@@ -22,7 +22,7 @@ import {
   Filter,
   Search,
   Download,
-  MessageCircle // 상담 메뉴용 아이콘 추가
+  MessageCircle
 } from 'lucide-react';
 
 const App = () => {
@@ -88,7 +88,6 @@ const App = () => {
     }
   });
 
-  // [수정] 학생 상담 데이터 상태 추가
   const [counselingData, setCounselingData] = useState({});
 
   const moods = ['😊', '🤩', '😐', '😴', '🤒', '😡', '😢', '😑'];
@@ -101,11 +100,17 @@ const App = () => {
     return isAllPresent ? 'bg-green-500' : 'bg-red-500';
   };
 
+  // [수정] 과제 현황 달력 점 표시 로직 (100% 완료 시 녹색, 아니면 빨간색)
   const getAssignmentDot = (date) => {
     const key = formatDate(date);
     const dayStatus = assignmentStatus[key];
     const dayTasks = assignments.filter(a => a.dueDate === key);
-    if (!dayStatus || dayTasks.length === 0) return null;
+    
+    // 해당 날짜에 과제가 없으면 점을 표시하지 않음
+    if (dayTasks.length === 0) return null;
+    // 과제는 있는데 아무도 상태를 기록하지 않았으면 무조건 빨간색
+    if (!dayStatus) return 'bg-red-500'; 
+    
     const isAllDone = students.every(student => 
       dayTasks.every(task => {
         const s = dayStatus[student.id]?.[task.id];
@@ -115,11 +120,14 @@ const App = () => {
     return isAllDone ? 'bg-green-500' : 'bg-red-500';
   };
 
-  // 상담 달력용 점 표시 함수
+  // [수정] 상담 기록 달력 점 표시 (미해결 있으면 빨간색, 모두 해결 시 파란색)
   const getCounselingDot = (date) => {
     const key = formatDate(date);
     const dayData = counselingData[key];
-    return (dayData && dayData.length > 0) ? 'bg-blue-500' : null;
+    if (!dayData || dayData.length === 0) return null;
+    
+    const hasUnresolved = dayData.some(record => !record.resolved);
+    return hasUnresolved ? 'bg-red-500' : 'bg-blue-500';
   };
 
   const getStatusIcon = (status) => {
@@ -254,12 +262,11 @@ const App = () => {
     }
   };
 
-  // 상담 기록 핸들러
   const addCounselingRecord = (date) => {
     const newRecord = { 
       id: 'c' + Date.now(), 
       recorder: '', 
-      studentId: students.length > 0 ? students[0].id : '', 
+      studentId: '', // [수정] 처음에 빈 값으로 설정하여 '학생 선택' 메시지가 보이도록 함
       content: '', 
       result: '', 
       resolved: false 
@@ -296,12 +303,12 @@ const App = () => {
     const allDates = Array.from(new Set([
       ...Object.keys(attendanceData),
       ...assignments.map(a => a.dueDate),
-      ...Object.keys(counselingData) // 상담 날짜 포함
+      ...Object.keys(counselingData) 
     ])).sort();
 
     allDates.forEach(date => {
+      // 1 & 2. 출석 및 과제
       students.forEach(student => {
-        // 1. 출석
         const attDay = attendanceData[date] || {};
         const sAtt = attDay[student.id];
         if (sAtt) {
@@ -309,7 +316,6 @@ const App = () => {
           csvContent += `${date},출석,${student.num},${escapeCSV(student.name)},출석체크,${presentStr},${sAtt.mood || ''},${escapeCSV(sAtt.memo)}\n`;
         }
 
-        // 2. 과제
         const dayAssignments = assignments.filter(a => a.dueDate === date);
         const taskDay = assignmentStatus[date] || {};
         const sTask = taskDay[student.id] || {};
@@ -323,15 +329,27 @@ const App = () => {
 
           csvContent += `${date},과제,${student.num},${escapeCSV(student.name)},${escapeCSV(itemStr)},${statusStr},-,${escapeCSV(memo)}\n`;
         });
+      });
 
-        // 3. 상담 (해당 학생의 상담만 필터링)
-        const dayCounseling = counselingData[date] || [];
-        const studentCounseling = dayCounseling.filter(c => c.studentId === student.id);
-        studentCounseling.forEach(c => {
-          const resolvedStr = c.resolved ? '해결완료' : '미해결';
-          const combinedMemo = `내용: ${c.content} / 결과: ${c.result}`;
-          csvContent += `${date},상담,${student.num},${escapeCSV(student.name)},${escapeCSV("작성자: " + c.recorder)},${resolvedStr},-,${escapeCSV(combinedMemo)}\n`;
-        });
+      // 3. 상담 (기타 타반 학생까지 모두 출력되도록 분리하여 처리)
+      const dayCounseling = counselingData[date] || [];
+      dayCounseling.forEach(c => {
+        const resolvedStr = c.resolved ? '해결완료' : '미해결';
+        const combinedMemo = `내용: ${c.content} / 결과: ${c.result}`;
+        
+        let sNum = '-';
+        let sName = '기타(타반 등)';
+        
+        // 학생 목록에 있는 학생일 경우 번호와 이름 매칭
+        if (c.studentId && c.studentId !== 'other') {
+          const matchedStudent = students.find(s => s.id === c.studentId);
+          if (matchedStudent) {
+            sNum = matchedStudent.num;
+            sName = matchedStudent.name;
+          }
+        }
+        
+        csvContent += `${date},상담,${sNum},${escapeCSV(sName)},${escapeCSV("작성자: " + c.recorder)},${resolvedStr},-,${escapeCSV(combinedMemo)}\n`;
       });
     });
 
@@ -356,11 +374,8 @@ const App = () => {
       <button onClick={() => {setActiveTab('attendance'); setSelectedStudent(null);}} className={`flex items-center gap-3 p-3 rounded-xl transition-all ${activeTab === 'attendance' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><Calendar size={20} /> 출석 관리</button>
       <button onClick={() => {setActiveTab('assignments'); setSelectedStudent(null);}} className={`flex items-center gap-3 p-3 rounded-xl transition-all ${activeTab === 'assignments' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><BookOpen size={20} /> 과제 관리</button>
       <button onClick={() => {setActiveTab('status'); setSelectedStudent(null);}} className={`flex items-center gap-3 p-3 rounded-xl transition-all ${activeTab === 'status' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><BarChart2 size={20} /> 과제 현황</button>
-      
-      {/* 학생 상담 메뉴 추가 */}
       <button onClick={() => {setActiveTab('counseling'); setSelectedStudent(null);}} className={`flex items-center gap-3 p-3 rounded-xl transition-all ${activeTab === 'counseling' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><MessageCircle size={20} /> 학생 상담</button>
       
-      {/* [수정] 데이터 다운로드 버튼 1줄로 조정 */}
       <div className="my-2 border-t border-gray-100"></div>
       <button 
         onClick={downloadCSV} 
@@ -691,7 +706,7 @@ const App = () => {
           </div>
         )}
 
-        {/* 5. 학생 상담 기능 추가 */}
+        {/* 5. 학생 상담 기능 */}
         {activeTab === 'counseling' && (
           <div className="flex gap-8 no-print overflow-hidden">
             <div className="shrink-0 w-80">
@@ -703,7 +718,7 @@ const App = () => {
                     const d = i + 1;
                     const curDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), d);
                     const isSelected = selectedDate.getDate() === d;
-                    const dotColor = getCounselingDot(curDate); // 상담 기록이 있으면 점 표시
+                    const dotColor = getCounselingDot(curDate); 
                     return (
                       <div key={d} className="relative flex flex-col items-center">
                         <button onClick={() => setSelectedDate(curDate)} className={`w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-medium transition-all ${isSelected ? 'bg-indigo-600 text-white shadow-md' : 'hover:bg-indigo-50 text-gray-700'}`}>{d}</button>
@@ -758,6 +773,7 @@ const App = () => {
                         >
                           <option value="" disabled>학생을 선택하세요</option>
                           {students.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                          <option value="other">기타 (타반 학생 등)</option>
                         </select>
                       </div>
                       <div className="w-1/3 flex flex-col justify-end pb-1">
@@ -768,8 +784,8 @@ const App = () => {
                             onChange={(e) => updateCounselingRecord(dateKey, record.id, 'resolved', e.target.checked)} 
                             className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer" 
                           />
-                          <span className={`font-black text-sm ${record.resolved ? 'text-green-600' : 'text-gray-400'}`}>
-                            {record.resolved ? '해결 완료' : '미해결 상태'}
+                          <span className={`font-black text-sm ${record.resolved ? 'text-blue-600' : 'text-red-500'}`}>
+                            {record.resolved ? '해결 완료 (파란색)' : '미해결 상태 (빨간색)'}
                           </span>
                         </label>
                       </div>
@@ -1013,8 +1029,6 @@ const App = () => {
   );
 };
 
-// --- Modals ---
-
 const AssignmentEditModal = ({ data, subjects, onClose, onSave }) => {
   const [title, setTitle] = useState(data.title || '');
   const [subjectId, setSubjectId] = useState(data.subjectId || '');
@@ -1034,7 +1048,6 @@ const AssignmentEditModal = ({ data, subjects, onClose, onSave }) => {
               autoFocus 
               value={title} 
               onChange={(e) => setTitle(e.target.value)} 
-              // [수정] 엔터키를 누르면 바로 저장되는 로직 추가
               onKeyDown={(e) => {
                 if(e.key === 'Enter') {
                   e.preventDefault();
