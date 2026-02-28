@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   Calendar, 
@@ -24,61 +24,6 @@ import {
 } from 'lucide-react';
 
 const App = () => {
-  // --- State ---
-  const [activeTab, setActiveTab] = useState('students'); 
-  const [selectedDate, setSelectedDate] = useState(new Date(2026, 1, 3)); 
-  const [selectedStudent, setSelectedStudent] = useState(null);
-  const [expandedTask, setExpandedTask] = useState(null);
-  
-  // New State for Student Assignment Detail View
-  const [assignmentDetailStudent, setAssignmentDetailStudent] = useState(null);
-  const [assignmentFilter, setAssignmentFilter] = useState('all'); // all, incomplete, complete
-  const [statusPickerTarget, setStatusPickerTarget] = useState(null); // { studentId, taskId, x, y }
-
-  const [showSubjectModal, setShowSubjectModal] = useState(null); 
-  const [showAssignmentModal, setShowAssignmentModal] = useState(false);
-  const [showStudentModal, setShowStudentModal] = useState(null); 
-  const [expandedSubjects, setExpandedSubjects] = useState({});
-
-  const [students, setStudents] = useState([
-    { id: '1', num: '1', name: '김학생', memo: '메모 없음', avatarColor: 'bg-indigo-600' },
-    { id: '2', num: '2', name: '이학생', memo: '메모 없음', avatarColor: 'bg-indigo-600' },
-    { id: '3', num: '3', name: '박학생', memo: '메모 없음', avatarColor: 'bg-indigo-600' },
-    { id: '4', num: '4', name: '최학생', memo: '메모 없음', avatarColor: 'bg-indigo-600' },
-  ]);
-
-  const [attendanceData, setAttendanceData] = useState({
-    '2026-02-03': {
-      '1': { present: true, mood: '😊', memo: '' },
-      '2': { present: true, mood: '😊', memo: '' },
-      '3': { present: true, mood: '😊', memo: '' },
-      '4': { present: true, mood: '😊', memo: '' },
-    }
-  });
-
-  const [subjects, setSubjects] = useState([
-    { id: 's1', title: '국어' },
-    { id: 's2', title: '수학' },
-    { id: 's3', title: '통합교과' },
-  ]);
-
-  const [assignments, setAssignments] = useState([
-    { id: 'a1', subjectId: 's1', title: '아침활동', dueDate: '2026-02-03' },
-    { id: 'a2', subjectId: 's2', title: '수학 익힘책', dueDate: '2026-02-03' },
-  ]);
-
-  const [assignmentStatus, setAssignmentStatus] = useState({
-    '2026-02-03': {
-      '1': { 'a1': 'done', 'a2': 'done', 'memo_a1': '', 'memo_a2': '' },
-      '2': { 'a1': 'done', 'a2': 'done', 'memo_a1': '', 'memo_a2': '' },
-      '3': { 'a1': 'done', 'a2': 'done', 'memo_a1': '', 'memo_a2': '' },
-      '4': { 'a1': 'done', 'a2': 'ing', 'memo_a1': '', 'memo_a2': '' },
-    }
-  });
-
-  const [showMoodPicker, setShowMoodPicker] = useState(null); 
-  const moods = ['😊', '🤩', '😐', '😴', '🤒', '😡', '😢', '😑'];
-
   // --- Helpers ---
   const formatDate = (date) => {
     const y = date.getFullYear();
@@ -87,8 +32,53 @@ const App = () => {
     return `${y}-${m}-${d}`;
   };
 
-  const dateKey = formatDate(selectedDate);
+  const getDaysInMonth = (year, month) => {
+    return new Date(year, month + 1, 0).getDate();
+  };
 
+  // --- State ---
+  const [activeTab, setActiveTab] = useState('students'); 
+  // 💡 오늘 날짜로 초기화
+  const [selectedDate, setSelectedDate] = useState(new Date()); 
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [expandedTask, setExpandedTask] = useState(null);
+  
+  const [assignmentDetailStudent, setAssignmentDetailStudent] = useState(null);
+  const [assignmentFilter, setAssignmentFilter] = useState('all'); 
+  const [statusPickerTarget, setStatusPickerTarget] = useState(null); 
+
+  const [showSubjectModal, setShowSubjectModal] = useState(null); 
+  const [showAssignmentModal, setShowAssignmentModal] = useState(false);
+  const [showStudentModal, setShowStudentModal] = useState(null); 
+  const [expandedSubjects, setExpandedSubjects] = useState({});
+
+  const dateKey = formatDate(selectedDate);
+  const currentYear = selectedDate.getFullYear();
+  const currentMonth = selectedDate.getMonth();
+
+  const [students, setStudents] = useState([
+    { id: '1', num: '1', name: '김학생', memo: '메모 없음', avatarColor: 'bg-indigo-600' },
+    { id: '2', num: '2', name: '이학생', memo: '메모 없음', avatarColor: 'bg-indigo-600' },
+    { id: '3', num: '3', name: '박학생', memo: '메모 없음', avatarColor: 'bg-indigo-600' },
+    { id: '4', num: '4', name: '최학생', memo: '메모 없음', avatarColor: 'bg-indigo-600' },
+  ]);
+
+  const [attendanceData, setAttendanceData] = useState({});
+  const [subjects, setSubjects] = useState([
+    { id: 's1', title: '국어' },
+    { id: 's2', title: '수학' },
+    { id: 's3', title: '통합교과' },
+  ]);
+  const [assignments, setAssignments] = useState([
+    { id: 'a1', subjectId: 's1', title: '아침활동', dueDate: dateKey },
+    { id: 'a2', subjectId: 's2', title: '수학 익힘책', dueDate: dateKey },
+  ]);
+  const [assignmentStatus, setAssignmentStatus] = useState({});
+
+  const [showMoodPicker, setShowMoodPicker] = useState(null); 
+  const moods = ['😊', '🤩', '😐', '😴', '🤒', '😡', '😢', '😑'];
+
+  // --- Logic ---
   const getAttendanceDot = (date) => {
     const key = formatDate(date);
     const dayData = attendanceData[key];
@@ -111,7 +101,6 @@ const App = () => {
     return isAllDone ? 'bg-green-500' : 'bg-red-500';
   };
 
-  // Status mapping
   const getStatusIcon = (status) => {
     switch(status) {
       case 'done': return '◎';
@@ -121,21 +110,12 @@ const App = () => {
     }
   };
 
-  const getStatusLabel = (status) => {
-    switch(status) {
-      case 'done': return '매우잘함';
-      case 'ing': return '잘함';
-      case 'bad': return '미흡';
-      default: return '미완료';
-    }
-  };
-
   const getStatusColorClass = (status) => {
     switch(status) {
-      case 'done': return 'bg-blue-700 text-white'; // 진한 파란색
-      case 'ing': return 'bg-yellow-100 text-yellow-800'; // 옅은 노란색
-      case 'bad': return 'bg-red-100 text-red-800'; // 옅은 빨간색
-      default: return 'bg-gray-100 text-gray-500'; // 회색
+      case 'done': return 'bg-blue-700 text-white';
+      case 'ing': return 'bg-yellow-100 text-yellow-800';
+      case 'bad': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-500';
     }
   };
 
@@ -322,12 +302,14 @@ const App = () => {
           <div className="flex gap-8 no-print overflow-hidden">
             <div className="shrink-0 w-80">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                <h3 className="font-bold text-lg mb-4 text-gray-800">2026년 2월</h3>
+                {/* 💡 현재 연도/월 표시 */}
+                <h3 className="font-bold text-lg mb-4 text-gray-800">{currentYear}년 {currentMonth + 1}월</h3>
                 <div className="grid grid-cols-7 gap-y-2 text-center mb-4 font-semibold text-xs">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d} className="text-gray-300">{d}</div>)}
-                  {Array.from({ length: 28 }, (_, i) => {
+                  {/* 💡 동적 달력 생성 */}
+                  {Array.from({ length: getDaysInMonth(currentYear, currentMonth) }, (_, i) => {
                     const d = i + 1;
-                    const curDate = new Date(2026, 1, d);
+                    const curDate = new Date(currentYear, currentMonth, d);
                     const isSelected = selectedDate.getDate() === d;
                     const dotColor = getAttendanceDot(curDate);
                     return (
@@ -374,7 +356,7 @@ const App = () => {
                         </button>
                         {showMoodPicker === student.id && (
                           <div className="absolute z-50 left-full ml-3 top-0 bg-white p-3 rounded-2xl shadow-2xl border border-gray-100 grid grid-cols-4 gap-2 w-44">
-                            {moods.map(m => <button key={m} onClick={() => {
+                              {moods.map(m => <button key={m} onClick={() => {
                               setAttendanceData(p => ({...p, [dateKey]: {...p[dateKey], [student.id]: {...state, mood: m}}}));
                               setShowMoodPicker(null);
                             }} className="w-9 h-9 text-xl hover:bg-slate-50 rounded-xl transition-colors">{m}</button>)}
@@ -502,12 +484,14 @@ const App = () => {
           <div className="flex gap-8 no-print">
             <div className="shrink-0 w-80">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                <h3 className="font-bold text-lg mb-4 text-gray-800">2026년 2월</h3>
+                {/* 💡 현재 연도/월 표시 */}
+                <h3 className="font-bold text-lg mb-4 text-gray-800">{currentYear}년 {currentMonth + 1}월</h3>
                 <div className="grid grid-cols-7 gap-y-2 text-center mb-4 font-semibold text-xs">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d} className="text-gray-300">{d}</div>)}
-                  {Array.from({ length: 28 }, (_, i) => {
+                  {/* 💡 동적 달력 생성 */}
+                  {Array.from({ length: getDaysInMonth(currentYear, currentMonth) }, (_, i) => {
                     const d = i + 1;
-                    const curDate = new Date(2026, 1, d);
+                    const curDate = new Date(currentYear, currentMonth, d);
                     const isSelected = selectedDate.getDate() === d;
                     const dotColor = getAssignmentDot(curDate);
                     return (
@@ -528,7 +512,6 @@ const App = () => {
               {students.map(student => {
                 const tasks = assignments.filter(a => a.dueDate === dateKey);
                 const status = assignmentStatus[dateKey]?.[student.id] || {};
-                // ◎ 와 ○ 둘 다 완료로 인정
                 const done = Object.entries(status).filter(([k, v]) => !k.startsWith('memo_') && (v === 'done' || v === 'ing')).length;
                 const total = tasks.length;
                 const percent = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -559,7 +542,8 @@ const App = () => {
                 <div className="flex-1">
                   <h3 className="text-4xl font-black text-gray-800 mb-2">{selectedStudent.name} 학생 개인 리포트</h3>
                   <div className="flex gap-4">
-                    <p className="text-gray-400 font-bold">분석 기간: 2026.02.01 - 2026.02.28</p>
+                    {/* 💡 리포트 날짜도 현행화 */}
+                    <p className="text-gray-400 font-bold">분석 날짜: {dateKey}</p>
                   </div>
                 </div>
               </div>
@@ -571,7 +555,6 @@ const App = () => {
         )}
 
         {/* --- Modals --- */}
-
         {/* 상태 선택 작은 모달 */}
         {statusPickerTarget && (
           <div className="fixed inset-0 z-[200]" onClick={() => setStatusPickerTarget(null)}>
@@ -598,197 +581,7 @@ const App = () => {
             </div>
           </div>
         )}
-
-        {/* 개별 학생 과제 상세 모달 */}
-        {assignmentDetailStudent && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-6">
-            <div className="bg-white rounded-[40px] w-full max-w-4xl max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
-              <div className="p-8 border-b border-gray-50 flex justify-between items-start shrink-0 bg-indigo-50/30">
-                <div>
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="bg-indigo-600 text-white text-xs px-2 py-1 rounded-md font-bold">학생 상세 현황</span>
-                    <h4 className="text-3xl font-black text-gray-800">{assignmentDetailStudent.name}</h4>
-                  </div>
-                  <p className="text-gray-400 font-bold text-sm">과제별 성취도 확인 (◎/○ 클릭 시 상태 변경 가능)</p>
-                </div>
-                <button onClick={() => {setAssignmentDetailStudent(null); setAssignmentFilter('all');}} className="p-3 bg-white hover:bg-red-50 hover:text-red-500 rounded-2xl shadow-sm transition-all"><X size={24} /></button>
-              </div>
-
-              {/* 필터 탭 */}
-              <div className="px-8 py-4 bg-white border-b border-gray-100 flex gap-2 shrink-0">
-                <button onClick={() => setAssignmentFilter('all')} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${assignmentFilter === 'all' ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-gray-400 hover:bg-slate-100'}`}>전체</button>
-                <button onClick={() => setAssignmentFilter('incomplete')} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${assignmentFilter === 'incomplete' ? 'bg-red-500 text-white' : 'bg-slate-50 text-gray-400 hover:bg-slate-100'}`}>미완료 (△, -)</button>
-                <button onClick={() => setAssignmentFilter('complete')} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${assignmentFilter === 'complete' ? 'bg-green-600 text-white' : 'bg-slate-50 text-gray-400 hover:bg-slate-100'}`}>완료 (◎, ○)</button>
-              </div>
-
-              {/* 과제 리스트 */}
-              <div className="flex-1 overflow-y-auto p-8 space-y-4 bg-slate-50/30">
-                {assignments
-                  .filter(a => {
-                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
-                    if (assignmentFilter === 'complete') return status === 'done' || status === 'ing';
-                    if (assignmentFilter === 'incomplete') return status !== 'done' && status !== 'ing';
-                    return true;
-                  })
-                  .map(a => {
-                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
-                    const memo = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[`memo_${a.id}`] || '';
-                    const subject = subjects.find(s => s.id === a.subjectId);
-                    
-                    return (
-                      <div key={a.id} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-6 items-start md:items-center">
-                        <button 
-                          onClick={(e) => {
-                            const rect = e.currentTarget.getBoundingClientRect();
-                            setStatusPickerTarget({ studentId: assignmentDetailStudent.id, taskId: a.id, date: a.dueDate, x: rect.left, y: rect.bottom + window.scrollY });
-                          }}
-                          className={`shrink-0 flex items-center justify-center w-16 h-16 rounded-2xl border font-black text-2xl transition-all hover:scale-105 active:scale-95 ${getStatusColorClass(status)}`}
-                        >
-                          {getStatusIcon(status)}
-                        </button>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[10px] font-black px-2 py-0.5 bg-indigo-100 text-indigo-600 rounded uppercase">{subject?.title || '기타'}</span>
-                            <span className="text-xs font-bold text-gray-300">{a.dueDate}</span>
-                          </div>
-                          <h5 className="font-bold text-gray-700 text-lg">{a.title}</h5>
-                          <p className={`text-xs font-bold mt-1 ${status === 'done' || status === 'ing' ? 'text-blue-600' : 'text-gray-400'}`}>
-                            상태: {getStatusLabel(status)}
-                          </p>
-                        </div>
-                        <div className="w-full md:w-72 shrink-0">
-                          <input 
-                            value={memo} 
-                            onChange={(e) => updateTaskMemo(assignmentDetailStudent.id, a.id, e.target.value, a.dueDate)}
-                            placeholder="메모 입력..." 
-                            className="w-full bg-slate-50 border-2 border-transparent focus:border-indigo-100 focus:bg-white px-4 py-3 rounded-2xl outline-none text-sm font-medium transition-all"
-                          />
-                        </div>
-                      </div>
-                    );
-                  })
-                }
-                {assignments.length === 0 && <div className="text-center py-20 text-gray-300 font-bold">데이터가 없습니다.</div>}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 과목 모달 */}
-        {showSubjectModal && (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-            <div className="bg-white rounded-[32px] p-8 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
-              <div className="flex justify-between items-center mb-6">
-                <h4 className="text-2xl font-bold">{showSubjectModal.id ? '과목 수정' : '새 과목 생성'}</h4>
-                <button onClick={() => setShowSubjectModal(null)} className="p-2 hover:bg-slate-100 rounded-full"><X size={20} /></button>
-              </div>
-              <div className="space-y-6">
-                <input id="sub_input" autoFocus defaultValue={showSubjectModal.title} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-bold" />
-                <button onClick={() => saveSubject(showSubjectModal.id, document.getElementById('sub_input').value)} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg">저장</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 학생 추가/수정 모달 */}
-        {showStudentModal && (
-          <StudentEditModal 
-            data={showStudentModal} 
-            onClose={() => setShowStudentModal(null)} 
-            onSave={saveStudent} 
-          />
-        )}
-
-        {/* 과제 추가 모달 */}
-        {showAssignmentModal && (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-            <div className="bg-white rounded-[32px] p-10 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
-              <div className="flex justify-between items-center mb-8">
-                <h4 className="text-2xl font-bold">새 과제 등록</h4>
-                <button onClick={() => setShowAssignmentModal(false)} className="p-2 hover:bg-slate-100 rounded-full"><X size={20} /></button>
-              </div>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-bold text-gray-400 mb-2 ml-1">과제 제목</label>
-                  <input id="asgn_title" className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-bold" />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-400 mb-2 ml-1">과목 선택</label>
-                  <select id="asgn_sub" className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 px-5 py-4 rounded-2xl outline-none font-bold appearance-none">
-                    {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-400 mb-2 ml-1">마감 기한</label>
-                  <input id="asgn_date" type="date" defaultValue={dateKey} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 px-5 py-4 rounded-2xl font-bold" />
-                </div>
-                <button onClick={() => {
-                  const title = document.getElementById('asgn_title').value;
-                  const subjectId = document.getElementById('asgn_sub').value;
-                  const dueDate = document.getElementById('asgn_date').value;
-                  if(!title) return;
-                  setAssignments([...assignments, { id: 'a' + Date.now(), subjectId, title, dueDate }]);
-                  setShowAssignmentModal(false);
-                }} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg">저장하기</button>
-              </div>
-            </div>
-          </div>
-        )}
       </main>
-    </div>
-  );
-};
-
-// 학생 추가/수정용 컴포넌트
-const StudentEditModal = ({ data, onClose, onSave }) => {
-  const [num, setNum] = useState(data.num || '');
-  const [name, setName] = useState(data.name || '');
-  const [memo, setMemo] = useState(data.memo || '');
-  
-  const nameRef = useRef(null);
-  const memoRef = useRef(null);
-
-  useEffect(() => {
-    if (nameRef.current) nameRef.current.focus();
-  }, []);
-
-  const handleKeyDown = (e, nextField) => {
-    if (e.key === 'Enter') {
-      if (nextField === 'memo') {
-        memoRef.current.focus();
-      } else if (nextField === 'save') {
-        onSave(data.id, num, name, memo, data.id === null); 
-      }
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-      <div className="bg-white rounded-[32px] p-10 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center mb-8">
-          <h4 className="text-2xl font-black text-gray-800">{data.id ? '학생 정보 수정' : '신규 학생 등록'}</h4>
-          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full"><X size={20} /></button>
-        </div>
-        <div className="space-y-6">
-          <div className="flex gap-4">
-            <div className="w-24">
-              <label className="block text-xs font-black text-gray-400 mb-2 ml-1">번호</label>
-              <input value={num} onChange={(e) => setNum(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-4 py-4 rounded-2xl outline-none transition-all font-bold text-center" />
-            </div>
-            <div className="flex-1">
-              <label className="block text-xs font-black text-gray-400 mb-2 ml-1">이름</label>
-              <input ref={nameRef} value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => handleKeyDown(e, 'memo')} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-bold" />
-            </div>
-          </div>
-          <div>
-            <label className="block text-xs font-black text-gray-400 mb-2 ml-1">메모</label>
-            <input ref={memoRef} value={memo} onChange={(e) => setMemo(e.target.value)} onKeyDown={(e) => handleKeyDown(e, 'save')} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-bold" />
-          </div>
-          <button onClick={() => onSave(data.id, num, name, memo, data.id === null)} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg hover:bg-indigo-700 transition-all">
-            {data.id ? '수정 완료' : '등록'}
-          </button>
-        </div>
-      </div>
     </div>
   );
 };
