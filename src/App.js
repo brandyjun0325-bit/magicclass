@@ -20,7 +20,8 @@ import {
   Info,
   Check,
   Filter,
-  Search
+  Search,
+  Download // 다운로드 아이콘 추가
 } from 'lucide-react';
 
 const App = () => {
@@ -34,17 +35,17 @@ const App = () => {
 
   // --- State ---
   const [activeTab, setActiveTab] = useState('students'); 
-  const [selectedDate, setSelectedDate] = useState(new Date()); // 항상 현재 날짜로 초기화
+  const [selectedDate, setSelectedDate] = useState(new Date()); 
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [expandedTask, setExpandedTask] = useState(null);
   
   const [assignmentDetailStudent, setAssignmentDetailStudent] = useState(null);
   const [assignmentFilter, setAssignmentFilter] = useState('all'); 
   const [statusPickerTarget, setStatusPickerTarget] = useState(null); 
-  const [moodPickerTarget, setMoodPickerTarget] = useState(null); // 기분 팝업 타겟 상태 추가
+  const [moodPickerTarget, setMoodPickerTarget] = useState(null); 
 
   const [showSubjectModal, setShowSubjectModal] = useState(null); 
-  const [showAssignmentModal, setShowAssignmentModal] = useState(null); // null 또는 선택된 과제 객체
+  const [showAssignmentModal, setShowAssignmentModal] = useState(null); 
   const [showStudentModal, setShowStudentModal] = useState(null); 
   const [expandedSubjects, setExpandedSubjects] = useState({});
 
@@ -110,7 +111,6 @@ const App = () => {
     return isAllDone ? 'bg-green-500' : 'bg-red-500';
   };
 
-  // Status mapping
   const getStatusIcon = (status) => {
     switch(status) {
       case 'done': return '◎';
@@ -243,6 +243,56 @@ const App = () => {
     }
   };
 
+  // --- 엑셀(CSV) 다운로드 기능 ---
+  const downloadCSV = () => {
+    let csvContent = '\uFEFF'; // 한글 깨짐 방지용 BOM
+    csvContent += '날짜,구분,학생번호,학생이름,항목,상태,기분,메모\n';
+
+    const escapeCSV = (str) => `"${String(str || '').replace(/"/g, '""')}"`;
+
+    // 모든 기록된 날짜 수집
+    const allDates = Array.from(new Set([
+      ...Object.keys(attendanceData),
+      ...assignments.map(a => a.dueDate)
+    ])).sort();
+
+    allDates.forEach(date => {
+      students.forEach(student => {
+        // 1. 출석 데이터 행 생성
+        const attDay = attendanceData[date] || {};
+        const sAtt = attDay[student.id];
+        if (sAtt) {
+          const presentStr = sAtt.present ? '출석' : '결석';
+          csvContent += `${date},출석,${student.num},${escapeCSV(student.name)},출석체크,${presentStr},${sAtt.mood || ''},${escapeCSV(sAtt.memo)}\n`;
+        }
+
+        // 2. 과제 데이터 행 생성
+        const dayAssignments = assignments.filter(a => a.dueDate === date);
+        const taskDay = assignmentStatus[date] || {};
+        const sTask = taskDay[student.id] || {};
+
+        dayAssignments.forEach(task => {
+          const status = sTask[task.id] || null;
+          const statusStr = getStatusLabel(status);
+          const memo = sTask[`memo_${task.id}`] || '';
+          const subject = subjects.find(s => s.id === task.subjectId)?.title || '기타';
+          const itemStr = `[${subject}] ${task.title}`;
+
+          csvContent += `${date},과제,${student.num},${escapeCSV(student.name)},${escapeCSV(itemStr)},${statusStr},-,${escapeCSV(memo)}\n`;
+        });
+      });
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `매직클래스_종합데이터_${formatDate(new Date())}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // --- UI Components ---
   const Sidebar = () => (
     <div className="w-64 bg-white border-r h-screen flex flex-col p-4 space-y-2 no-print shrink-0">
@@ -254,6 +304,15 @@ const App = () => {
       <button onClick={() => {setActiveTab('attendance'); setSelectedStudent(null);}} className={`flex items-center gap-3 p-3 rounded-xl transition-all ${activeTab === 'attendance' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><Calendar size={20} /> 출석 관리</button>
       <button onClick={() => {setActiveTab('assignments'); setSelectedStudent(null);}} className={`flex items-center gap-3 p-3 rounded-xl transition-all ${activeTab === 'assignments' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><BookOpen size={20} /> 과제 관리</button>
       <button onClick={() => {setActiveTab('status'); setSelectedStudent(null);}} className={`flex items-center gap-3 p-3 rounded-xl transition-all ${activeTab === 'status' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><BarChart2 size={20} /> 과제 현황</button>
+      
+      {/* 데이터 다운로드 버튼 */}
+      <div className="my-2 border-t border-gray-100"></div>
+      <button 
+        onClick={downloadCSV} 
+        className="flex items-center gap-3 p-3 rounded-xl transition-all text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 font-bold shadow-sm border border-emerald-100"
+      >
+        <Download size={20} /> AI 분석용 엑셀 다운로드
+      </button>
     </div>
   );
 
@@ -373,13 +432,12 @@ const App = () => {
                         <button 
                           disabled={!state.present}
                           onClick={(e) => {
-                            // [수정] 이모지 팝업이 화면 하단에서 잘리지 않도록 위치 계산 로직 추가
                             const rect = e.currentTarget.getBoundingClientRect();
-                            const pickerHeight = 120; // 팝업 예상 높이
+                            const pickerHeight = 120; 
                             let posY = rect.top;
                             
                             if (posY + pickerHeight > window.innerHeight) {
-                              posY = window.innerHeight - pickerHeight - 20; // 넘어갈 경우 위로 끌어올림
+                              posY = window.innerHeight - pickerHeight - 20; 
                             }
                             
                             setMoodPickerTarget({ 
@@ -459,7 +517,6 @@ const App = () => {
                                   <span className="text-[10px] font-bold text-gray-400 bg-white px-2 py-1 rounded-md border border-gray-100 ml-2">{a.dueDate}</span>
                                 </div>
                                 <div className="flex items-center gap-1 text-xs text-indigo-400 font-bold">
-                                  {/* [수정] 과제 수정/삭제 기능 아이콘 추가 */}
                                   <button onClick={(e) => { e.stopPropagation(); setShowAssignmentModal(a); }} className="p-2 hover:bg-indigo-100 text-indigo-500 rounded-xl transition-colors"><Edit2 size={16} /></button>
                                   <button onClick={(e) => { e.stopPropagation(); deleteAssignment(a.id); }} className="p-2 hover:bg-red-100 text-red-500 rounded-xl transition-colors"><Trash2 size={16} /></button>
                                   <div className="ml-2 bg-white px-3 py-1.5 rounded-lg border border-indigo-50 shadow-sm text-indigo-600">
@@ -601,7 +658,6 @@ const App = () => {
 
         {/* --- Modals --- */}
 
-        {/* 상태 선택 작은 모달 */}
         {statusPickerTarget && (
           <div className="fixed inset-0 z-[200]" onClick={() => setStatusPickerTarget(null)}>
             <div 
@@ -628,7 +684,6 @@ const App = () => {
           </div>
         )}
 
-        {/* [수정] 기분 선택 이모지 팝업을 화면에서 잘리지 않는 팝업으로 분리 */}
         {moodPickerTarget && (
           <div className="fixed inset-0 z-[200]" onClick={() => setMoodPickerTarget(null)}>
             <div 
@@ -652,7 +707,6 @@ const App = () => {
           </div>
         )}
 
-        {/* 개별 학생 과제 상세 모달 */}
         {assignmentDetailStudent && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-6">
             <div className="bg-white rounded-[40px] w-full max-w-4xl max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
@@ -762,7 +816,6 @@ const App = () => {
           />
         )}
 
-        {/* [수정] 과제 생성 및 수정을 담당하는 모달 변경 */}
         {showAssignmentModal && (
           <AssignmentEditModal 
             key={showAssignmentModal.id || 'new_assignment'}
@@ -772,10 +825,8 @@ const App = () => {
             onSave={(id, title, subId, date) => {
               if(!title) return;
               if (id) {
-                // 수정 시
                 setAssignments(prev => prev.map(a => a.id === id ? { ...a, title, subjectId: subId, dueDate: date } : a));
               } else {
-                // [수정] 신규 생성 시 리스트의 가장 앞(최상단)에 추가되도록 배열 순서 변경
                 setAssignments(prev => [{ id: 'a' + Date.now(), subjectId: subId, title, dueDate: date }, ...prev]);
               }
               setShowAssignmentModal(null);
@@ -787,7 +838,6 @@ const App = () => {
   );
 };
 
-// [수정] 과제 추가 및 수정을 위한 모달 컴포넌트 추가
 const AssignmentEditModal = ({ data, subjects, onClose, onSave }) => {
   const [title, setTitle] = useState(data.title || '');
   const [subjectId, setSubjectId] = useState(data.subjectId || '');
