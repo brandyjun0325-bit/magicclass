@@ -21,7 +21,8 @@ import {
   Check,
   Filter,
   Search,
-  Download // 다운로드 아이콘 추가
+  Download,
+  MessageCircle // 상담 메뉴용 아이콘 추가
 } from 'lucide-react';
 
 const App = () => {
@@ -87,6 +88,9 @@ const App = () => {
     }
   });
 
+  // [수정] 학생 상담 데이터 상태 추가
+  const [counselingData, setCounselingData] = useState({});
+
   const moods = ['😊', '🤩', '😐', '😴', '🤒', '😡', '😢', '😑'];
 
   const getAttendanceDot = (date) => {
@@ -109,6 +113,13 @@ const App = () => {
       })
     );
     return isAllDone ? 'bg-green-500' : 'bg-red-500';
+  };
+
+  // 상담 달력용 점 표시 함수
+  const getCounselingDot = (date) => {
+    const key = formatDate(date);
+    const dayData = counselingData[key];
+    return (dayData && dayData.length > 0) ? 'bg-blue-500' : null;
   };
 
   const getStatusIcon = (status) => {
@@ -243,22 +254,54 @@ const App = () => {
     }
   };
 
+  // 상담 기록 핸들러
+  const addCounselingRecord = (date) => {
+    const newRecord = { 
+      id: 'c' + Date.now(), 
+      recorder: '', 
+      studentId: students.length > 0 ? students[0].id : '', 
+      content: '', 
+      result: '', 
+      resolved: false 
+    };
+    setCounselingData(prev => ({ 
+      ...prev, 
+      [date]: [newRecord, ...(prev[date] || [])] 
+    }));
+  };
+
+  const updateCounselingRecord = (date, id, field, value) => {
+    setCounselingData(prev => ({
+      ...prev,
+      [date]: prev[date].map(r => r.id === id ? { ...r, [field]: value } : r)
+    }));
+  };
+
+  const deleteCounselingRecord = (date, id) => {
+    if(window.confirm('이 상담 기록을 삭제하시겠습니까?')) {
+      setCounselingData(prev => ({
+        ...prev,
+        [date]: prev[date].filter(r => r.id !== id)
+      }));
+    }
+  };
+
   // --- 엑셀(CSV) 다운로드 기능 ---
   const downloadCSV = () => {
-    let csvContent = '\uFEFF'; // 한글 깨짐 방지용 BOM
+    let csvContent = '\uFEFF'; 
     csvContent += '날짜,구분,학생번호,학생이름,항목,상태,기분,메모\n';
 
     const escapeCSV = (str) => `"${String(str || '').replace(/"/g, '""')}"`;
 
-    // 모든 기록된 날짜 수집
     const allDates = Array.from(new Set([
       ...Object.keys(attendanceData),
-      ...assignments.map(a => a.dueDate)
+      ...assignments.map(a => a.dueDate),
+      ...Object.keys(counselingData) // 상담 날짜 포함
     ])).sort();
 
     allDates.forEach(date => {
       students.forEach(student => {
-        // 1. 출석 데이터 행 생성
+        // 1. 출석
         const attDay = attendanceData[date] || {};
         const sAtt = attDay[student.id];
         if (sAtt) {
@@ -266,7 +309,7 @@ const App = () => {
           csvContent += `${date},출석,${student.num},${escapeCSV(student.name)},출석체크,${presentStr},${sAtt.mood || ''},${escapeCSV(sAtt.memo)}\n`;
         }
 
-        // 2. 과제 데이터 행 생성
+        // 2. 과제
         const dayAssignments = assignments.filter(a => a.dueDate === date);
         const taskDay = assignmentStatus[date] || {};
         const sTask = taskDay[student.id] || {};
@@ -279,6 +322,15 @@ const App = () => {
           const itemStr = `[${subject}] ${task.title}`;
 
           csvContent += `${date},과제,${student.num},${escapeCSV(student.name)},${escapeCSV(itemStr)},${statusStr},-,${escapeCSV(memo)}\n`;
+        });
+
+        // 3. 상담 (해당 학생의 상담만 필터링)
+        const dayCounseling = counselingData[date] || [];
+        const studentCounseling = dayCounseling.filter(c => c.studentId === student.id);
+        studentCounseling.forEach(c => {
+          const resolvedStr = c.resolved ? '해결완료' : '미해결';
+          const combinedMemo = `내용: ${c.content} / 결과: ${c.result}`;
+          csvContent += `${date},상담,${student.num},${escapeCSV(student.name)},${escapeCSV("작성자: " + c.recorder)},${resolvedStr},-,${escapeCSV(combinedMemo)}\n`;
         });
       });
     });
@@ -295,7 +347,7 @@ const App = () => {
 
   // --- UI Components ---
   const Sidebar = () => (
-    <div className="w-64 bg-white border-r h-screen flex flex-col p-4 space-y-2 no-print shrink-0">
+    <div className="w-64 bg-white border-r h-screen flex flex-col p-4 space-y-2 no-print shrink-0 overflow-y-auto">
       <div className="flex items-center gap-2 mb-8 px-2 text-indigo-600 font-bold text-xl">
         <div className="p-2 bg-indigo-600 rounded-lg text-white"><Sparkles size={24} /></div>
         <h1>매직클래스</h1>
@@ -305,13 +357,16 @@ const App = () => {
       <button onClick={() => {setActiveTab('assignments'); setSelectedStudent(null);}} className={`flex items-center gap-3 p-3 rounded-xl transition-all ${activeTab === 'assignments' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><BookOpen size={20} /> 과제 관리</button>
       <button onClick={() => {setActiveTab('status'); setSelectedStudent(null);}} className={`flex items-center gap-3 p-3 rounded-xl transition-all ${activeTab === 'status' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><BarChart2 size={20} /> 과제 현황</button>
       
-      {/* 데이터 다운로드 버튼 */}
+      {/* 학생 상담 메뉴 추가 */}
+      <button onClick={() => {setActiveTab('counseling'); setSelectedStudent(null);}} className={`flex items-center gap-3 p-3 rounded-xl transition-all ${activeTab === 'counseling' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><MessageCircle size={20} /> 학생 상담</button>
+      
+      {/* [수정] 데이터 다운로드 버튼 1줄로 조정 */}
       <div className="my-2 border-t border-gray-100"></div>
       <button 
         onClick={downloadCSV} 
-        className="flex items-center gap-3 p-3 rounded-xl transition-all text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 font-bold shadow-sm border border-emerald-100"
+        className="flex items-center gap-2 px-3 py-3 rounded-xl transition-all text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 font-bold shadow-sm border border-emerald-100 text-sm whitespace-nowrap"
       >
-        <Download size={20} /> AI 분석용 엑셀 다운로드
+        <Download size={18} className="shrink-0" /> 엑셀 다운로드 (AI 분석용)
       </button>
     </div>
   );
@@ -327,6 +382,7 @@ const App = () => {
             {activeTab === 'attendance' && '출석 관리'}
             {activeTab === 'assignments' && '과제 관리'}
             {activeTab === 'status' && '과제 현황'}
+            {activeTab === 'counseling' && '학생 상담'}
           </h2>
         </div>
 
@@ -635,7 +691,126 @@ const App = () => {
           </div>
         )}
 
-        {/* 5. 개인 리포트 */}
+        {/* 5. 학생 상담 기능 추가 */}
+        {activeTab === 'counseling' && (
+          <div className="flex gap-8 no-print overflow-hidden">
+            <div className="shrink-0 w-80">
+              <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <h3 className="font-bold text-lg mb-4 text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                <div className="grid grid-cols-7 gap-y-2 text-center mb-4 font-semibold text-xs">
+                  {['일','월','화','수','목','금','토'].map(d => <div key={d} className="text-gray-300">{d}</div>)}
+                  {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() }, (_, i) => {
+                    const d = i + 1;
+                    const curDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), d);
+                    const isSelected = selectedDate.getDate() === d;
+                    const dotColor = getCounselingDot(curDate); // 상담 기록이 있으면 점 표시
+                    return (
+                      <div key={d} className="relative flex flex-col items-center">
+                        <button onClick={() => setSelectedDate(curDate)} className={`w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-medium transition-all ${isSelected ? 'bg-indigo-600 text-white shadow-md' : 'hover:bg-indigo-50 text-gray-700'}`}>{d}</button>
+                        {dotColor && <div className={`absolute bottom-1 w-1.5 h-1.5 rounded-full ${dotColor}`} />}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-1 bg-white rounded-3xl border border-gray-100 shadow-sm p-8 min-w-0 flex flex-col h-[calc(100vh-8rem)]">
+              <div className="flex items-center justify-between mb-6 shrink-0">
+                <h3 className="text-xl font-bold flex items-center gap-3 shrink-0">
+                  <MessageCircle className="text-indigo-600" size={24} />
+                  <span>{dateKey} 학생 상담 기록</span>
+                </h3>
+                <button 
+                  onClick={() => addCounselingRecord(dateKey)} 
+                  className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-indigo-700 flex items-center gap-2 text-sm shadow-md transition-all"
+                >
+                  <Plus size={16} /> 상담 추가
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+                {(counselingData[dateKey] || []).map((record) => (
+                  <div key={record.id} className="bg-slate-50 p-6 rounded-[24px] border border-gray-100 shadow-sm flex flex-col gap-4 relative group">
+                    <button 
+                      onClick={() => deleteCounselingRecord(dateKey, record.id)} 
+                      className="absolute top-4 right-4 text-gray-300 hover:text-red-500 hover:bg-red-50 p-2 rounded-xl transition-all"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                    
+                    <div className="flex gap-4 items-center pr-10">
+                      <div className="w-1/3">
+                        <label className="block text-xs font-black text-gray-400 mb-1 ml-1">적은 사람 (작성자)</label>
+                        <input 
+                          value={record.recorder} 
+                          onChange={(e) => updateCounselingRecord(dateKey, record.id, 'recorder', e.target.value)} 
+                          className="w-full bg-white border border-gray-100 focus:border-indigo-400 px-4 py-2.5 rounded-xl outline-none text-sm font-bold transition-all" 
+                          placeholder="예: 담임교사" 
+                        />
+                      </div>
+                      <div className="w-1/3">
+                        <label className="block text-xs font-black text-gray-400 mb-1 ml-1">적힌 사람 (학생 선택)</label>
+                        <select 
+                          value={record.studentId} 
+                          onChange={(e) => updateCounselingRecord(dateKey, record.id, 'studentId', e.target.value)} 
+                          className="w-full bg-white border border-gray-100 focus:border-indigo-400 px-4 py-2.5 rounded-xl outline-none text-sm font-bold appearance-none transition-all"
+                        >
+                          <option value="" disabled>학생을 선택하세요</option>
+                          {students.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                        </select>
+                      </div>
+                      <div className="w-1/3 flex flex-col justify-end pb-1">
+                        <label className="flex items-center gap-3 cursor-pointer p-2 rounded-xl hover:bg-gray-100 transition-colors w-fit">
+                          <input 
+                            type="checkbox" 
+                            checked={record.resolved} 
+                            onChange={(e) => updateCounselingRecord(dateKey, record.id, 'resolved', e.target.checked)} 
+                            className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer" 
+                          />
+                          <span className={`font-black text-sm ${record.resolved ? 'text-green-600' : 'text-gray-400'}`}>
+                            {record.resolved ? '해결 완료' : '미해결 상태'}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-4">
+                      <div className="flex-1">
+                        <label className="block text-xs font-black text-gray-400 mb-1 ml-1">상담 내용</label>
+                        <textarea 
+                          value={record.content} 
+                          onChange={(e) => updateCounselingRecord(dateKey, record.id, 'content', e.target.value)} 
+                          rows={3} 
+                          className="w-full bg-white border border-gray-100 focus:border-indigo-400 px-4 py-3 rounded-2xl outline-none text-sm font-medium resize-none transition-all leading-relaxed" 
+                          placeholder="학생과의 상담 내용이나 관찰 사항을 기록하세요..." 
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <label className="block text-xs font-black text-gray-400 mb-1 ml-1">상담 결과</label>
+                        <textarea 
+                          value={record.result} 
+                          onChange={(e) => updateCounselingRecord(dateKey, record.id, 'result', e.target.value)} 
+                          rows={3} 
+                          className="w-full bg-white border border-gray-100 focus:border-indigo-400 px-4 py-3 rounded-2xl outline-none text-sm font-medium resize-none transition-all leading-relaxed" 
+                          placeholder="상담 후 조치 사항이나 결과를 기록하세요..." 
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {(!counselingData[dateKey] || counselingData[dateKey].length === 0) && (
+                  <div className="text-center py-20 text-gray-300 font-bold flex flex-col items-center gap-3">
+                    <MessageCircle size={48} className="text-gray-200" />
+                    <p>기록된 상담 내용이 없습니다.<br/>우측 상단의 버튼을 눌러 새 상담을 추가해 보세요.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 6. 개인 리포트 */}
         {selectedStudent && (
           <div className="space-y-6">
             <button onClick={() => setSelectedStudent(null)} className="no-print flex items-center gap-2 text-gray-400 hover:text-indigo-600 transition-colors mb-4 font-bold"><ChevronLeft size={20} /> 목록으로 돌아가기</button>
@@ -838,6 +1013,8 @@ const App = () => {
   );
 };
 
+// --- Modals ---
+
 const AssignmentEditModal = ({ data, subjects, onClose, onSave }) => {
   const [title, setTitle] = useState(data.title || '');
   const [subjectId, setSubjectId] = useState(data.subjectId || '');
@@ -853,7 +1030,19 @@ const AssignmentEditModal = ({ data, subjects, onClose, onSave }) => {
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-bold text-gray-400 mb-2 ml-1">과제 제목</label>
-            <input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-bold" />
+            <input 
+              autoFocus 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              // [수정] 엔터키를 누르면 바로 저장되는 로직 추가
+              onKeyDown={(e) => {
+                if(e.key === 'Enter') {
+                  e.preventDefault();
+                  onSave(data.id, title, subjectId, dueDate);
+                }
+              }}
+              className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-bold" 
+            />
           </div>
           <div>
             <label className="block text-sm font-bold text-gray-400 mb-2 ml-1">과목 선택</label>
