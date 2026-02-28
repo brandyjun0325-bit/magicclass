@@ -24,16 +24,24 @@ import {
 } from 'lucide-react';
 
 const App = () => {
+  // --- Helpers ---
+  const formatDate = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  };
+
   // --- State ---
   const [activeTab, setActiveTab] = useState('students'); 
-  const [selectedDate, setSelectedDate] = useState(new Date(2026, 1, 3)); 
+  // [수정] 초기 날짜를 현재 날짜로 변경
+  const [selectedDate, setSelectedDate] = useState(new Date()); 
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [expandedTask, setExpandedTask] = useState(null);
   
-  // New State for Student Assignment Detail View
   const [assignmentDetailStudent, setAssignmentDetailStudent] = useState(null);
-  const [assignmentFilter, setAssignmentFilter] = useState('all'); // all, incomplete, complete
-  const [statusPickerTarget, setStatusPickerTarget] = useState(null); // { studentId, taskId, x, y }
+  const [assignmentFilter, setAssignmentFilter] = useState('all'); 
+  const [statusPickerTarget, setStatusPickerTarget] = useState(null); 
 
   const [showSubjectModal, setShowSubjectModal] = useState(null); 
   const [showAssignmentModal, setShowAssignmentModal] = useState(false);
@@ -47,8 +55,11 @@ const App = () => {
     { id: '4', num: '4', name: '최학생', memo: '메모 없음', avatarColor: 'bg-indigo-600' },
   ]);
 
+  const dateKey = formatDate(selectedDate);
+
+  // [수정] 초기 데이터 키를 현재 날짜 키로 유연하게 설정
   const [attendanceData, setAttendanceData] = useState({
-    '2026-02-03': {
+    [dateKey]: {
       '1': { present: true, mood: '😊', memo: '' },
       '2': { present: true, mood: '😊', memo: '' },
       '3': { present: true, mood: '😊', memo: '' },
@@ -63,12 +74,12 @@ const App = () => {
   ]);
 
   const [assignments, setAssignments] = useState([
-    { id: 'a1', subjectId: 's1', title: '아침활동', dueDate: '2026-02-03' },
-    { id: 'a2', subjectId: 's2', title: '수학 익힘책', dueDate: '2026-02-03' },
+    { id: 'a1', subjectId: 's1', title: '아침활동', dueDate: dateKey },
+    { id: 'a2', subjectId: 's2', title: '수학 익힘책', dueDate: dateKey },
   ]);
 
   const [assignmentStatus, setAssignmentStatus] = useState({
-    '2026-02-03': {
+    [dateKey]: {
       '1': { 'a1': 'done', 'a2': 'done', 'memo_a1': '', 'memo_a2': '' },
       '2': { 'a1': 'done', 'a2': 'done', 'memo_a1': '', 'memo_a2': '' },
       '3': { 'a1': 'done', 'a2': 'done', 'memo_a1': '', 'memo_a2': '' },
@@ -78,16 +89,6 @@ const App = () => {
 
   const [showMoodPicker, setShowMoodPicker] = useState(null); 
   const moods = ['😊', '🤩', '😐', '😴', '🤒', '😡', '😢', '😑'];
-
-  // --- Helpers ---
-  const formatDate = (date) => {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-  };
-
-  const dateKey = formatDate(selectedDate);
 
   const getAttendanceDot = (date) => {
     const key = formatDate(date);
@@ -132,10 +133,10 @@ const App = () => {
 
   const getStatusColorClass = (status) => {
     switch(status) {
-      case 'done': return 'bg-blue-700 text-white'; // 진한 파란색
-      case 'ing': return 'bg-yellow-100 text-yellow-800'; // 옅은 노란색
-      case 'bad': return 'bg-red-100 text-red-800'; // 옅은 빨간색
-      default: return 'bg-gray-100 text-gray-500'; // 회색
+      case 'done': return 'bg-blue-700 text-white'; 
+      case 'ing': return 'bg-yellow-100 text-yellow-800'; 
+      case 'bad': return 'bg-red-100 text-red-800'; 
+      default: return 'bg-gray-100 text-gray-500'; 
     }
   };
 
@@ -322,12 +323,14 @@ const App = () => {
           <div className="flex gap-8 no-print overflow-hidden">
             <div className="shrink-0 w-80">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                <h3 className="font-bold text-lg mb-4 text-gray-800">2026년 2월</h3>
+                {/* [수정] 현재 연도와 월을 표시하도록 변경 */}
+                <h3 className="font-bold text-lg mb-4 text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
                 <div className="grid grid-cols-7 gap-y-2 text-center mb-4 font-semibold text-xs">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d} className="text-gray-300">{d}</div>)}
-                  {Array.from({ length: 28 }, (_, i) => {
+                  {/* [수정] 해당 월의 실제 일수를 계산하여 출력 */}
+                  {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() }, (_, i) => {
                     const d = i + 1;
-                    const curDate = new Date(2026, 1, d);
+                    const curDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), d);
                     const isSelected = selectedDate.getDate() === d;
                     const dotColor = getAttendanceDot(curDate);
                     return (
@@ -502,12 +505,14 @@ const App = () => {
           <div className="flex gap-8 no-print">
             <div className="shrink-0 w-80">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                <h3 className="font-bold text-lg mb-4 text-gray-800">2026년 2월</h3>
+                {/* [수정] 현재 연도와 월을 표시하도록 변경 */}
+                <h3 className="font-bold text-lg mb-4 text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
                 <div className="grid grid-cols-7 gap-y-2 text-center mb-4 font-semibold text-xs">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d} className="text-gray-300">{d}</div>)}
-                  {Array.from({ length: 28 }, (_, i) => {
+                  {/* [수정] 해당 월의 실제 일수를 계산하여 출력 */}
+                  {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() }, (_, i) => {
                     const d = i + 1;
-                    const curDate = new Date(2026, 1, d);
+                    const curDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), d);
                     const isSelected = selectedDate.getDate() === d;
                     const dotColor = getAssignmentDot(curDate);
                     return (
@@ -528,7 +533,6 @@ const App = () => {
               {students.map(student => {
                 const tasks = assignments.filter(a => a.dueDate === dateKey);
                 const status = assignmentStatus[dateKey]?.[student.id] || {};
-                // ◎ 와 ○ 둘 다 완료로 인정
                 const done = Object.entries(status).filter(([k, v]) => !k.startsWith('memo_') && (v === 'done' || v === 'ing')).length;
                 const total = tasks.length;
                 const percent = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -559,7 +563,7 @@ const App = () => {
                 <div className="flex-1">
                   <h3 className="text-4xl font-black text-gray-800 mb-2">{selectedStudent.name} 학생 개인 리포트</h3>
                   <div className="flex gap-4">
-                    <p className="text-gray-400 font-bold">분석 기간: 2026.02.01 - 2026.02.28</p>
+                    <p className="text-gray-400 font-bold">분석 기간: {selectedDate.getFullYear()}.{String(selectedDate.getMonth() + 1).padStart(2, '0')}.01 - {dateKey}</p>
                   </div>
                 </div>
               </div>
@@ -570,9 +574,8 @@ const App = () => {
           </div>
         )}
 
-        {/* --- Modals --- */}
+        {/* --- Modals (생략 없이 유지) --- */}
 
-        {/* 상태 선택 작은 모달 */}
         {statusPickerTarget && (
           <div className="fixed inset-0 z-[200]" onClick={() => setStatusPickerTarget(null)}>
             <div 
@@ -599,7 +602,6 @@ const App = () => {
           </div>
         )}
 
-        {/* 개별 학생 과제 상세 모달 */}
         {assignmentDetailStudent && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-6">
             <div className="bg-white rounded-[40px] w-full max-w-4xl max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
@@ -614,14 +616,12 @@ const App = () => {
                 <button onClick={() => {setAssignmentDetailStudent(null); setAssignmentFilter('all');}} className="p-3 bg-white hover:bg-red-50 hover:text-red-500 rounded-2xl shadow-sm transition-all"><X size={24} /></button>
               </div>
 
-              {/* 필터 탭 */}
               <div className="px-8 py-4 bg-white border-b border-gray-100 flex gap-2 shrink-0">
                 <button onClick={() => setAssignmentFilter('all')} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${assignmentFilter === 'all' ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-gray-400 hover:bg-slate-100'}`}>전체</button>
                 <button onClick={() => setAssignmentFilter('incomplete')} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${assignmentFilter === 'incomplete' ? 'bg-red-500 text-white' : 'bg-slate-50 text-gray-400 hover:bg-slate-100'}`}>미완료 (△, -)</button>
                 <button onClick={() => setAssignmentFilter('complete')} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${assignmentFilter === 'complete' ? 'bg-green-600 text-white' : 'bg-slate-50 text-gray-400 hover:bg-slate-100'}`}>완료 (◎, ○)</button>
               </div>
 
-              {/* 과제 리스트 */}
               <div className="flex-1 overflow-y-auto p-8 space-y-4 bg-slate-50/30">
                 {assignments
                   .filter(a => {
@@ -674,7 +674,6 @@ const App = () => {
           </div>
         )}
 
-        {/* 과목 모달 */}
         {showSubjectModal && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
             <div className="bg-white rounded-[32px] p-8 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
@@ -690,7 +689,6 @@ const App = () => {
           </div>
         )}
 
-        {/* 학생 추가/수정 모달 */}
         {showStudentModal && (
           <StudentEditModal 
             data={showStudentModal} 
@@ -699,7 +697,6 @@ const App = () => {
           />
         )}
 
-        {/* 과제 추가 모달 */}
         {showAssignmentModal && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
             <div className="bg-white rounded-[32px] p-10 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
@@ -739,7 +736,6 @@ const App = () => {
   );
 };
 
-// 학생 추가/수정용 컴포넌트
 const StudentEditModal = ({ data, onClose, onSave }) => {
   const [num, setNum] = useState(data.num || '');
   const [name, setName] = useState(data.name || '');
