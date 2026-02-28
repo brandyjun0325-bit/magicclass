@@ -465,15 +465,13 @@ const App = () => {
                                           <div 
                                             onClick={(e) => {
                                               const rect = e.currentTarget.getBoundingClientRect();
-                                              const pickerHeight = 150; // 평가 박스의 예상 높이
-                                              let posY = rect.top - 10; // 박스의 상단을 기준으로 약간 위에서 시작
+                                              const pickerHeight = 150; 
+                                              let posY = rect.top - 10; 
                                               
-                                              // 화면 아래로 넘어가는 경우(잘림 방지) 위쪽으로 끌어올림
                                               if (posY + pickerHeight > window.innerHeight) {
                                                 posY = window.innerHeight - pickerHeight - 20;
                                               }
                                               
-                                              // [수정] 박스의 바로 오른쪽 옆(rect.right)에 나타나도록 x좌표 수정
                                               setStatusPickerTarget({ 
                                                 studentId: s.id, 
                                                 taskId: a.id, 
@@ -654,7 +652,6 @@ const App = () => {
                             const pickerHeight = 150; 
                             let posY = rect.top - 10;
                             
-                            // [수정] 모달 내에서도 화면 아래로 잘리지 않도록 위치 보정 및 오른쪽 옆에 표시
                             if (posY + pickerHeight > window.innerHeight) {
                               posY = window.innerHeight - pickerHeight - 20;
                             }
@@ -714,8 +711,10 @@ const App = () => {
           </div>
         )}
 
+        {/* [수정 1] 학생 등록 모달에 key 속성을 추가하여 다음 학생 입력 시 모달 상태를 완벽하게 초기화하고 포커스를 다시 잡도록 설정 */}
         {showStudentModal && (
           <StudentEditModal 
+            key={showStudentModal.id || `new_student_${showStudentModal.num}`}
             data={showStudentModal} 
             onClose={() => setShowStudentModal(null)} 
             onSave={saveStudent} 
@@ -773,11 +772,19 @@ const StudentEditModal = ({ data, onClose, onSave }) => {
     if (nameRef.current) nameRef.current.focus();
   }, []);
 
-  const handleKeyDown = (e, nextField) => {
+  // [수정 2] 엔터키 동작 변경: 신규 등록일 때는 이름만 치고 엔터 눌러도 바로 저장됨
+  const handleKeyDown = (e, currentField) => {
     if (e.key === 'Enter') {
-      if (nextField === 'memo') {
-        memoRef.current.focus();
-      } else if (nextField === 'save') {
+      e.preventDefault();
+      if (currentField === 'name') {
+        if (data.id === null) {
+          // 신규 등록 시: 이름 입력 후 엔터 치면 쾌속으로 저장하고 다음 창으로 넘어감
+          onSave(data.id, num, name, memo, true);
+        } else {
+          // 수정 시: 기존처럼 메모칸으로 이동
+          memoRef.current?.focus();
+        }
+      } else if (currentField === 'memo') {
         onSave(data.id, num, name, memo, data.id === null); 
       }
     }
@@ -798,12 +805,24 @@ const StudentEditModal = ({ data, onClose, onSave }) => {
             </div>
             <div className="flex-1">
               <label className="block text-xs font-black text-gray-400 mb-2 ml-1">이름</label>
-              <input ref={nameRef} value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => handleKeyDown(e, 'memo')} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-bold" />
+              <input 
+                ref={nameRef} 
+                value={name} 
+                onChange={(e) => setName(e.target.value)} 
+                onKeyDown={(e) => handleKeyDown(e, 'name')} // [수정 3] 파라미터를 'name'으로 변경
+                className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-bold" 
+              />
             </div>
           </div>
           <div>
             <label className="block text-xs font-black text-gray-400 mb-2 ml-1">메모</label>
-            <input ref={memoRef} value={memo} onChange={(e) => setMemo(e.target.value)} onKeyDown={(e) => handleKeyDown(e, 'save')} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-bold" />
+            <input 
+              ref={memoRef} 
+              value={memo} 
+              onChange={(e) => setMemo(e.target.value)} 
+              onKeyDown={(e) => handleKeyDown(e, 'memo')} // [수정 4]
+              className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-bold" 
+            />
           </div>
           <button onClick={() => onSave(data.id, num, name, memo, data.id === null)} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg hover:bg-indigo-700 transition-all">
             {data.id ? '수정 완료' : '등록'}
