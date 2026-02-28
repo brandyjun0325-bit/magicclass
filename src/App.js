@@ -34,7 +34,6 @@ const App = () => {
 
   // --- State ---
   const [activeTab, setActiveTab] = useState('students'); 
-  // [수정] 초기 날짜를 현재 날짜로 변경
   const [selectedDate, setSelectedDate] = useState(new Date()); 
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [expandedTask, setExpandedTask] = useState(null);
@@ -57,7 +56,6 @@ const App = () => {
 
   const dateKey = formatDate(selectedDate);
 
-  // [수정] 초기 데이터 키를 현재 날짜 키로 유연하게 설정
   const [attendanceData, setAttendanceData] = useState({
     [dateKey]: {
       '1': { present: true, mood: '😊', memo: '' },
@@ -323,11 +321,9 @@ const App = () => {
           <div className="flex gap-8 no-print overflow-hidden">
             <div className="shrink-0 w-80">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                {/* [수정] 현재 연도와 월을 표시하도록 변경 */}
                 <h3 className="font-bold text-lg mb-4 text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
                 <div className="grid grid-cols-7 gap-y-2 text-center mb-4 font-semibold text-xs">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d} className="text-gray-300">{d}</div>)}
-                  {/* [수정] 해당 월의 실제 일수를 계산하여 출력 */}
                   {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() }, (_, i) => {
                     const d = i + 1;
                     const curDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), d);
@@ -469,7 +465,22 @@ const App = () => {
                                           <div 
                                             onClick={(e) => {
                                               const rect = e.currentTarget.getBoundingClientRect();
-                                              setStatusPickerTarget({ studentId: s.id, taskId: a.id, date: dateKey, x: rect.left, y: rect.bottom + window.scrollY });
+                                              const pickerHeight = 150; // 평가 박스의 예상 높이
+                                              let posY = rect.top - 10; // 박스의 상단을 기준으로 약간 위에서 시작
+                                              
+                                              // 화면 아래로 넘어가는 경우(잘림 방지) 위쪽으로 끌어올림
+                                              if (posY + pickerHeight > window.innerHeight) {
+                                                posY = window.innerHeight - pickerHeight - 20;
+                                              }
+                                              
+                                              // [수정] 박스의 바로 오른쪽 옆(rect.right)에 나타나도록 x좌표 수정
+                                              setStatusPickerTarget({ 
+                                                studentId: s.id, 
+                                                taskId: a.id, 
+                                                date: dateKey, 
+                                                x: rect.right + 10, 
+                                                y: posY 
+                                              });
                                             }} 
                                             className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all border ${getStatusColorClass(status)}`}
                                           >
@@ -505,11 +516,9 @@ const App = () => {
           <div className="flex gap-8 no-print">
             <div className="shrink-0 w-80">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                {/* [수정] 현재 연도와 월을 표시하도록 변경 */}
                 <h3 className="font-bold text-lg mb-4 text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
                 <div className="grid grid-cols-7 gap-y-2 text-center mb-4 font-semibold text-xs">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d} className="text-gray-300">{d}</div>)}
-                  {/* [수정] 해당 월의 실제 일수를 계산하여 출력 */}
                   {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() }, (_, i) => {
                     const d = i + 1;
                     const curDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), d);
@@ -574,8 +583,9 @@ const App = () => {
           </div>
         )}
 
-        {/* --- Modals (생략 없이 유지) --- */}
+        {/* --- Modals --- */}
 
+        {/* 상태 선택 작은 모달 */}
         {statusPickerTarget && (
           <div className="fixed inset-0 z-[200]" onClick={() => setStatusPickerTarget(null)}>
             <div 
@@ -602,6 +612,7 @@ const App = () => {
           </div>
         )}
 
+        {/* 개별 학생 과제 상세 모달 */}
         {assignmentDetailStudent && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-6">
             <div className="bg-white rounded-[40px] w-full max-w-4xl max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
@@ -640,7 +651,21 @@ const App = () => {
                         <button 
                           onClick={(e) => {
                             const rect = e.currentTarget.getBoundingClientRect();
-                            setStatusPickerTarget({ studentId: assignmentDetailStudent.id, taskId: a.id, date: a.dueDate, x: rect.left, y: rect.bottom + window.scrollY });
+                            const pickerHeight = 150; 
+                            let posY = rect.top - 10;
+                            
+                            // [수정] 모달 내에서도 화면 아래로 잘리지 않도록 위치 보정 및 오른쪽 옆에 표시
+                            if (posY + pickerHeight > window.innerHeight) {
+                              posY = window.innerHeight - pickerHeight - 20;
+                            }
+                            
+                            setStatusPickerTarget({ 
+                              studentId: assignmentDetailStudent.id, 
+                              taskId: a.id, 
+                              date: a.dueDate, 
+                              x: rect.right + 10, 
+                              y: posY 
+                            });
                           }}
                           className={`shrink-0 flex items-center justify-center w-16 h-16 rounded-2xl border font-black text-2xl transition-all hover:scale-105 active:scale-95 ${getStatusColorClass(status)}`}
                         >
