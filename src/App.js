@@ -34,16 +34,17 @@ const App = () => {
 
   // --- State ---
   const [activeTab, setActiveTab] = useState('students'); 
-  const [selectedDate, setSelectedDate] = useState(new Date()); 
+  const [selectedDate, setSelectedDate] = useState(new Date()); // 항상 현재 날짜로 초기화
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [expandedTask, setExpandedTask] = useState(null);
   
   const [assignmentDetailStudent, setAssignmentDetailStudent] = useState(null);
   const [assignmentFilter, setAssignmentFilter] = useState('all'); 
   const [statusPickerTarget, setStatusPickerTarget] = useState(null); 
+  const [moodPickerTarget, setMoodPickerTarget] = useState(null); // 기분 팝업 타겟 상태 추가
 
   const [showSubjectModal, setShowSubjectModal] = useState(null); 
-  const [showAssignmentModal, setShowAssignmentModal] = useState(false);
+  const [showAssignmentModal, setShowAssignmentModal] = useState(null); // null 또는 선택된 과제 객체
   const [showStudentModal, setShowStudentModal] = useState(null); 
   const [expandedSubjects, setExpandedSubjects] = useState({});
 
@@ -85,7 +86,6 @@ const App = () => {
     }
   });
 
-  const [showMoodPicker, setShowMoodPicker] = useState(null); 
   const moods = ['😊', '🤩', '😐', '😴', '🤒', '😡', '😢', '😑'];
 
   const getAttendanceDot = (date) => {
@@ -237,6 +237,12 @@ const App = () => {
     }
   };
 
+  const deleteAssignment = (id) => {
+    if(window.confirm('정말로 이 과제를 삭제하시겠습니까?')) {
+      setAssignments(prev => prev.filter(a => a.id !== id));
+    }
+  };
+
   // --- UI Components ---
   const Sidebar = () => (
     <div className="w-64 bg-white border-r h-screen flex flex-col p-4 space-y-2 no-print shrink-0">
@@ -366,19 +372,26 @@ const App = () => {
                       <div className="relative shrink-0">
                         <button 
                           disabled={!state.present}
-                          onClick={() => setShowMoodPicker(showMoodPicker === student.id ? null : student.id)} 
+                          onClick={(e) => {
+                            // [수정] 이모지 팝업이 화면 하단에서 잘리지 않도록 위치 계산 로직 추가
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const pickerHeight = 120; // 팝업 예상 높이
+                            let posY = rect.top;
+                            
+                            if (posY + pickerHeight > window.innerHeight) {
+                              posY = window.innerHeight - pickerHeight - 20; // 넘어갈 경우 위로 끌어올림
+                            }
+                            
+                            setMoodPickerTarget({ 
+                              studentId: student.id, 
+                              x: rect.right + 10, 
+                              y: posY 
+                            });
+                          }} 
                           className={`w-12 h-12 rounded-2xl bg-gray-50 border-2 border-transparent flex items-center justify-center text-2xl transition-all ${state.present ? 'hover:border-indigo-100 opacity-100' : 'opacity-30'}`}
                         >
                           {state.mood}
                         </button>
-                        {showMoodPicker === student.id && (
-                          <div className="absolute z-50 left-full ml-3 top-0 bg-white p-3 rounded-2xl shadow-2xl border border-gray-100 grid grid-cols-4 gap-2 w-44">
-                            {moods.map(m => <button key={m} onClick={() => {
-                              setAttendanceData(p => ({...p, [dateKey]: {...p[dateKey], [student.id]: {...state, mood: m}}}));
-                              setShowMoodPicker(null);
-                            }} className="w-9 h-9 text-xl hover:bg-slate-50 rounded-xl transition-colors">{m}</button>)}
-                          </div>
-                        )}
                       </div>
 
                       <div className="flex-1">
@@ -410,7 +423,7 @@ const App = () => {
               </div>
               <div className="flex gap-2">
                 <button onClick={() => setShowSubjectModal({id: null, title: ''})} className="bg-white text-gray-600 border border-gray-200 px-5 py-2.5 rounded-2xl flex items-center gap-2 font-semibold shadow-sm hover:bg-gray-50 transition-all">과목 추가</button>
-                <button onClick={() => setShowAssignmentModal(true)} className="bg-indigo-600 text-white px-5 py-2.5 rounded-2xl flex items-center gap-2 font-semibold shadow-md hover:bg-indigo-700 transition-all">새 과제</button>
+                <button onClick={() => setShowAssignmentModal({id: null, title: '', subjectId: subjects[0]?.id || '', dueDate: dateKey})} className="bg-indigo-600 text-white px-5 py-2.5 rounded-2xl flex items-center gap-2 font-semibold shadow-md hover:bg-indigo-700 transition-all">새 과제</button>
               </div>
             </div>
             
@@ -445,8 +458,13 @@ const App = () => {
                                   <span className="font-bold text-gray-700">{a.title}</span>
                                   <span className="text-[10px] font-bold text-gray-400 bg-white px-2 py-1 rounded-md border border-gray-100 ml-2">{a.dueDate}</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-xs text-indigo-400 font-bold">
-                                  {expandedTask === a.id ? '현황 접기' : '현황 보기'}
+                                <div className="flex items-center gap-1 text-xs text-indigo-400 font-bold">
+                                  {/* [수정] 과제 수정/삭제 기능 아이콘 추가 */}
+                                  <button onClick={(e) => { e.stopPropagation(); setShowAssignmentModal(a); }} className="p-2 hover:bg-indigo-100 text-indigo-500 rounded-xl transition-colors"><Edit2 size={16} /></button>
+                                  <button onClick={(e) => { e.stopPropagation(); deleteAssignment(a.id); }} className="p-2 hover:bg-red-100 text-red-500 rounded-xl transition-colors"><Trash2 size={16} /></button>
+                                  <div className="ml-2 bg-white px-3 py-1.5 rounded-lg border border-indigo-50 shadow-sm text-indigo-600">
+                                    {expandedTask === a.id ? '현황 접기' : '현황 보기'}
+                                  </div>
                                 </div>
                               </div>
                               
@@ -610,6 +628,30 @@ const App = () => {
           </div>
         )}
 
+        {/* [수정] 기분 선택 이모지 팝업을 화면에서 잘리지 않는 팝업으로 분리 */}
+        {moodPickerTarget && (
+          <div className="fixed inset-0 z-[200]" onClick={() => setMoodPickerTarget(null)}>
+            <div 
+              className="absolute bg-white p-3 rounded-2xl shadow-2xl border border-gray-100 grid grid-cols-4 gap-2 w-44 animate-in zoom-in-95 duration-150"
+              style={{ left: moodPickerTarget.x, top: moodPickerTarget.y }}
+              onClick={e => e.stopPropagation()}
+            >
+              {moods.map(m => (
+                <button 
+                  key={m} 
+                  onClick={() => {
+                    setAttendanceData(p => ({...p, [dateKey]: {...p[dateKey], [moodPickerTarget.studentId]: {...p[dateKey]?.[moodPickerTarget.studentId], mood: m}}}));
+                    setMoodPickerTarget(null);
+                  }} 
+                  className="w-9 h-9 text-xl hover:bg-slate-50 rounded-xl transition-colors"
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* 개별 학생 과제 상세 모달 */}
         {assignmentDetailStudent && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-6">
@@ -711,7 +753,6 @@ const App = () => {
           </div>
         )}
 
-        {/* [수정 1] 학생 등록 모달에 key 속성을 추가하여 다음 학생 입력 시 모달 상태를 완벽하게 초기화하고 포커스를 다시 잡도록 설정 */}
         {showStudentModal && (
           <StudentEditModal 
             key={showStudentModal.id || `new_student_${showStudentModal.num}`}
@@ -721,41 +762,64 @@ const App = () => {
           />
         )}
 
+        {/* [수정] 과제 생성 및 수정을 담당하는 모달 변경 */}
         {showAssignmentModal && (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-            <div className="bg-white rounded-[32px] p-10 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
-              <div className="flex justify-between items-center mb-8">
-                <h4 className="text-2xl font-bold">새 과제 등록</h4>
-                <button onClick={() => setShowAssignmentModal(false)} className="p-2 hover:bg-slate-100 rounded-full"><X size={20} /></button>
-              </div>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-bold text-gray-400 mb-2 ml-1">과제 제목</label>
-                  <input id="asgn_title" className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-bold" />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-400 mb-2 ml-1">과목 선택</label>
-                  <select id="asgn_sub" className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 px-5 py-4 rounded-2xl outline-none font-bold appearance-none">
-                    {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-400 mb-2 ml-1">마감 기한</label>
-                  <input id="asgn_date" type="date" defaultValue={dateKey} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 px-5 py-4 rounded-2xl font-bold" />
-                </div>
-                <button onClick={() => {
-                  const title = document.getElementById('asgn_title').value;
-                  const subjectId = document.getElementById('asgn_sub').value;
-                  const dueDate = document.getElementById('asgn_date').value;
-                  if(!title) return;
-                  setAssignments([...assignments, { id: 'a' + Date.now(), subjectId, title, dueDate }]);
-                  setShowAssignmentModal(false);
-                }} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg">저장하기</button>
-              </div>
-            </div>
-          </div>
+          <AssignmentEditModal 
+            key={showAssignmentModal.id || 'new_assignment'}
+            data={showAssignmentModal}
+            subjects={subjects}
+            onClose={() => setShowAssignmentModal(null)}
+            onSave={(id, title, subId, date) => {
+              if(!title) return;
+              if (id) {
+                // 수정 시
+                setAssignments(prev => prev.map(a => a.id === id ? { ...a, title, subjectId: subId, dueDate: date } : a));
+              } else {
+                // [수정] 신규 생성 시 리스트의 가장 앞(최상단)에 추가되도록 배열 순서 변경
+                setAssignments(prev => [{ id: 'a' + Date.now(), subjectId: subId, title, dueDate: date }, ...prev]);
+              }
+              setShowAssignmentModal(null);
+            }}
+          />
         )}
       </main>
+    </div>
+  );
+};
+
+// [수정] 과제 추가 및 수정을 위한 모달 컴포넌트 추가
+const AssignmentEditModal = ({ data, subjects, onClose, onSave }) => {
+  const [title, setTitle] = useState(data.title || '');
+  const [subjectId, setSubjectId] = useState(data.subjectId || '');
+  const [dueDate, setDueDate] = useState(data.dueDate || '');
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+      <div className="bg-white rounded-[32px] p-10 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-8">
+          <h4 className="text-2xl font-bold">{data.id ? '과제 수정' : '새 과제 등록'}</h4>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full"><X size={20} /></button>
+        </div>
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-bold text-gray-400 mb-2 ml-1">과제 제목</label>
+            <input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-bold" />
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-gray-400 mb-2 ml-1">과목 선택</label>
+            <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 px-5 py-4 rounded-2xl outline-none font-bold appearance-none">
+              {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-gray-400 mb-2 ml-1">마감 기한</label>
+            <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 px-5 py-4 rounded-2xl font-bold" />
+          </div>
+          <button onClick={() => onSave(data.id, title, subjectId, dueDate)} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:bg-indigo-700 transition-all">
+            저장하기
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
@@ -772,16 +836,13 @@ const StudentEditModal = ({ data, onClose, onSave }) => {
     if (nameRef.current) nameRef.current.focus();
   }, []);
 
-  // [수정 2] 엔터키 동작 변경: 신규 등록일 때는 이름만 치고 엔터 눌러도 바로 저장됨
   const handleKeyDown = (e, currentField) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       if (currentField === 'name') {
         if (data.id === null) {
-          // 신규 등록 시: 이름 입력 후 엔터 치면 쾌속으로 저장하고 다음 창으로 넘어감
           onSave(data.id, num, name, memo, true);
         } else {
-          // 수정 시: 기존처럼 메모칸으로 이동
           memoRef.current?.focus();
         }
       } else if (currentField === 'memo') {
@@ -809,7 +870,7 @@ const StudentEditModal = ({ data, onClose, onSave }) => {
                 ref={nameRef} 
                 value={name} 
                 onChange={(e) => setName(e.target.value)} 
-                onKeyDown={(e) => handleKeyDown(e, 'name')} // [수정 3] 파라미터를 'name'으로 변경
+                onKeyDown={(e) => handleKeyDown(e, 'name')} 
                 className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-bold" 
               />
             </div>
@@ -820,7 +881,7 @@ const StudentEditModal = ({ data, onClose, onSave }) => {
               ref={memoRef} 
               value={memo} 
               onChange={(e) => setMemo(e.target.value)} 
-              onKeyDown={(e) => handleKeyDown(e, 'memo')} // [수정 4]
+              onKeyDown={(e) => handleKeyDown(e, 'memo')} 
               className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-bold" 
             />
           </div>
