@@ -17,7 +17,7 @@ import {
   Download,
   MessageCircle,
   Trophy,
-  ArrowUpDown
+  Filter
 } from 'lucide-react';
 
 // --- Local Storage Custom Hook ---
@@ -27,6 +27,7 @@ function useLocalStorage(key, initialValue) {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
+      console.warn("로컬 스토리지 읽기 에러:", error);
       return initialValue;
     }
   });
@@ -34,13 +35,15 @@ function useLocalStorage(key, initialValue) {
   useEffect(() => {
     try {
       window.localStorage.setItem(key, JSON.stringify(storedValue));
-    } catch (error) {}
+    } catch (error) {
+      console.warn("로컬 스토리지 저장 에러:", error);
+    }
   }, [key, storedValue]);
 
   return [storedValue, setStoredValue];
 }
 
-// --- Sound Player ---
+// --- Sound Player (마법 & 천둥 소리) ---
 const playSound = (type) => {
   try {
     if (type === 'magic') {
@@ -87,8 +90,8 @@ const App = () => {
 
   // 매직 점수 전용 상태
   const [selectedStudentsForMagic, setSelectedStudentsForMagic] = useState([]); 
-  const [magicPointValue, setMagicPointValue] = useState(1); // 1~10 선택 점수
-  const [magicSortOrder, setMagicSortOrder] = useState('num'); // num, desc, asc
+  const [magicPointValue, setMagicPointValue] = useState(1); 
+  const [magicSortOrder, setMagicSortOrder] = useState('num'); 
   const [reportPeriod, setReportPeriod] = useState('all'); 
 
   const dateKey = formatDate(selectedDate);
@@ -107,10 +110,10 @@ const App = () => {
 
   const moods = ['😊', '🤩', '😐', '😴', '🤒', '😡', '😢', '😑'];
 
-  // --- 자동 연계 로직: 과제 점수 계산 (매우잘함 3, 잘함 2, 미흡 1) ---
+  // --- 과제 점수 자동 연계 계산기 (매우잘함 3, 잘함 2, 미흡 1) ---
   const getStudentTaskPoints = (studentId) => {
     let taskPts = 0;
-    Object.values(assignmentStatus).forEach(dayData => {
+    Object.values(assignmentStatus || {}).forEach(dayData => {
       const sData = dayData[studentId] || {};
       Object.entries(sData).forEach(([k, v]) => {
         if (!k.startsWith('memo_')) {
@@ -123,7 +126,7 @@ const App = () => {
     return taskPts;
   };
 
-  // 학생의 총합 매직 점수 = (수동 부여 매직 점수) + (자동 연계 과제 점수)
+  // 학생 총합 매직 점수 = (수동 매직 점수) + (자동 연계 과제 점수)
   const getStudentTotalPoints = (studentId) => {
     const manualPoints = (magicPoints[studentId] || []).reduce((acc, p) => acc + p.amount, 0);
     const taskPoints = getStudentTaskPoints(studentId);
@@ -241,11 +244,8 @@ const App = () => {
 
   const saveSubject = (id, title) => {
     if(!title) return;
-    if (id) {
-      setSubjects(subjects.map(s => s.id === id ? {...s, title} : s));
-    } else {
-      setSubjects([...subjects, { id: 's' + Date.now(), title }]);
-    }
+    if (id) setSubjects(subjects.map(s => s.id === id ? {...s, title} : s));
+    else setSubjects([...subjects, { id: 's' + Date.now(), title }]);
     setShowSubjectModal(null);
   };
 
@@ -278,11 +278,10 @@ const App = () => {
     }
   };
 
-  // 매직 점수 부여 (사유 제거, 점수 즉시 반영)
+  // 매직 점수 부여 (소리 및 점수 즉시 반영)
   const handleMagicPointAction = (studentIdsArray, type) => {
     if (studentIdsArray.length === 0) return alert('학생을 먼저 선택해주세요.');
     
-    // 사운드 재생
     playSound(type === 'plus' ? 'magic' : 'thunder');
 
     setMagicPoints(prev => {
@@ -321,7 +320,6 @@ const App = () => {
         return true;
       });
 
-      // 수동 부여 합계 + 과제 부여 합계(전체 기간일 때만 합산)
       const manualTotal = filteredPoints.reduce((acc, curr) => acc + curr.amount, 0);
       const total = reportPeriod === 'all' ? manualTotal + getStudentTaskPoints(student.id) : manualTotal;
 
@@ -339,6 +337,7 @@ const App = () => {
     return parseInt(a.num) - parseInt(b.num);
   });
 
+  // --- CSV Download ---
   const downloadCSV = () => {
     let csvContent = '\uFEFF'; 
     csvContent += '날짜,구분,학생번호,학생이름,항목,상태/점수,메모\n';
@@ -482,7 +481,6 @@ const App = () => {
                       <button onClick={() => toggleAttendance(student.id)} className={`w-10 h-10 lg:w-12 lg:h-12 rounded-2xl flex items-center justify-center transition-all shrink-0 ${state.present ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-300'}`}><CheckCircle size={20} className="lg:w-6 lg:h-6" /></button>
                       <div className="w-20 lg:w-24 font-black text-xl lg:text-2xl text-gray-700 shrink-0 truncate whitespace-nowrap">{student.name}</div>
                       <div className="relative shrink-0">
-                        {/* 이모지 클릭 시 다중 팝업 표시 */}
                         <button disabled={!state.present} onClick={(e) => setMoodPickerTarget({ studentId: student.id, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 220, 120) })} className={`w-10 h-10 lg:w-12 lg:h-12 rounded-2xl bg-gray-50 border-2 border-transparent flex items-center justify-center text-xl lg:text-2xl transition-all ${state.present ? 'hover:border-indigo-100' : 'opacity-30'}`}>{state.mood}</button>
                       </div>
                       <div className="flex-1"><input value={state.memo} onChange={(e) => setAttendanceData(p => ({...p, [dateKey]: {...p[dateKey], [student.id]: {...state, memo: e.target.value}}}))} placeholder="비고 입력..." className="w-full bg-slate-50 border-none px-4 lg:px-6 py-2.5 lg:py-3.5 rounded-2xl focus:ring-2 focus:ring-indigo-100 text-xs lg:text-sm font-medium" /></div>
@@ -548,7 +546,6 @@ const App = () => {
                                       const status = assignmentStatus[dateKey]?.[s.id]?.[a.id] || null;
                                       return (
                                         <div key={s.id} className="flex flex-col gap-2 p-3 rounded-2xl bg-slate-50 border border-gray-100 relative">
-                                          {/* 상태 클릭 시 팝업 띄우기 */}
                                           <div onClick={(e) => setStatusPickerTarget({ studentId: s.id, taskId: a.id, date: dateKey, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 160, 160) })} className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all border shadow-sm hover:scale-[1.02] ${getStatusColorClass(status)}`}>
                                             <span className="font-black text-lg truncate pr-2 whitespace-nowrap">{s.name}</span>
                                             <div className="flex flex-col items-end">
@@ -677,7 +674,6 @@ const App = () => {
         {/* 6. 매직 점수 (1줄에 5명 배치, 사유 삭제, 1~10점 선택, 소리 추가) */}
         {activeTab === 'magicpoints' && (
           <div className="space-y-6 max-w-[1400px] mx-auto pb-10">
-            {/* 상단 컨트롤 패널 */}
             <div className="bg-white p-6 rounded-[32px] border border-indigo-100 shadow-sm flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
               <div>
                 <h3 className="text-2xl font-black text-gray-800 flex items-center gap-2 mb-2"><Trophy className="text-indigo-600"/> 매직 점수 관리</h3>
@@ -688,7 +684,6 @@ const App = () => {
                   </button>
                   <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg">{selectedStudentsForMagic.length}명 선택됨</span>
                   
-                  {/* 정렬 드롭다운 */}
                   <div className="flex items-center gap-2 ml-4">
                     <Filter size={16} className="text-gray-400"/>
                     <select value={magicSortOrder} onChange={(e)=>setMagicSortOrder(e.target.value)} className="bg-transparent text-sm font-bold text-gray-600 outline-none cursor-pointer">
@@ -718,7 +713,6 @@ const App = () => {
               </div>
             </div>
 
-            {/* 학생 개별 그리드 (1줄 5명: xl:grid-cols-5) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {sortedStudentsForMagic.map(student => {
                 const total = getStudentTotalPoints(student.id);
@@ -736,12 +730,10 @@ const App = () => {
                       </div>
                     </div>
                     
-                    {/* 이름 1줄 고정 & 폰트 크기 확대 */}
                     <div className="text-2xl md:text-3xl font-black text-gray-800 text-center w-full truncate px-2 whitespace-nowrap">
                       {student.num}. {student.name}
                     </div>
                     
-                    {/* 점수 크기 대폭 확대 */}
                     <div className={`text-5xl md:text-6xl font-black my-4 transition-all ${total > 0 ? 'text-blue-600' : total < 0 ? 'text-red-500' : 'text-gray-400'}`}>
                       {total > 0 ? `+${total}` : total}
                     </div>
@@ -755,7 +747,6 @@ const App = () => {
               })}
             </div>
 
-            {/* 학생 리포트 (통계 영역) */}
             <div className="mt-12 bg-white rounded-[32px] p-6 md:p-8 border border-gray-100 shadow-sm">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-6 mb-6 gap-4">
                 <div>
@@ -804,7 +795,6 @@ const App = () => {
 
         {/* --- 기타 공통 팝업 영역 (이모지, 성취도) --- */}
 
-        {/* 과제 성취도 평가 팝업 */}
         {statusPickerTarget && (
           <div className="fixed inset-0 z-[200]" onClick={() => setStatusPickerTarget(null)}>
             <div 
@@ -821,7 +811,7 @@ const App = () => {
                 <button 
                   key={item.l}
                   onClick={() => {
-                    playSound('magic'); // 과제 평가 시에도 소리 재생
+                    playSound('magic'); 
                     setTaskStatus(statusPickerTarget.studentId, statusPickerTarget.taskId, item.s, statusPickerTarget.date);
                   }}
                   className={`flex items-center justify-between px-3 py-3 rounded-lg text-xs font-bold transition-all ${getStatusColorClass(item.s)} hover:scale-[1.02]`}
@@ -834,7 +824,6 @@ const App = () => {
           </div>
         )}
 
-        {/* 출석 이모지 팝업 */}
         {moodPickerTarget && (
           <div className="fixed inset-0 z-[200]" onClick={() => setMoodPickerTarget(null)}>
             <div 
@@ -858,7 +847,256 @@ const App = () => {
           </div>
         )}
 
+        {assignmentDetailStudent && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-4 md:p-6 pb-20 md:pb-6">
+            <div className="bg-white rounded-[32px] md:rounded-[40px] w-full max-w-4xl h-[85vh] md:max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
+              <div className="p-5 md:p-8 border-b border-gray-50 flex justify-between items-start shrink-0 bg-indigo-50/30">
+                <div>
+                  <div className="flex items-center gap-2 md:gap-3 mb-1">
+                    <span className="bg-indigo-600 text-white text-[10px] md:text-xs px-2 py-1 rounded-md font-bold">학생 상세 현황</span>
+                    <h4 className="text-xl md:text-3xl font-black text-gray-800">{assignmentDetailStudent.name}</h4>
+                  </div>
+                  <p className="text-gray-400 font-bold text-xs md:text-sm">과제별 성취도 확인 (아이콘 클릭 시 변경 가능)</p>
+                </div>
+                <button onClick={() => {setAssignmentDetailStudent(null); setAssignmentFilter('all');}} className="p-2 md:p-3 bg-white hover:bg-red-50 hover:text-red-500 rounded-xl md:rounded-2xl shadow-sm transition-all"><X size={20} className="md:w-6 md:h-6" /></button>
+              </div>
+
+              <div className="px-5 md:px-8 py-3 md:py-4 bg-white border-b border-gray-100 flex gap-2 shrink-0 overflow-x-auto hide-scrollbar">
+                <button onClick={() => setAssignmentFilter('all')} className={`px-4 md:px-5 py-1.5 md:py-2 rounded-xl text-xs md:text-sm font-bold transition-all whitespace-nowrap ${assignmentFilter === 'all' ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-gray-400 hover:bg-slate-100'}`}>전체보기</button>
+                <button onClick={() => setAssignmentFilter('incomplete')} className={`px-4 md:px-5 py-1.5 md:py-2 rounded-xl text-xs md:text-sm font-bold transition-all whitespace-nowrap ${assignmentFilter === 'incomplete' ? 'bg-red-500 text-white' : 'bg-slate-50 text-gray-400 hover:bg-slate-100'}`}>미완료 (△, -)</button>
+                <button onClick={() => setAssignmentFilter('complete')} className={`px-4 md:px-5 py-1.5 md:py-2 rounded-xl text-xs md:text-sm font-bold transition-all whitespace-nowrap ${assignmentFilter === 'complete' ? 'bg-green-600 text-white' : 'bg-slate-50 text-gray-400 hover:bg-slate-100'}`}>완료 (◎, ○)</button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-3 md:space-y-4 bg-slate-50/30">
+                {assignments
+                  .filter(a => {
+                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
+                    if (assignmentFilter === 'complete') return status === 'done' || status === 'ing';
+                    if (assignmentFilter === 'incomplete') return status !== 'done' && status !== 'ing';
+                    return true;
+                  })
+                  .map(a => {
+                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
+                    const memo = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[`memo_${a.id}`] || '';
+                    const subject = subjects.find(s => s.id === a.subjectId);
+                    
+                    return (
+                      <div key={a.id} className="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center">
+                        <div className="flex items-center gap-4 w-full md:w-auto">
+                          <button 
+                            onClick={(e) => {
+                              const coords = calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 160, 150);
+                              setStatusPickerTarget({ studentId: assignmentDetailStudent.id, taskId: a.id, date: a.dueDate, x: coords.x, y: coords.y });
+                            }}
+                            className={`shrink-0 flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-2xl border font-black text-xl md:text-2xl transition-all hover:scale-105 active:scale-95 ${getStatusColorClass(status)}`}
+                          >
+                            {getStatusIcon(status)}
+                          </button>
+                          <div className="flex-1 md:hidden">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span className="text-[10px] font-black px-1.5 py-0.5 bg-indigo-100 text-indigo-600 rounded">{subject?.title || '기타'}</span>
+                              <span className="text-[10px] font-bold text-gray-300">{a.dueDate}</span>
+                            </div>
+                            <h5 className="font-bold text-gray-700 text-sm">{a.title}</h5>
+                          </div>
+                        </div>
+                        
+                        <div className="hidden md:block flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[10px] font-black px-2 py-0.5 bg-indigo-100 text-indigo-600 rounded uppercase">{subject?.title || '기타'}</span>
+                            <span className="text-xs font-bold text-gray-300">{a.dueDate}</span>
+                          </div>
+                          <h5 className="font-bold text-gray-700 text-lg">{a.title}</h5>
+                          <p className={`text-xs font-bold mt-1 ${status === 'done' || status === 'ing' ? 'text-blue-600' : 'text-gray-400'}`}>
+                            상태: {getStatusLabel(status)}
+                          </p>
+                        </div>
+                        
+                        <div className="w-full md:w-72 shrink-0">
+                          <input 
+                            value={memo} 
+                            onChange={(e) => updateTaskMemo(assignmentDetailStudent.id, a.id, e.target.value, a.dueDate)}
+                            placeholder="개별 메모 입력..." 
+                            className="w-full bg-slate-50 border-2 border-transparent focus:border-indigo-100 focus:bg-white px-3 md:px-4 py-2.5 md:py-3 rounded-xl md:rounded-2xl outline-none text-xs md:text-sm font-medium transition-all"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })
+                }
+                {assignments.length === 0 && <div className="text-center py-20 text-gray-300 font-bold text-sm">할당된 과제가 없습니다.</div>}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showSubjectModal && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+            <div className="bg-white rounded-[32px] p-6 md:p-8 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
+              <div className="flex justify-between items-center mb-6">
+                <h4 className="text-xl md:text-2xl font-bold">{showSubjectModal.id ? '과목 수정' : '새 과목 생성'}</h4>
+                <button onClick={() => setShowSubjectModal(null)} className="p-2 hover:bg-slate-100 rounded-full"><X size={20} /></button>
+              </div>
+              <div className="space-y-4 md:space-y-6">
+                <input id="sub_input" autoFocus defaultValue={showSubjectModal.title} onKeyDown={(e) => {if(e.key==='Enter') saveSubject(showSubjectModal.id, e.target.value)}} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none transition-all font-bold text-sm md:text-base" placeholder="과목명을 입력하세요" />
+                <button onClick={() => saveSubject(showSubjectModal.id, document.getElementById('sub_input').value)} className="w-full bg-indigo-600 text-white py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-base md:text-lg shadow-lg">저장</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* --- Missing Modals Restored Here --- */}
+        {showStudentModal && (
+          <StudentEditModal 
+            key={showStudentModal.id || `new_student_${showStudentModal.num}`}
+            data={showStudentModal} 
+            onClose={() => setShowStudentModal(null)} 
+            onSave={saveStudent} 
+          />
+        )}
+
+        {showAssignmentModal && (
+          <AssignmentEditModal 
+            key={showAssignmentModal.id || 'new_assignment'}
+            data={showAssignmentModal}
+            subjects={subjects}
+            onClose={() => setShowAssignmentModal(null)}
+            onSave={(id, title, subId, date) => {
+              if(!title) return;
+              if (id) {
+                setAssignments(prev => prev.map(a => a.id === id ? { ...a, title, subjectId: subId, dueDate: date } : a));
+              } else {
+                setAssignments(prev => [{ id: 'a' + Date.now(), subjectId: subId, title, dueDate: date }, ...prev]);
+              }
+              setShowAssignmentModal(null);
+            }}
+          />
+        )}
+
       </main>
+      
+      {/* CSS */}
+      <style dangerouslySetContent={{__html: `
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}} />
+    </div>
+  );
+};
+
+// --- 독립된 모달 컴포넌트들 ---
+const AssignmentEditModal = ({ data, subjects, onClose, onSave }) => {
+  const [title, setTitle] = useState(data.title || '');
+  const [subjectId, setSubjectId] = useState(data.subjectId || '');
+  const [dueDate, setDueDate] = useState(data.dueDate || '');
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+      <div className="bg-white rounded-[32px] p-6 md:p-10 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-6 md:mb-8">
+          <h4 className="text-xl md:text-2xl font-bold">{data.id ? '과제 수정' : '새 과제 등록'}</h4>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full"><X size={20} /></button>
+        </div>
+        <div className="space-y-4 md:space-y-6">
+          <div>
+            <label className="block text-xs md:text-sm font-bold text-gray-400 mb-1.5 md:mb-2 ml-1">과제 제목</label>
+            <input 
+              autoFocus 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              onKeyDown={(e) => {
+                if(e.key === 'Enter') {
+                  e.preventDefault();
+                  onSave(data.id, title, subjectId, dueDate);
+                }
+              }}
+              placeholder="예: 국어활동 12쪽 풀기"
+              className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none transition-all font-bold text-sm md:text-base" 
+            />
+          </div>
+          <div>
+            <label className="block text-xs md:text-sm font-bold text-gray-400 mb-1.5 md:mb-2 ml-1">과목 선택</label>
+            <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none font-bold appearance-none text-sm md:text-base">
+              {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs md:text-sm font-bold text-gray-400 mb-1.5 md:mb-2 ml-1">마감 기한</label>
+            <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-sm md:text-base" />
+          </div>
+          <button onClick={() => onSave(data.id, title, subjectId, dueDate)} className="w-full bg-indigo-600 text-white py-3 md:py-4 mt-2 rounded-xl md:rounded-2xl font-bold text-base md:text-lg shadow-lg hover:bg-indigo-700 transition-all">
+            저장하기
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const StudentEditModal = ({ data, onClose, onSave }) => {
+  const [num, setNum] = useState(data.num || '');
+  const [name, setName] = useState(data.name || '');
+  const [memo, setMemo] = useState(data.memo || '');
+  const nameRef = useRef(null);
+  const memoRef = useRef(null);
+
+  useEffect(() => {
+    if (nameRef.current) nameRef.current.focus();
+  }, []);
+
+  const handleKeyDown = (e, currentField) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (currentField === 'name') {
+        if (data.id === null) onSave(data.id, num, name, memo, true);
+        else memoRef.current?.focus(); 
+      } else if (currentField === 'memo') {
+        onSave(data.id, num, name, memo, data.id === null); 
+      }
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+      <div className="bg-white rounded-[32px] p-6 md:p-10 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-6 md:mb-8">
+          <h4 className="text-xl md:text-2xl font-black text-gray-800">{data.id ? '학생 정보 수정' : '신규 학생 등록'}</h4>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full"><X size={20} /></button>
+        </div>
+        <div className="space-y-4 md:space-y-6">
+          <div className="flex gap-3 md:gap-4">
+            <div className="w-20 md:w-24">
+              <label className="block text-xs font-black text-gray-400 mb-1.5 md:mb-2 ml-1">번호</label>
+              <input value={num} onChange={(e) => setNum(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-3 md:px-4 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none transition-all font-bold text-center text-sm md:text-base" />
+            </div>
+            <div className="flex-1">
+              <label className="block text-xs font-black text-gray-400 mb-1.5 md:mb-2 ml-1">이름</label>
+              <input 
+                ref={nameRef} 
+                value={name} 
+                onChange={(e) => setName(e.target.value)} 
+                onKeyDown={(e) => handleKeyDown(e, 'name')} 
+                placeholder="학생 이름"
+                className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none transition-all font-bold text-sm md:text-base" 
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-black text-gray-400 mb-1.5 md:mb-2 ml-1">메모 (선택사항)</label>
+            <input 
+              ref={memoRef} 
+              value={memo} 
+              onChange={(e) => setMemo(e.target.value)} 
+              onKeyDown={(e) => handleKeyDown(e, 'memo')} 
+              placeholder="참고사항 입력"
+              className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none transition-all font-bold text-sm md:text-base" 
+            />
+          </div>
+          <button onClick={() => onSave(data.id, num, name, memo, data.id === null)} className="w-full bg-indigo-600 text-white py-3 md:py-4 mt-2 rounded-xl md:rounded-2xl font-black text-base md:text-lg shadow-lg hover:bg-indigo-700 transition-all">
+            {data.id ? '수정 완료' : '등록'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
