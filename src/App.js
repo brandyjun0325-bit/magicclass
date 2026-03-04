@@ -18,7 +18,8 @@ import {
   MessageCircle,
   Trophy,
   Filter,
-  RotateCcw // 초기화 아이콘 추가
+  RotateCcw,
+  CheckSquare // 제출 관리용 아이콘 추가
 } from 'lucide-react';
 
 // --- Local Storage Custom Hook ---
@@ -78,6 +79,7 @@ const App = () => {
   const [selectedDate, setSelectedDate] = useState(new Date()); 
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [expandedTask, setExpandedTask] = useState(null);
+  const [expandedSubmission, setExpandedSubmission] = useState(null); // 제출 관리 아코디언 상태
   
   const [assignmentDetailStudent, setAssignmentDetailStudent] = useState(null);
   const [assignmentFilter, setAssignmentFilter] = useState('all'); 
@@ -86,6 +88,7 @@ const App = () => {
 
   const [showSubjectModal, setShowSubjectModal] = useState(null); 
   const [showAssignmentModal, setShowAssignmentModal] = useState(null); 
+  const [showSubmissionModal, setShowSubmissionModal] = useState(null); // 제출물 추가 모달
   const [showStudentModal, setShowStudentModal] = useState(null); 
   const [expandedSubjects, setExpandedSubjects] = useState({});
 
@@ -94,7 +97,6 @@ const App = () => {
   const [magicPointValue, setMagicPointValue] = useState(1); 
   const [magicSortOrder, setMagicSortOrder] = useState('num'); 
   const [reportPeriod, setReportPeriod] = useState('all'); 
-  // [추가] 리포트 기간 직접 지정 상태
   const [customStartDate, setCustomStartDate] = useState(formatDate(new Date()));
   const [customEndDate, setCustomEndDate] = useState(formatDate(new Date()));
 
@@ -106,6 +108,11 @@ const App = () => {
     { id: '2', num: '2', name: '이학생', memo: '메모 없음' },
   ]);
   const [attendanceData, setAttendanceData] = useLocalStorage('magic_attendance', {});
+  
+  // [추가] 제출 관리 데이터 (단순 O/X 제출물)
+  const [submissions, setSubmissions] = useLocalStorage('magic_submissions', []);
+  const [submissionStatus, setSubmissionStatus] = useLocalStorage('magic_submissionStatus', {});
+
   const [subjects, setSubjects] = useLocalStorage('magic_subjects', [{ id: 's1', title: '국어' }, { id: 's2', title: '수학' }]);
   const [assignments, setAssignments] = useLocalStorage('magic_assignments', []);
   const [assignmentStatus, setAssignmentStatus] = useLocalStorage('magic_assignmentStatus', {});
@@ -194,6 +201,34 @@ const App = () => {
       const state = currentDay[studentId] || { present: false, mood: '😊', memo: '' };
       return { ...prev, [dateKey]: { ...currentDay, [studentId]: { ...state, present: !state.present } } };
     });
+  };
+
+  // [추가] 제출 관리 핸들러
+  const toggleSubmissionStatus = (submissionId, studentId) => {
+    setSubmissionStatus(prev => {
+      const currentSubStatus = prev[submissionId] || {};
+      const isSubmitted = currentSubStatus[studentId] || false;
+      return {
+        ...prev,
+        [submissionId]: { ...currentSubStatus, [studentId]: !isSubmitted }
+      };
+    });
+  };
+
+  const bulkCompleteSubmission = (submissionId) => {
+    setSubmissionStatus(prev => {
+      const newStatus = { ...(prev[submissionId] || {}) };
+      students.forEach(s => {
+        newStatus[s.id] = true;
+      });
+      return { ...prev, [submissionId]: newStatus };
+    });
+  };
+
+  const deleteSubmissionItem = (id) => {
+    if(window.confirm('이 제출물을 삭제하시겠습니까?')) {
+      setSubmissions(prev => prev.filter(s => s.id !== id));
+    }
   };
 
   const setTaskStatus = (studentId, taskId, status, date = dateKey) => {
@@ -305,14 +340,12 @@ const App = () => {
     });
   };
 
-  // [추가] 매직 점수 초기화
   const handleResetMagicPoints = () => {
     if(window.confirm('모든 학생의 [수동 부여 매직 점수]를 완전히 초기화하시겠습니까? (과제 연동 점수는 유지됩니다)\n이 작업은 되돌릴 수 없습니다.')) {
       setMagicPoints({});
     }
   };
 
-  // [수정] 학생 리포트 통계 계산기 (과제 점수도 기간별로 필터링)
   const calculateReportData = () => {
     const now = new Date();
     const startOfToday = getStartOfDay(now).getTime();
@@ -367,7 +400,6 @@ const App = () => {
     }).sort((a, b) => b.total - a.total); 
   };
 
-  // 매직 탭 학생 정렬
   const sortedStudentsForMagic = [...students].sort((a, b) => {
     if (magicSortOrder === 'desc') return getStudentTotalPoints(b.id) - getStudentTotalPoints(a.id);
     if (magicSortOrder === 'asc') return getStudentTotalPoints(a.id) - getStudentTotalPoints(b.id);
@@ -380,22 +412,39 @@ const App = () => {
     csvContent += '날짜,구분,학생번호,학생이름,항목,상태/점수,메모\n';
     const escape = (s) => `"${String(s || '').replace(/"/g, '""')}"`;
 
-    const allDates = Array.from(new Set([...Object.keys(attendanceData), ...assignments.map(a => a.dueDate), ...Object.keys(counselingData)])).sort();
+    const allDates = Array.from(new Set([
+      ...Object.keys(attendanceData),
+      ...assignments.map(a => a.dueDate),
+      ...Object.keys(counselingData),
+      ...submissions.map(s => s.date) // 제출관리 날짜 포함
+    ])).sort();
 
     allDates.forEach(date => {
       students.forEach(student => {
+        // 출석
         const att = attendanceData[date]?.[student.id];
         if (att) csvContent += `${date},출석,${student.num},${escape(student.name)},출석체크,${att.present?'출석':'결석'},${escape(att.mood + ' ' + att.memo)}\n`;
+        
+        // 제출물
+        submissions.filter(s => s.date === date).forEach(subm => {
+          const isSubm = submissionStatus[subm.id]?.[student.id];
+          csvContent += `${date},제출물,${student.num},${escape(student.name)},${escape(subm.title)},${isSubm?'제출완료':'미제출'},\n`;
+        });
+
+        // 과제
         assignments.filter(a => a.dueDate === date).forEach(t => {
           const s = assignmentStatus[date]?.[student.id]?.[t.id];
           csvContent += `${date},과제,${student.num},${escape(student.name)},${escape(t.title)},${getStatusLabel(s)},${escape(assignmentStatus[date]?.[student.id]?.[`memo_${t.id}`])}\n`;
         });
+        
+        // 상담
         (counselingData[date] || []).filter(c => c.studentId === student.id).forEach(c => {
           csvContent += `${date},상담,${student.num},${escape(student.name)},${escape(c.recorder)},${c.resolved?'완료':'미해결'},${escape(c.content + ' / ' + c.result)}\n`;
         });
       });
     });
     
+    // 매직점수
     students.forEach(student => {
       (magicPoints[student.id] || []).forEach(p => {
         csvContent += `${p.date},매직점수,${student.num},${escape(student.name)},${p.type === 'plus' ? '칭찬매직' : '노력매직'},${p.amount},\n`;
@@ -422,6 +471,8 @@ const App = () => {
       <div className="hidden md:flex items-center gap-2 mb-8 px-2 text-indigo-600 font-bold text-xl"><Sparkles size={24} /><h1>매직클래스</h1></div>
       <button onClick={() => {setActiveTab('students'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'students' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><Users size={20} /> <span className="md:inline">학생 관리</span></button>
       <button onClick={() => {setActiveTab('attendance'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'attendance' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><Calendar size={20} /> <span className="md:inline">출석 관리</span></button>
+      {/* [추가] 제출 관리 메뉴 */}
+      <button onClick={() => {setActiveTab('submissions'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'submissions' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><CheckSquare size={20} /> <span className="md:inline">제출 관리</span></button>
       <button onClick={() => {setActiveTab('assignments'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'assignments' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><BookOpen size={20} /> <span className="md:inline">과제 관리</span></button>
       <button onClick={() => {setActiveTab('status'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'status' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><BarChart2 size={20} /> <span className="md:inline">과제 현황</span></button>
       <button onClick={() => {setActiveTab('counseling'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'counseling' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><MessageCircle size={20} /> <span className="md:inline">학생 상담</span></button>
@@ -446,6 +497,7 @@ const App = () => {
           <h2 className="text-xl font-bold flex items-center gap-2">
             {activeTab === 'students' && (selectedStudent ? '개인 리포트' : '학생 명단 관리')}
             {activeTab === 'attendance' && '출석 관리'}
+            {activeTab === 'submissions' && '제출 관리'}
             {activeTab === 'assignments' && '과제 관리'}
             {activeTab === 'status' && '과제 현황 종합'}
             {activeTab === 'counseling' && '학생 상담 기록'}
@@ -529,6 +581,84 @@ const App = () => {
           </div>
         )}
 
+        {/* 2.5 [신규] 제출 관리 (단순 O/X) */}
+        {activeTab === 'submissions' && (
+          <div className="space-y-6 no-print">
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl lg:text-2xl font-bold flex items-center gap-2"><CheckSquare className="text-indigo-600"/> 제출물 관리</h3>
+                <span className="text-xs font-bold text-gray-400">가정통신문, 동의서 등 단순 O/X 확인용 제출물</span>
+              </div>
+              <button onClick={() => setShowSubmissionModal({id: null, title: '', date: dateKey})} className="bg-indigo-600 text-white px-4 py-2.5 rounded-2xl font-semibold shadow-md hover:bg-indigo-700 text-sm flex items-center gap-2">
+                <Plus size={18}/> 새 제출물
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {submissions.length === 0 && <div className="text-center py-10 text-gray-400 font-bold bg-white rounded-3xl">등록된 제출물이 없습니다.</div>}
+              {submissions.map(subm => {
+                const isExpanded = expandedSubmission === subm.id;
+                const submittedCount = students.filter(s => submissionStatus[subm.id]?.[s.id]).length;
+                const percent = students.length > 0 ? Math.round((submittedCount / students.length) * 100) : 0;
+                
+                return (
+                  <div key={subm.id} className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div className="flex items-center group relative">
+                      <button onClick={() => setExpandedSubmission(p => p === subm.id ? null : subm.id)} className="flex-1 px-5 lg:px-8 py-5 lg:py-6 flex justify-between items-center hover:bg-slate-50 transition-colors text-left">
+                        <div className="flex items-center gap-3 lg:gap-4 pr-16 w-full">
+                          <CheckSquare className={`shrink-0 ${percent === 100 ? 'text-green-500' : 'text-indigo-400'}`} size={20} />
+                          <span className="font-bold text-lg lg:text-xl text-gray-700 truncate">{subm.title}</span>
+                          <span className="text-[10px] font-bold text-gray-400 bg-white px-2 py-1 rounded-md border border-gray-100">{subm.date}</span>
+                          
+                          {/* 진행률 미니 바 */}
+                          <div className="hidden md:flex flex-1 items-center gap-2 ml-4 max-w-xs">
+                            <div className="h-2 flex-1 bg-slate-100 rounded-full overflow-hidden">
+                              <div className={`h-full transition-all ${percent === 100 ? 'bg-green-500' : 'bg-indigo-400'}`} style={{width: `${percent}%`}}></div>
+                            </div>
+                            <span className="text-xs font-bold text-gray-400 w-12 text-right">{submittedCount}/{students.length}</span>
+                          </div>
+                        </div>
+                        {isExpanded ? <ChevronUp className="text-gray-300 shrink-0" /> : <ChevronDown className="text-gray-300 shrink-0" />}
+                      </button>
+                      <div className="absolute right-12 lg:right-20 flex gap-2 lg:gap-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-gradient-to-l from-white pl-4">
+                        <Edit2 onClick={() => setShowSubmissionModal(subm)} size={18} className="text-gray-300 hover:text-indigo-600 cursor-pointer" />
+                        <Trash2 onClick={() => deleteSubmissionItem(subm.id)} size={18} className="text-gray-300 hover:text-red-500 cursor-pointer" />
+                      </div>
+                    </div>
+                    
+                    {isExpanded && (
+                      <div className="px-4 lg:px-8 pb-4 lg:pb-6">
+                        <div className="p-4 lg:p-6 bg-slate-50 border border-indigo-50 rounded-3xl">
+                          <div className="flex justify-between items-center mb-4">
+                            <h5 className="font-bold text-indigo-600 text-xs lg:text-sm">제출 현황 체크 (클릭하여 상태 변경)</h5>
+                            <button onClick={() => bulkCompleteSubmission(subm.id)} className="text-[10px] bg-green-500 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-green-600">전원 제출 완료</button>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 lg:gap-3">
+                            {students.map(s => {
+                              const isSubm = submissionStatus[subm.id]?.[s.id] || false;
+                              return (
+                                <button 
+                                  key={s.id} 
+                                  onClick={() => toggleSubmissionStatus(subm.id, s.id)}
+                                  className={`p-3 rounded-2xl border-2 font-bold text-sm lg:text-base transition-all flex justify-between items-center ${isSubm ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 bg-white text-gray-500 hover:border-indigo-300'}`}
+                                >
+                                  <span className="truncate">{s.num}. {s.name}</span>
+                                  {isSubm ? <CheckCircle size={18} /> : <X size={18} className="opacity-30" />}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* 3. 과제 관리 */}
         {activeTab === 'assignments' && (
           <div className="space-y-6 no-print">
@@ -583,7 +713,6 @@ const App = () => {
                                       const status = assignmentStatus[dateKey]?.[s.id]?.[a.id] || null;
                                       return (
                                         <div key={s.id} className="flex flex-col gap-2 p-3 rounded-2xl bg-slate-50 border border-gray-100 relative">
-                                          {/* 상태 클릭 시 팝업 띄우기 */}
                                           <div onClick={(e) => setStatusPickerTarget({ studentId: s.id, taskId: a.id, date: dateKey, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 160, 160) })} className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all border shadow-sm hover:scale-[1.02] ${getStatusColorClass(status)}`}>
                                             <span className="font-black text-lg truncate pr-2 whitespace-nowrap">{s.name}</span>
                                             <div className="flex flex-col items-end">
@@ -712,7 +841,6 @@ const App = () => {
         {/* 6. 매직 점수 */}
         {activeTab === 'magicpoints' && (
           <div className="space-y-6 max-w-[1400px] mx-auto pb-10">
-            {/* 상단 컨트롤 패널 */}
             <div className="bg-white p-6 rounded-[32px] border border-indigo-100 shadow-sm flex flex-col lg:flex-row items-start lg:items-end justify-between gap-4">
               <div>
                 <h3 className="text-2xl font-black text-gray-800 flex items-center gap-2 mb-2"><Trophy className="text-indigo-600"/> 매직 점수 관리</h3>
@@ -723,7 +851,6 @@ const App = () => {
                   </button>
                   <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg">{selectedStudentsForMagic.length}명 선택됨</span>
                   
-                  {/* 정렬 & 초기화 버튼 */}
                   <div className="flex items-center gap-2 ml-0 sm:ml-4">
                     <Filter size={16} className="text-gray-400"/>
                     <select value={magicSortOrder} onChange={(e)=>setMagicSortOrder(e.target.value)} className="bg-transparent text-sm font-bold text-gray-600 outline-none cursor-pointer">
@@ -731,7 +858,6 @@ const App = () => {
                       <option value="desc">점수 높은 순</option>
                       <option value="asc">점수 낮은 순</option>
                     </select>
-                    {/* [추가] 매직 점수 완전 초기화 버튼 */}
                     <button onClick={handleResetMagicPoints} className="ml-2 px-3 py-1.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors flex items-center gap-1">
                       <RotateCcw size={14} /> 초기화
                     </button>
@@ -757,7 +883,6 @@ const App = () => {
               </div>
             </div>
 
-            {/* 학생 개별 그리드 (1줄 5명) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {sortedStudentsForMagic.map(student => {
                 const total = getStudentTotalPoints(student.id);
@@ -775,12 +900,10 @@ const App = () => {
                       </div>
                     </div>
                     
-                    {/* 이름 1줄 고정 & 폰트 크기 확대 */}
                     <div className="text-2xl md:text-3xl font-black text-gray-800 text-center w-full truncate px-2 whitespace-nowrap">
                       {student.num}. {student.name}
                     </div>
                     
-                    {/* 점수 크기 대폭 확대 */}
                     <div className={`text-5xl md:text-6xl font-black my-4 transition-all ${total > 0 ? 'text-blue-600' : total < 0 ? 'text-red-500' : 'text-gray-400'}`}>
                       {total > 0 ? `+${total}` : total}
                     </div>
@@ -794,7 +917,6 @@ const App = () => {
               })}
             </div>
 
-            {/* 학생 리포트 (통계 영역 - 기간 직접 지정 추가) */}
             <div className="mt-12 bg-white rounded-[32px] p-6 md:p-8 border border-gray-100 shadow-sm">
               <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center border-b pb-6 mb-6 gap-4">
                 <div>
@@ -802,7 +924,6 @@ const App = () => {
                   <p className="text-sm text-gray-400 font-medium mt-1">과제 점수(+3, +2, +1)와 수동 매직 점수가 지정된 기간에 맞춰 필터링됩니다.</p>
                 </div>
                 
-                {/* [추가] 기간 선택 및 직접 지정 입력란 */}
                 <div className="flex flex-col lg:flex-row bg-slate-100 p-1.5 rounded-2xl w-full xl:w-auto gap-2">
                   <div className="flex w-full lg:w-auto">
                     <button onClick={() => setReportPeriod('day')} className={`flex-1 lg:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-all ${reportPeriod === 'day' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>일간</button>
@@ -811,7 +932,6 @@ const App = () => {
                     <button onClick={() => setReportPeriod('all')} className={`flex-1 lg:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-all ${reportPeriod === 'all' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>전체</button>
                     <button onClick={() => setReportPeriod('custom')} className={`flex-1 lg:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-all ${reportPeriod === 'custom' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>직접지정</button>
                   </div>
-                  {/* 기간 직접 지정 모드일 때만 달력 표시 */}
                   {reportPeriod === 'custom' && (
                     <div className="flex items-center gap-1.5 px-2 py-1 justify-center">
                       <input type="date" value={customStartDate} onChange={e => setCustomStartDate(e.target.value)} className="bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-bold text-gray-600 outline-none shadow-sm" />
@@ -830,7 +950,7 @@ const App = () => {
                       <th className="px-6 py-4">학생 이름</th>
                       <th className="px-6 py-4 text-blue-600">수동 칭찬 (+)</th>
                       <th className="px-6 py-4 text-red-500">수동 노력 (-)</th>
-                      <th className="px-6 py-4 text-emerald-600">과제 점수 연동</th>
+                      <th className="px-6 py-4 text-emerald-600">과제 연동</th>
                       <th className="px-6 py-4 text-right rounded-r-2xl">최종 종합 점수</th>
                     </tr>
                   </thead>
@@ -858,7 +978,6 @@ const App = () => {
 
         {/* --- 공통 팝업 영역 --- */}
 
-        {/* 과제 성취도 평가 팝업 */}
         {statusPickerTarget && (
           <div className="fixed inset-0 z-[200]" onClick={() => setStatusPickerTarget(null)}>
             <div 
@@ -888,7 +1007,6 @@ const App = () => {
           </div>
         )}
 
-        {/* 출석 이모지 팝업 */}
         {moodPickerTarget && (
           <div className="fixed inset-0 z-[200]" onClick={() => setMoodPickerTarget(null)}>
             <div 
@@ -912,7 +1030,25 @@ const App = () => {
           </div>
         )}
 
-        {/* 개별 학생 상세 현황 모달 */}
+        {/* --- 개별 모달(상세 현황 및 과목/학생/제출물 추가) --- */}
+        {/* 제출물 추가 모달 */}
+        {showSubmissionModal && (
+          <SubmissionEditModal 
+            key={showSubmissionModal.id || 'new_submission'}
+            data={showSubmissionModal}
+            onClose={() => setShowSubmissionModal(null)}
+            onSave={(id, title, date) => {
+              if(!title) return;
+              if (id) {
+                setSubmissions(prev => prev.map(s => s.id === id ? { ...s, title, date } : s));
+              } else {
+                setSubmissions(prev => [{ id: 'sm' + Date.now(), title, date }, ...prev]);
+              }
+              setShowSubmissionModal(null);
+            }}
+          />
+        )}
+
         {assignmentDetailStudent && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-4 md:p-6 pb-20 md:pb-6">
             <div className="bg-white rounded-[32px] md:rounded-[40px] w-full max-w-4xl h-[85vh] md:max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
@@ -996,7 +1132,6 @@ const App = () => {
           </div>
         )}
 
-        {/* 과목 관리 모달 */}
         {showSubjectModal && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
             <div className="bg-white rounded-[32px] p-6 md:p-8 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
@@ -1012,7 +1147,6 @@ const App = () => {
           </div>
         )}
 
-        {/* --- Missing Modals Restored Here --- */}
         {showStudentModal && (
           <StudentEditModal 
             key={showStudentModal.id || `new_student_${showStudentModal.num}`}
@@ -1039,7 +1173,6 @@ const App = () => {
             }}
           />
         )}
-
       </main>
       
       {/* CSS */}
@@ -1052,6 +1185,48 @@ const App = () => {
 };
 
 // --- 독립된 모달 컴포넌트들 ---
+
+const SubmissionEditModal = ({ data, onClose, onSave }) => {
+  const [title, setTitle] = useState(data.title || '');
+  const [date, setDate] = useState(data.date || '');
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+      <div className="bg-white rounded-[32px] p-6 md:p-10 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-6 md:mb-8">
+          <h4 className="text-xl md:text-2xl font-bold">{data.id ? '제출물 수정' : '새 제출물 등록'}</h4>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full"><X size={20} /></button>
+        </div>
+        <div className="space-y-4 md:space-y-6">
+          <div>
+            <label className="block text-xs md:text-sm font-bold text-gray-400 mb-1.5 md:mb-2 ml-1">제출물 제목</label>
+            <input 
+              autoFocus 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              onKeyDown={(e) => {
+                if(e.key === 'Enter') {
+                  e.preventDefault();
+                  onSave(data.id, title, date);
+                }
+              }}
+              placeholder="예: 현장체험학습 동의서"
+              className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none transition-all font-bold text-sm md:text-base" 
+            />
+          </div>
+          <div>
+            <label className="block text-xs md:text-sm font-bold text-gray-400 mb-1.5 md:mb-2 ml-1">날짜 지정</label>
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-sm md:text-base" />
+          </div>
+          <button onClick={() => onSave(data.id, title, date)} className="w-full bg-indigo-600 text-white py-3 md:py-4 mt-2 rounded-xl md:rounded-2xl font-bold text-base md:text-lg shadow-lg hover:bg-indigo-700 transition-all">
+            저장하기
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AssignmentEditModal = ({ data, subjects, onClose, onSave }) => {
   const [title, setTitle] = useState(data.title || '');
   const [subjectId, setSubjectId] = useState(data.subjectId || '');
