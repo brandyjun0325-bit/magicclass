@@ -26,7 +26,7 @@ import {
   ArrowDown
 } from 'lucide-react';
 
-// --- Local Storage Custom Hook ---
+// --- Local Storage Custom Hook (데이터 영구 누적 저장) ---
 function useLocalStorage(key, initialValue) {
   const [storedValue, setStoredValue] = useState(() => {
     try {
@@ -569,13 +569,20 @@ const App = () => {
             <div className="bg-white rounded-[32px] md:rounded-[40px] border border-gray-100 shadow-sm overflow-x-auto">
               <table className="w-full text-left min-w-[500px] table-fixed">
                 <thead className="bg-slate-50 text-gray-400 text-xs border-b font-black uppercase tracking-wider">
-                  <tr><th className="px-6 md:px-10 py-4 md:py-5 w-24">번호</th><th className="px-6 md:px-10 py-4 md:py-5 w-48">이름</th><th className="px-6 md:px-10 py-4 md:py-5">학생 메모</th><th className="px-6 md:px-10 py-4 md:py-5 text-right w-32">작업</th></tr>
+                  <tr>
+                    {/* [수정] 번호 너비를 줄이고 중앙 정렬 */}
+                    <th className="px-4 md:px-6 py-4 md:py-5 w-16 md:w-24 text-center">번호</th>
+                    <th className="px-6 md:px-10 py-4 md:py-5 w-48">이름</th>
+                    <th className="px-6 md:px-10 py-4 md:py-5">학생 메모</th>
+                    <th className="px-6 md:px-10 py-4 md:py-5 text-right w-32">작업</th>
+                  </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {students.length === 0 && <tr><td colSpan="4" className="text-center py-10 text-gray-400 font-bold">등록된 학생이 없습니다.</td></tr>}
                   {students.map(s => (
                     <tr key={s.id} className="hover:bg-indigo-50/30 transition-colors">
-                      <td className="px-6 md:px-10 py-4 md:py-6 text-gray-400 font-mono text-base md:text-lg truncate">{s.num.padStart(2, '0')}</td>
+                      {/* [수정] 번호가 잘리지 않도록 truncate 삭제, 폰트 크기 및 굵기 상향, whitespace-nowrap 적용 */}
+                      <td className="px-4 md:px-6 py-4 md:py-6 text-gray-600 font-black text-lg md:text-xl text-center whitespace-nowrap">{s.num}</td>
                       <td onClick={() => setSelectedStudent(s)} className="px-6 md:px-10 py-4 md:py-6 font-black text-xl md:text-2xl text-indigo-600 cursor-pointer hover:underline truncate whitespace-nowrap overflow-hidden text-ellipsis">{s.name}</td>
                       <td className="px-6 md:px-10 py-4 md:py-6 truncate"><input type="text" value={s.memo} onChange={e => handleInlineMemoUpdate(s.id, e.target.value)} placeholder="메모 입력" className="w-full bg-transparent border-none focus:ring-0 text-gray-600 font-medium truncate" /></td>
                       <td className="px-6 md:px-10 py-4 md:py-6 text-right"><div className="flex justify-end gap-2 md:gap-3"><button onClick={() => setShowStudentModal(s)} className="p-2 md:p-2.5 bg-gray-50 text-gray-300 hover:text-indigo-600 rounded-xl"><Edit2 size={18} /></button><button onClick={() => deleteStudent(s.id)} className="p-2 md:p-2.5 bg-gray-50 text-gray-300 hover:text-red-500 rounded-xl"><Trash2 size={18} /></button></div></td>
@@ -1080,18 +1087,15 @@ const App = () => {
                         <p className="text-xs font-bold text-gray-400 mt-0.5 truncate">{selectedExternalLink.url}</p>
                       </div>
                     </div>
-                    {/* [핵심 수정] 새 창 열기 강제 적용 (현재 선택된 링크를 무조건 오픈) */}
                     <button onClick={() => window.open(selectedExternalLink.url, '_blank')} className="flex items-center gap-1.5 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 shadow-md transition-colors shrink-0">
                       새 창 열기 <ExternalLink size={16}/>
                     </button>
                   </div>
                   
                   <div className="flex-1 w-full bg-gray-50 relative flex flex-col">
-                    {/* 안내 문구 추가 */}
                     <div className="bg-yellow-50 text-yellow-800 text-xs font-bold py-2 px-4 text-center border-b border-yellow-100 shrink-0">
                       💡 네이버, 구글 등 일부 웹사이트는 보안상 화면에 보이지 않을 수 있습니다. 회색 화면이 나타나면 우측 상단의 [새 창 열기]를 이용해 주세요.
                     </div>
-                    {/* key를 부여하여 링크가 바뀔 때마다 iframe 강제 새로고침 */}
                     <iframe key={selectedExternalLink.id} src={selectedExternalLink.url} title={selectedExternalLink.title} className="flex-1 w-full h-full border-none" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" />
                   </div>
                 </>
@@ -1162,7 +1166,7 @@ const App = () => {
           </div>
         )}
 
-        {/* --- 개별 모달(상세 현황 및 과목/학생/제출물/외부링크 추가) --- */}
+        {/* --- 개별 모달 --- */}
         {showLinkModal && (
           <LinkEditModal 
             key={showLinkModal.id || 'new_link'}
