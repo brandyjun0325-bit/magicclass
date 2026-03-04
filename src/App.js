@@ -17,7 +17,8 @@ import {
   Download,
   MessageCircle,
   Trophy,
-  Filter
+  Filter,
+  RotateCcw // 초기화 아이콘 추가
 } from 'lucide-react';
 
 // --- Local Storage Custom Hook ---
@@ -93,6 +94,9 @@ const App = () => {
   const [magicPointValue, setMagicPointValue] = useState(1); 
   const [magicSortOrder, setMagicSortOrder] = useState('num'); 
   const [reportPeriod, setReportPeriod] = useState('all'); 
+  // [추가] 리포트 기간 직접 지정 상태
+  const [customStartDate, setCustomStartDate] = useState(formatDate(new Date()));
+  const [customEndDate, setCustomEndDate] = useState(formatDate(new Date()));
 
   const dateKey = formatDate(selectedDate);
 
@@ -110,7 +114,7 @@ const App = () => {
 
   const moods = ['😊', '🤩', '😐', '😴', '🤒', '😡', '😢', '😑'];
 
-  // --- 과제 점수 자동 연계 계산기 (매우잘함 3, 잘함 2, 미흡 1) ---
+  // --- 자동 연계 로직: 과제 점수 전체 계산 ---
   const getStudentTaskPoints = (studentId) => {
     let taskPts = 0;
     Object.values(assignmentStatus || {}).forEach(dayData => {
@@ -126,7 +130,6 @@ const App = () => {
     return taskPts;
   };
 
-  // 학생 총합 매직 점수 = (수동 매직 점수) + (자동 연계 과제 점수)
   const getStudentTotalPoints = (studentId) => {
     const manualPoints = (magicPoints[studentId] || []).reduce((acc, p) => acc + p.amount, 0);
     const taskPoints = getStudentTaskPoints(studentId);
@@ -278,7 +281,7 @@ const App = () => {
     }
   };
 
-  // 매직 점수 부여 (소리 및 점수 즉시 반영)
+  // 매직 점수 부여
   const handleMagicPointAction = (studentIdsArray, type) => {
     if (studentIdsArray.length === 0) return alert('학생을 먼저 선택해주세요.');
     
@@ -302,14 +305,24 @@ const App = () => {
     });
   };
 
-  // 학생 리포트 통계 계산기
+  // [추가] 매직 점수 초기화
+  const handleResetMagicPoints = () => {
+    if(window.confirm('모든 학생의 [수동 부여 매직 점수]를 완전히 초기화하시겠습니까? (과제 연동 점수는 유지됩니다)\n이 작업은 되돌릴 수 없습니다.')) {
+      setMagicPoints({});
+    }
+  };
+
+  // [수정] 학생 리포트 통계 계산기 (과제 점수도 기간별로 필터링)
   const calculateReportData = () => {
     const now = new Date();
     const startOfToday = getStartOfDay(now).getTime();
     const startOfWeek = getStartOfWeek(now).getTime();
     const startOfMonth = getStartOfMonth(now).getTime();
+    const cStart = new Date(customStartDate).getTime();
+    const cEnd = new Date(customEndDate).setHours(23, 59, 59, 999);
 
     return students.map(student => {
+      // 1. 수동 부여 매직 점수 계산
       const points = magicPoints[student.id] || [];
       const filteredPoints = points.filter(p => {
         if (reportPeriod === 'all') return true;
@@ -317,16 +330,40 @@ const App = () => {
         if (reportPeriod === 'day') return p.timestamp >= startOfToday;
         if (reportPeriod === 'week') return p.timestamp >= startOfWeek;
         if (reportPeriod === 'month') return p.timestamp >= startOfMonth;
+        if (reportPeriod === 'custom') return p.timestamp >= cStart && p.timestamp <= cEnd;
         return true;
       });
 
       const manualTotal = filteredPoints.reduce((acc, curr) => acc + curr.amount, 0);
-      const total = reportPeriod === 'all' ? manualTotal + getStudentTaskPoints(student.id) : manualTotal;
-
       const plusCount = filteredPoints.filter(p => p.type === 'plus').length;
       const minusCount = filteredPoints.filter(p => p.type === 'minus').length;
 
-      return { ...student, total, plusCount, minusCount };
+      // 2. 과제 연동 점수 기간별 계산
+      let taskPts = 0;
+      Object.entries(assignmentStatus || {}).forEach(([dateStr, dayData]) => {
+        const dateTs = new Date(dateStr).getTime();
+        let include = false;
+        if (reportPeriod === 'all') include = true;
+        else if (reportPeriod === 'day' && dateTs >= startOfToday) include = true;
+        else if (reportPeriod === 'week' && dateTs >= startOfWeek) include = true;
+        else if (reportPeriod === 'month' && dateTs >= startOfMonth) include = true;
+        else if (reportPeriod === 'custom' && dateTs >= cStart && dateTs <= cEnd) include = true;
+
+        if (include) {
+          const sData = dayData[student.id] || {};
+          Object.entries(sData).forEach(([k, v]) => {
+            if (!k.startsWith('memo_')) {
+              if (v === 'done') taskPts += 3;
+              else if (v === 'ing') taskPts += 2;
+              else if (v === 'bad') taskPts += 1;
+            }
+          });
+        }
+      });
+
+      const total = manualTotal + taskPts;
+
+      return { ...student, total, plusCount, minusCount, taskPts };
     }).sort((a, b) => b.total - a.total); 
   };
 
@@ -546,6 +583,7 @@ const App = () => {
                                       const status = assignmentStatus[dateKey]?.[s.id]?.[a.id] || null;
                                       return (
                                         <div key={s.id} className="flex flex-col gap-2 p-3 rounded-2xl bg-slate-50 border border-gray-100 relative">
+                                          {/* 상태 클릭 시 팝업 띄우기 */}
                                           <div onClick={(e) => setStatusPickerTarget({ studentId: s.id, taskId: a.id, date: dateKey, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 160, 160) })} className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all border shadow-sm hover:scale-[1.02] ${getStatusColorClass(status)}`}>
                                             <span className="font-black text-lg truncate pr-2 whitespace-nowrap">{s.name}</span>
                                             <div className="flex flex-col items-end">
@@ -671,33 +709,39 @@ const App = () => {
           </div>
         )}
 
-        {/* 6. 매직 점수 (1줄에 5명 배치, 사유 삭제, 1~10점 선택, 소리 추가) */}
+        {/* 6. 매직 점수 */}
         {activeTab === 'magicpoints' && (
           <div className="space-y-6 max-w-[1400px] mx-auto pb-10">
-            <div className="bg-white p-6 rounded-[32px] border border-indigo-100 shadow-sm flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
+            {/* 상단 컨트롤 패널 */}
+            <div className="bg-white p-6 rounded-[32px] border border-indigo-100 shadow-sm flex flex-col lg:flex-row items-start lg:items-end justify-between gap-4">
               <div>
                 <h3 className="text-2xl font-black text-gray-800 flex items-center gap-2 mb-2"><Trophy className="text-indigo-600"/> 매직 점수 관리</h3>
                 <p className="text-sm text-gray-500 font-medium mb-4">학생을 선택하고 한 번에 점수를 부여하세요. (소리 지원 🔊)</p>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <button onClick={() => setSelectedStudentsForMagic(students.length === selectedStudentsForMagic.length ? [] : students.map(s => s.id))} className="px-4 py-2 bg-slate-100 text-gray-600 rounded-xl text-sm font-bold hover:bg-slate-200 transition-colors">
                     {students.length > 0 && students.length === selectedStudentsForMagic.length ? '전체 해제' : '전체 선택'}
                   </button>
                   <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg">{selectedStudentsForMagic.length}명 선택됨</span>
                   
-                  <div className="flex items-center gap-2 ml-4">
+                  {/* 정렬 & 초기화 버튼 */}
+                  <div className="flex items-center gap-2 ml-0 sm:ml-4">
                     <Filter size={16} className="text-gray-400"/>
                     <select value={magicSortOrder} onChange={(e)=>setMagicSortOrder(e.target.value)} className="bg-transparent text-sm font-bold text-gray-600 outline-none cursor-pointer">
                       <option value="num">번호순 정렬</option>
                       <option value="desc">점수 높은 순</option>
                       <option value="asc">점수 낮은 순</option>
                     </select>
+                    {/* [추가] 매직 점수 완전 초기화 버튼 */}
+                    <button onClick={handleResetMagicPoints} className="ml-2 px-3 py-1.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors flex items-center gap-1">
+                      <RotateCcw size={14} /> 초기화
+                    </button>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto p-4 bg-slate-50 rounded-2xl border border-gray-100">
+              <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto p-4 bg-slate-50 rounded-2xl border border-gray-100">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-gray-500">부여 점수:</span>
+                  <span className="text-sm font-bold text-gray-500 whitespace-nowrap">부여 점수:</span>
                   <select 
                     value={magicPointValue} 
                     onChange={(e) => setMagicPointValue(Number(e.target.value))}
@@ -706,13 +750,14 @@ const App = () => {
                     {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}점</option>)}
                   </select>
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={() => handleMagicPointAction(selectedStudentsForMagic, 'plus')} className="flex-1 bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-blue-700 shadow-md transition-all active:scale-95 whitespace-nowrap">✨ 칭찬 매직 (+)</button>
-                  <button onClick={() => handleMagicPointAction(selectedStudentsForMagic, 'minus')} className="flex-1 bg-red-500 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-red-600 shadow-md transition-all active:scale-95 whitespace-nowrap">⚡ 노력 매직 (-)</button>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <button onClick={() => handleMagicPointAction(selectedStudentsForMagic, 'plus')} className="flex-1 sm:flex-none bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-blue-700 shadow-md transition-all active:scale-95 whitespace-nowrap">✨ 칭찬 (+)</button>
+                  <button onClick={() => handleMagicPointAction(selectedStudentsForMagic, 'minus')} className="flex-1 sm:flex-none bg-red-500 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-red-600 shadow-md transition-all active:scale-95 whitespace-nowrap">⚡ 노력 (-)</button>
                 </div>
               </div>
             </div>
 
+            {/* 학생 개별 그리드 (1줄 5명) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {sortedStudentsForMagic.map(student => {
                 const total = getStudentTotalPoints(student.id);
@@ -730,10 +775,12 @@ const App = () => {
                       </div>
                     </div>
                     
+                    {/* 이름 1줄 고정 & 폰트 크기 확대 */}
                     <div className="text-2xl md:text-3xl font-black text-gray-800 text-center w-full truncate px-2 whitespace-nowrap">
                       {student.num}. {student.name}
                     </div>
                     
+                    {/* 점수 크기 대폭 확대 */}
                     <div className={`text-5xl md:text-6xl font-black my-4 transition-all ${total > 0 ? 'text-blue-600' : total < 0 ? 'text-red-500' : 'text-gray-400'}`}>
                       {total > 0 ? `+${total}` : total}
                     </div>
@@ -747,17 +794,31 @@ const App = () => {
               })}
             </div>
 
+            {/* 학생 리포트 (통계 영역 - 기간 직접 지정 추가) */}
             <div className="mt-12 bg-white rounded-[32px] p-6 md:p-8 border border-gray-100 shadow-sm">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-6 mb-6 gap-4">
+              <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center border-b pb-6 mb-6 gap-4">
                 <div>
                   <h3 className="text-xl font-black flex items-center gap-2"><BarChart2 className="text-indigo-600"/> 매직 점수 종합 리포트</h3>
-                  <p className="text-sm text-gray-400 font-medium mt-1">과제 점수(+3, +2, +1)와 수동 매직 점수가 모두 합산된 현황입니다.</p>
+                  <p className="text-sm text-gray-400 font-medium mt-1">과제 점수(+3, +2, +1)와 수동 매직 점수가 지정된 기간에 맞춰 필터링됩니다.</p>
                 </div>
-                <div className="flex bg-slate-100 p-1 rounded-xl w-full md:w-auto">
-                  <button onClick={() => setReportPeriod('day')} className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all ${reportPeriod === 'day' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>일간</button>
-                  <button onClick={() => setReportPeriod('week')} className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all ${reportPeriod === 'week' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>주간</button>
-                  <button onClick={() => setReportPeriod('month')} className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all ${reportPeriod === 'month' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>월간</button>
-                  <button onClick={() => setReportPeriod('all')} className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all ${reportPeriod === 'all' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>전체</button>
+                
+                {/* [추가] 기간 선택 및 직접 지정 입력란 */}
+                <div className="flex flex-col lg:flex-row bg-slate-100 p-1.5 rounded-2xl w-full xl:w-auto gap-2">
+                  <div className="flex w-full lg:w-auto">
+                    <button onClick={() => setReportPeriod('day')} className={`flex-1 lg:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-all ${reportPeriod === 'day' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>일간</button>
+                    <button onClick={() => setReportPeriod('week')} className={`flex-1 lg:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-all ${reportPeriod === 'week' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>주간</button>
+                    <button onClick={() => setReportPeriod('month')} className={`flex-1 lg:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-all ${reportPeriod === 'month' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>월간</button>
+                    <button onClick={() => setReportPeriod('all')} className={`flex-1 lg:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-all ${reportPeriod === 'all' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>전체</button>
+                    <button onClick={() => setReportPeriod('custom')} className={`flex-1 lg:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-all ${reportPeriod === 'custom' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>직접지정</button>
+                  </div>
+                  {/* 기간 직접 지정 모드일 때만 달력 표시 */}
+                  {reportPeriod === 'custom' && (
+                    <div className="flex items-center gap-1.5 px-2 py-1 justify-center">
+                      <input type="date" value={customStartDate} onChange={e => setCustomStartDate(e.target.value)} className="bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-bold text-gray-600 outline-none shadow-sm" />
+                      <span className="text-gray-400 font-bold text-xs">~</span>
+                      <input type="date" value={customEndDate} onChange={e => setCustomEndDate(e.target.value)} className="bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-bold text-gray-600 outline-none shadow-sm" />
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -767,8 +828,9 @@ const App = () => {
                     <tr>
                       <th className="px-6 py-4 rounded-l-2xl">순위</th>
                       <th className="px-6 py-4">학생 이름</th>
-                      <th className="px-6 py-4 text-blue-600">칭찬 매직 (+)</th>
-                      <th className="px-6 py-4 text-red-500">노력 매직 (-)</th>
+                      <th className="px-6 py-4 text-blue-600">수동 칭찬 (+)</th>
+                      <th className="px-6 py-4 text-red-500">수동 노력 (-)</th>
+                      <th className="px-6 py-4 text-emerald-600">과제 점수 연동</th>
                       <th className="px-6 py-4 text-right rounded-r-2xl">최종 종합 점수</th>
                     </tr>
                   </thead>
@@ -776,9 +838,10 @@ const App = () => {
                     {calculateReportData().map((student, index) => (
                       <tr key={student.id} className="hover:bg-indigo-50/20 transition-colors">
                         <td className="px-6 py-5 font-bold text-gray-400">{index + 1}</td>
-                        <td className="px-6 py-5 font-black text-lg text-gray-700">{student.name}</td>
+                        <td className="px-6 py-5 font-black text-lg text-gray-700">{student.num}. {student.name}</td>
                         <td className="px-6 py-5 font-bold text-blue-600">{student.plusCount}건</td>
                         <td className="px-6 py-5 font-bold text-red-500">{student.minusCount}건</td>
+                        <td className="px-6 py-5 font-bold text-emerald-600">+{student.taskPts}점</td>
                         <td className="px-6 py-5 text-right">
                           <span className={`inline-block px-4 py-1.5 rounded-xl font-black text-xl ${student.total > 0 ? 'bg-blue-50 text-blue-600' : student.total < 0 ? 'bg-red-50 text-red-500' : 'bg-gray-100 text-gray-500'}`}>
                             {student.total > 0 ? `+${student.total}` : student.total}
@@ -793,8 +856,9 @@ const App = () => {
           </div>
         )}
 
-        {/* --- 기타 공통 팝업 영역 (이모지, 성취도) --- */}
+        {/* --- 공통 팝업 영역 --- */}
 
+        {/* 과제 성취도 평가 팝업 */}
         {statusPickerTarget && (
           <div className="fixed inset-0 z-[200]" onClick={() => setStatusPickerTarget(null)}>
             <div 
@@ -824,6 +888,7 @@ const App = () => {
           </div>
         )}
 
+        {/* 출석 이모지 팝업 */}
         {moodPickerTarget && (
           <div className="fixed inset-0 z-[200]" onClick={() => setMoodPickerTarget(null)}>
             <div 
@@ -847,6 +912,7 @@ const App = () => {
           </div>
         )}
 
+        {/* 개별 학생 상세 현황 모달 */}
         {assignmentDetailStudent && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-4 md:p-6 pb-20 md:pb-6">
             <div className="bg-white rounded-[32px] md:rounded-[40px] w-full max-w-4xl h-[85vh] md:max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
@@ -930,6 +996,7 @@ const App = () => {
           </div>
         )}
 
+        {/* 과목 관리 모달 */}
         {showSubjectModal && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
             <div className="bg-white rounded-[32px] p-6 md:p-8 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
