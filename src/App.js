@@ -117,7 +117,7 @@ const App = () => {
   const [showAssignmentModal, setShowAssignmentModal] = useState(null); 
   const [showSubmissionModal, setShowSubmissionModal] = useState(null); 
   const [showStudentModal, setShowStudentModal] = useState(null); 
-  const [showLinkModal, setShowLinkModal] = useState(null); // [추가] 외부자료 모달
+  const [showLinkModal, setShowLinkModal] = useState(null); 
   const [expandedSubjects, setExpandedSubjects] = useState({});
 
   // 매직 점수 및 리포트 전용 상태
@@ -147,7 +147,7 @@ const App = () => {
   const [assignmentStatus, setAssignmentStatus] = useLocalStorage('magic_assignmentStatus', {});
   const [counselingData, setCounselingData] = useLocalStorage('magic_counseling', {});
   const [magicPoints, setMagicPoints] = useLocalStorage('magic_points', {}); 
-  const [externalLinks, setExternalLinks] = useLocalStorage('magic_external_links', []); // [추가] 외부 자료 데이터
+  const [externalLinks, setExternalLinks] = useLocalStorage('magic_external_links', []); 
 
   const moods = ['😊', '🤩', '😐', '😴', '🤒', '😡', '😢', '😑'];
 
@@ -529,8 +529,6 @@ const App = () => {
       <button onClick={() => {setActiveTab('status'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'status' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><BarChart2 size={20} /> <span className="md:inline">과제 현황</span></button>
       <button onClick={() => {setActiveTab('counseling'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'counseling' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><MessageCircle size={20} /> <span className="md:inline">학생 상담</span></button>
       <button onClick={() => {setActiveTab('magicpoints'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'magicpoints' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><Trophy size={20} /> <span className="md:inline">매직 점수</span></button>
-      
-      {/* [추가] 외부 자료 메뉴 */}
       <button onClick={() => {setActiveTab('externals'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'externals' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><LinkIcon size={20} /> <span className="md:inline">외부 자료</span></button>
       
       <div className="hidden md:block my-2 border-t border-gray-100"></div>
@@ -972,7 +970,6 @@ const App = () => {
               })}
             </div>
 
-            {/* 학생 리포트 */}
             <div className="mt-12 bg-white rounded-[32px] p-6 md:p-8 border border-gray-100 shadow-sm">
               <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center border-b pb-6 mb-6 gap-4">
                 <div>
@@ -998,7 +995,6 @@ const App = () => {
                 </div>
               </div>
 
-              {/* [추가] 리포트 정렬 드롭다운 */}
               <div className="flex justify-end mb-4">
                 <div className="flex items-center gap-2">
                   <Filter size={16} className="text-gray-400"/>
@@ -1047,7 +1043,6 @@ const App = () => {
         {/* 7. 외부 자료 메뉴 */}
         {activeTab === 'externals' && (
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 no-print h-full min-h-[80vh]">
-            {/* 왼쪽 링크 목록 */}
             <div className="w-full lg:w-96 shrink-0 flex flex-col gap-4">
               <div className="flex justify-between items-center bg-white p-6 rounded-[32px] shadow-sm border border-gray-100">
                 <h3 className="text-xl font-bold flex items-center gap-2"><LinkIcon className="text-indigo-600"/> 외부 자료</h3>
@@ -1074,11 +1069,10 @@ const App = () => {
               </div>
             </div>
 
-            {/* 오른쪽 iframe 뷰어 */}
-            <div className="flex-1 bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden flex flex-col min-h-[500px] lg:min-h-0">
+            <div className="flex-1 bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden flex flex-col min-h-[500px] lg:min-h-0 relative">
               {selectedExternalLink ? (
                 <>
-                  <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-slate-50 shrink-0">
+                  <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-slate-50 shrink-0 z-10">
                     <div className="flex items-center gap-3 truncate pr-4">
                       <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 shadow-inner"><LinkIcon size={20}/></div>
                       <div>
@@ -1086,12 +1080,19 @@ const App = () => {
                         <p className="text-xs font-bold text-gray-400 mt-0.5 truncate">{selectedExternalLink.url}</p>
                       </div>
                     </div>
-                    <a href={selectedExternalLink.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 shadow-md transition-colors shrink-0">
+                    {/* [핵심 수정] 새 창 열기 강제 적용 (현재 선택된 링크를 무조건 오픈) */}
+                    <button onClick={() => window.open(selectedExternalLink.url, '_blank')} className="flex items-center gap-1.5 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 shadow-md transition-colors shrink-0">
                       새 창 열기 <ExternalLink size={16}/>
-                    </a>
+                    </button>
                   </div>
-                  <div className="flex-1 w-full bg-gray-50 relative">
-                    <iframe src={selectedExternalLink.url} title={selectedExternalLink.title} className="absolute inset-0 w-full h-full border-none" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" />
+                  
+                  <div className="flex-1 w-full bg-gray-50 relative flex flex-col">
+                    {/* 안내 문구 추가 */}
+                    <div className="bg-yellow-50 text-yellow-800 text-xs font-bold py-2 px-4 text-center border-b border-yellow-100 shrink-0">
+                      💡 네이버, 구글 등 일부 웹사이트는 보안상 화면에 보이지 않을 수 있습니다. 회색 화면이 나타나면 우측 상단의 [새 창 열기]를 이용해 주세요.
+                    </div>
+                    {/* key를 부여하여 링크가 바뀔 때마다 iframe 강제 새로고침 */}
+                    <iframe key={selectedExternalLink.id} src={selectedExternalLink.url} title={selectedExternalLink.title} className="flex-1 w-full h-full border-none" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" />
                   </div>
                 </>
               ) : (
@@ -1101,7 +1102,6 @@ const App = () => {
                     <p className="font-black text-xl text-gray-400 mb-2">왼쪽에서 자료를 선택해주세요.</p>
                     <p className="text-sm font-medium opacity-60">이곳에 웹페이지가 표시됩니다.</p>
                   </div>
-                  <p className="text-xs mt-4 opacity-50 bg-white px-4 py-2 rounded-lg border border-gray-100">* 네이버, 구글 등 보안 설정이 된 사이트는 우측 상단의 '새 창 열기'를 이용해주세요.</p>
                 </div>
               )}
             </div>
