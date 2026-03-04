@@ -19,7 +19,11 @@ import {
   Trophy,
   Filter,
   RotateCcw,
-  CheckSquare
+  CheckSquare,
+  Link as LinkIcon,
+  ExternalLink,
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react';
 
 // --- Local Storage Custom Hook ---
@@ -58,16 +62,14 @@ const playSound = (type) => {
     gain.connect(ctx.destination);
 
     if (type === 'magic') {
-      // 칭찬 매직: 경쾌하고 맑은 띠링~ 소리
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, ctx.currentTime); // A5음
-      osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1); // A6음으로 슉 올라감
-      gain.gain.setValueAtTime(1, ctx.currentTime); // 볼륨 최대
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4); // 서서히 줄어듦
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1); 
+      gain.gain.setValueAtTime(1, ctx.currentTime); 
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4); 
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 0.4);
     } else if (type === 'thunder') {
-      // 노력 매직: 낮고 묵직한 삐- 소리
       osc.type = 'sawtooth';
       osc.frequency.setValueAtTime(150, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.2);
@@ -115,18 +117,20 @@ const App = () => {
   const [showAssignmentModal, setShowAssignmentModal] = useState(null); 
   const [showSubmissionModal, setShowSubmissionModal] = useState(null); 
   const [showStudentModal, setShowStudentModal] = useState(null); 
+  const [showLinkModal, setShowLinkModal] = useState(null); // [추가] 외부자료 모달
   const [expandedSubjects, setExpandedSubjects] = useState({});
 
-  // 매직 점수 전용 상태
+  // 매직 점수 및 리포트 전용 상태
   const [selectedStudentsForMagic, setSelectedStudentsForMagic] = useState([]); 
   const [magicPointValue, setMagicPointValue] = useState(1); 
   const [magicSortOrder, setMagicSortOrder] = useState('num'); 
-  
-  // 리포트 전용 상태
   const [reportPeriod, setReportPeriod] = useState('all'); 
   const [customStartDate, setCustomStartDate] = useState(formatDate(new Date()));
   const [customEndDate, setCustomEndDate] = useState(formatDate(new Date()));
-  const [reportSortOrder, setReportSortOrder] = useState('desc'); // [추가] 리포트 정렬 상태
+  const [reportSortOrder, setReportSortOrder] = useState('desc');
+
+  // 외부 자료 전용 상태
+  const [selectedExternalLink, setSelectedExternalLink] = useState(null);
 
   const dateKey = formatDate(selectedDate);
 
@@ -143,6 +147,7 @@ const App = () => {
   const [assignmentStatus, setAssignmentStatus] = useLocalStorage('magic_assignmentStatus', {});
   const [counselingData, setCounselingData] = useLocalStorage('magic_counseling', {});
   const [magicPoints, setMagicPoints] = useLocalStorage('magic_points', {}); 
+  const [externalLinks, setExternalLinks] = useLocalStorage('magic_external_links', []); // [추가] 외부 자료 데이터
 
   const moods = ['😊', '🤩', '😐', '😴', '🤒', '😡', '😢', '😑'];
 
@@ -333,22 +338,15 @@ const App = () => {
     }
   };
 
+  // 매직 점수 부여
   const handleMagicPointAction = (studentIdsArray, type) => {
     if (studentIdsArray.length === 0) return alert('학생을 먼저 선택해주세요.');
     playSound(type === 'plus' ? 'magic' : 'thunder');
-
     setMagicPoints(prev => {
       const newPoints = { ...prev };
       const amount = type === 'plus' ? magicPointValue : -magicPointValue;
-      
       studentIdsArray.forEach(studentId => {
-        const newRecord = {
-          id: 'p' + Date.now() + Math.random(),
-          date: dateKey,
-          timestamp: new Date().getTime(),
-          type,
-          amount
-        };
+        const newRecord = { id: 'p' + Date.now() + Math.random(), date: dateKey, timestamp: new Date().getTime(), type, amount };
         newPoints[studentId] = [newRecord, ...(newPoints[studentId] || [])];
       });
       return newPoints;
@@ -361,7 +359,43 @@ const App = () => {
     }
   };
 
-  // 학생 리포트 통계 계산 및 정렬 (추가된 reportSortOrder 반영)
+  // --- 외부 자료 핸들러 ---
+  const saveExternalLink = (id, title, url) => {
+    if (!title || !url) return;
+    let formattedUrl = url;
+    if (!/^https?:\/\//i.test(formattedUrl)) {
+      formattedUrl = 'https://' + formattedUrl; // 프로토콜 자동 추가
+    }
+
+    if (id) {
+      setExternalLinks(prev => prev.map(l => l.id === id ? { ...l, title, url: formattedUrl } : l));
+      if (selectedExternalLink?.id === id) setSelectedExternalLink({ id, title, url: formattedUrl });
+    } else {
+      setExternalLinks(prev => [...prev, { id: 'l' + Date.now(), title, url: formattedUrl }]);
+    }
+    setShowLinkModal(null);
+  };
+
+  const deleteExternalLink = (id) => {
+    if (window.confirm('이 링크를 삭제하시겠습니까?')) {
+      setExternalLinks(prev => prev.filter(l => l.id !== id));
+      if (selectedExternalLink?.id === id) setSelectedExternalLink(null);
+    }
+  };
+
+  const moveExternalLink = (index, direction) => {
+    setExternalLinks(prev => {
+      const newLinks = [...prev];
+      if (direction === 'up' && index > 0) {
+        [newLinks[index - 1], newLinks[index]] = [newLinks[index], newLinks[index - 1]];
+      } else if (direction === 'down' && index < newLinks.length - 1) {
+        [newLinks[index + 1], newLinks[index]] = [newLinks[index], newLinks[index + 1]];
+      }
+      return newLinks;
+    });
+  };
+
+  // 학생 리포트 통계 계산 및 정렬
   const calculateReportData = () => {
     const now = new Date();
     const startOfToday = getStartOfDay(now).getTime();
@@ -371,7 +405,6 @@ const App = () => {
     const cEnd = new Date(customEndDate).setHours(23, 59, 59, 999);
 
     const reportData = students.map(student => {
-      // 1. 수동 부여 점수 필터링
       const points = magicPoints[student.id] || [];
       const filteredPoints = points.filter(p => {
         if (reportPeriod === 'all') return true;
@@ -387,7 +420,6 @@ const App = () => {
       const plusCount = filteredPoints.filter(p => p.type === 'plus').length;
       const minusCount = filteredPoints.filter(p => p.type === 'minus').length;
 
-      // 2. 과제 연동 점수 필터링
       let taskPts = 0;
       Object.entries(assignmentStatus || {}).forEach(([dateStr, dayData]) => {
         const dateTs = new Date(dateStr).getTime();
@@ -414,11 +446,10 @@ const App = () => {
       return { ...student, total, plusCount, minusCount, taskPts };
     });
 
-    // 정렬 로직 적용
     return reportData.sort((a, b) => {
       if (reportSortOrder === 'desc') return b.total - a.total;
       if (reportSortOrder === 'asc') return a.total - b.total;
-      return parseInt(a.num) - parseInt(b.num); // 'num' 정렬
+      return parseInt(a.num) - parseInt(b.num); 
     });
   };
 
@@ -431,13 +462,10 @@ const App = () => {
   // --- AI 완벽 대응 CSV Download ---
   const downloadCSV = () => {
     let csvContent = '\uFEFF'; 
-    // AI가 인식하기 가장 좋은 Long Format 형태
     csvContent += '학생번호,학생이름,날짜,기록분류,세부항목,상태_및_점수,비고_및_메모\n';
     const escape = (s) => `"${String(s || '').replace(/"/g, '""')}"`;
 
-    // 학생별 -> 날짜별로 정렬하여 내보냄 (AI가 맥락 파악하기 좋음)
     const sortedExportStudents = [...students].sort((a, b) => parseInt(a.num) - parseInt(b.num));
-    
     const allDates = Array.from(new Set([
       ...Object.keys(attendanceData),
       ...assignments.map(a => a.dueDate),
@@ -448,33 +476,28 @@ const App = () => {
 
     sortedExportStudents.forEach(student => {
       allDates.forEach(date => {
-        // 1. 출석
         const att = attendanceData[date]?.[student.id];
         if (att) {
           const emojiStr = att.mood !== '😊' ? att.mood : '';
           csvContent += `${student.num},${escape(student.name)},${date},출석,일일출결,${att.present?'출석':'결석'},${escape(emojiStr + ' ' + att.memo)}\n`;
         }
         
-        // 2. 제출물
         submissions.filter(s => s.date === date).forEach(subm => {
           const isSubm = submissionStatus[subm.id]?.[student.id];
           csvContent += `${student.num},${escape(student.name)},${date},제출물,${escape(subm.title)},${isSubm?'제출완료':'미제출'},\n`;
         });
 
-        // 3. 과제
         assignments.filter(a => a.dueDate === date).forEach(t => {
           const s = assignmentStatus[date]?.[student.id]?.[t.id];
-          if(s !== undefined && s !== null) { // 기록이 있는 경우만
+          if(s !== undefined && s !== null) { 
             csvContent += `${student.num},${escape(student.name)},${date},과제,${escape(t.title)},${getStatusLabel(s)},${escape(assignmentStatus[date]?.[student.id]?.[`memo_${t.id}`])}\n`;
           }
         });
         
-        // 4. 상담
         (counselingData[date] || []).filter(c => c.studentId === student.id).forEach(c => {
           csvContent += `${student.num},${escape(student.name)},${date},상담기록,${escape('작성:'+c.recorder)},${c.resolved?'해결완료':'미해결'},${escape('내용:'+c.content + ' / 조치:' + c.result)}\n`;
         });
 
-        // 5. 매직점수
         (magicPoints[student.id] || []).filter(p => p.date === date).forEach(p => {
           csvContent += `${student.num},${escape(student.name)},${date},매직점수,${p.type === 'plus' ? '칭찬' : '노력'},${p.amount > 0 ? '+'+p.amount : p.amount},\n`;
         });
@@ -507,6 +530,9 @@ const App = () => {
       <button onClick={() => {setActiveTab('counseling'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'counseling' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><MessageCircle size={20} /> <span className="md:inline">학생 상담</span></button>
       <button onClick={() => {setActiveTab('magicpoints'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'magicpoints' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><Trophy size={20} /> <span className="md:inline">매직 점수</span></button>
       
+      {/* [추가] 외부 자료 메뉴 */}
+      <button onClick={() => {setActiveTab('externals'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'externals' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><LinkIcon size={20} /> <span className="md:inline">외부 자료</span></button>
+      
       <div className="hidden md:block my-2 border-t border-gray-100"></div>
       <button onClick={downloadCSV} className="hidden md:flex items-center gap-2 px-3 py-3 rounded-xl transition-all text-emerald-600 hover:bg-emerald-50 font-bold shadow-sm border border-emerald-100 text-sm whitespace-nowrap"><Download size={18} /> AI분석 엑셀 다운</button>
     </div>
@@ -531,6 +557,7 @@ const App = () => {
             {activeTab === 'status' && '과제 현황 종합'}
             {activeTab === 'counseling' && '학생 상담 기록'}
             {activeTab === 'magicpoints' && '매직 점수 관리'}
+            {activeTab === 'externals' && '외부 자료 관리'}
           </h2>
         </div>
 
@@ -869,7 +896,6 @@ const App = () => {
         {/* 6. 매직 점수 */}
         {activeTab === 'magicpoints' && (
           <div className="space-y-6 max-w-[1400px] mx-auto pb-10">
-            {/* 상단 컨트롤 패널 */}
             <div className="bg-white p-6 rounded-[32px] border border-indigo-100 shadow-sm flex flex-col lg:flex-row items-start lg:items-end justify-between gap-4">
               <div>
                 <h3 className="text-2xl font-black text-gray-800 flex items-center gap-2 mb-2"><Trophy className="text-indigo-600"/> 매직 점수 관리</h3>
@@ -1018,6 +1044,70 @@ const App = () => {
           </div>
         )}
 
+        {/* 7. 외부 자료 메뉴 */}
+        {activeTab === 'externals' && (
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 no-print h-full min-h-[80vh]">
+            {/* 왼쪽 링크 목록 */}
+            <div className="w-full lg:w-96 shrink-0 flex flex-col gap-4">
+              <div className="flex justify-between items-center bg-white p-6 rounded-[32px] shadow-sm border border-gray-100">
+                <h3 className="text-xl font-bold flex items-center gap-2"><LinkIcon className="text-indigo-600"/> 외부 자료</h3>
+                <button onClick={() => setShowLinkModal({id: null, title: '', url: ''})} className="bg-indigo-600 text-white p-2 rounded-xl hover:bg-indigo-700 transition-colors shadow-md"><Plus size={20}/></button>
+              </div>
+              <div className="flex-1 bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 overflow-y-auto space-y-3">
+                {externalLinks.length === 0 && <p className="text-center py-10 text-gray-400 text-sm font-bold">등록된 외부 자료가 없습니다.</p>}
+                {externalLinks.map((link, idx) => (
+                  <div key={link.id} className={`p-4 rounded-2xl border-2 transition-all flex items-center justify-between group ${selectedExternalLink?.id === link.id ? 'border-indigo-500 bg-indigo-50 shadow-md' : 'border-gray-100 bg-white hover:border-indigo-200'}`}>
+                    <div className="flex-1 cursor-pointer truncate mr-2" onClick={() => setSelectedExternalLink(link)}>
+                      <h4 className="font-black text-gray-800 truncate">{link.title}</h4>
+                      <p className="text-[10px] font-bold text-gray-400 truncate mt-1">{link.url}</p>
+                    </div>
+                    <div className="flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
+                      <div className="flex flex-col bg-white rounded-lg border border-gray-100 shadow-sm mr-1">
+                        <button onClick={() => moveExternalLink(idx, 'up')} disabled={idx===0} className="p-1 text-gray-400 hover:text-indigo-600 disabled:opacity-30 border-b border-gray-50"><ArrowUp size={12}/></button>
+                        <button onClick={() => moveExternalLink(idx, 'down')} disabled={idx===externalLinks.length-1} className="p-1 text-gray-400 hover:text-indigo-600 disabled:opacity-30"><ArrowDown size={12}/></button>
+                      </div>
+                      <button onClick={() => setShowLinkModal(link)} className="p-2 text-gray-300 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 rounded-xl"><Edit2 size={14}/></button>
+                      <button onClick={() => deleteExternalLink(link.id)} className="p-2 text-gray-300 hover:text-red-500 bg-slate-50 hover:bg-red-50 rounded-xl"><Trash2 size={14}/></button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 오른쪽 iframe 뷰어 */}
+            <div className="flex-1 bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden flex flex-col min-h-[500px] lg:min-h-0">
+              {selectedExternalLink ? (
+                <>
+                  <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-slate-50 shrink-0">
+                    <div className="flex items-center gap-3 truncate pr-4">
+                      <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 shadow-inner"><LinkIcon size={20}/></div>
+                      <div>
+                        <h3 className="font-black text-gray-800 truncate text-lg">{selectedExternalLink.title}</h3>
+                        <p className="text-xs font-bold text-gray-400 mt-0.5 truncate">{selectedExternalLink.url}</p>
+                      </div>
+                    </div>
+                    <a href={selectedExternalLink.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 shadow-md transition-colors shrink-0">
+                      새 창 열기 <ExternalLink size={16}/>
+                    </a>
+                  </div>
+                  <div className="flex-1 w-full bg-gray-50 relative">
+                    <iframe src={selectedExternalLink.url} title={selectedExternalLink.title} className="absolute inset-0 w-full h-full border-none" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" />
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center text-gray-300 gap-4 p-10 text-center">
+                  <div className="p-6 bg-slate-50 rounded-full shadow-inner"><LinkIcon size={48} className="text-indigo-200" /></div>
+                  <div>
+                    <p className="font-black text-xl text-gray-400 mb-2">왼쪽에서 자료를 선택해주세요.</p>
+                    <p className="text-sm font-medium opacity-60">이곳에 웹페이지가 표시됩니다.</p>
+                  </div>
+                  <p className="text-xs mt-4 opacity-50 bg-white px-4 py-2 rounded-lg border border-gray-100">* 네이버, 구글 등 보안 설정이 된 사이트는 우측 상단의 '새 창 열기'를 이용해주세요.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* --- 공통 팝업 영역 --- */}
 
         {statusPickerTarget && (
@@ -1072,7 +1162,16 @@ const App = () => {
           </div>
         )}
 
-        {/* --- 개별 모달(상세 현황 및 과목/학생/제출물 추가) --- */}
+        {/* --- 개별 모달(상세 현황 및 과목/학생/제출물/외부링크 추가) --- */}
+        {showLinkModal && (
+          <LinkEditModal 
+            key={showLinkModal.id || 'new_link'}
+            data={showLinkModal}
+            onClose={() => setShowLinkModal(null)}
+            onSave={saveExternalLink}
+          />
+        )}
+
         {showSubmissionModal && (
           <SubmissionEditModal 
             key={showSubmissionModal.id || 'new_submission'}
@@ -1220,6 +1319,52 @@ const App = () => {
 };
 
 // --- 독립된 모달 컴포넌트들 ---
+
+const LinkEditModal = ({ data, onClose, onSave }) => {
+  const [title, setTitle] = useState(data.title || '');
+  const [url, setUrl] = useState(data.url || '');
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+      <div className="bg-white rounded-[32px] p-6 md:p-10 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-6 md:mb-8">
+          <h4 className="text-xl md:text-2xl font-bold">{data.id ? '외부 자료 수정' : '새 외부 자료 등록'}</h4>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full"><X size={20} /></button>
+        </div>
+        <div className="space-y-4 md:space-y-6">
+          <div>
+            <label className="block text-xs md:text-sm font-bold text-gray-400 mb-1.5 md:mb-2 ml-1">자료 이름</label>
+            <input 
+              autoFocus 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              placeholder="예: 디지털 교과서, 아이스크림"
+              className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none transition-all font-bold text-sm md:text-base" 
+            />
+          </div>
+          <div>
+            <label className="block text-xs md:text-sm font-bold text-gray-400 mb-1.5 md:mb-2 ml-1">웹사이트 주소 (URL)</label>
+            <input 
+              value={url} 
+              onChange={(e) => setUrl(e.target.value)} 
+              onKeyDown={(e) => {
+                if(e.key === 'Enter') {
+                  e.preventDefault();
+                  onSave(data.id, title, url);
+                }
+              }}
+              placeholder="예: www.naver.com"
+              className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-500 focus:bg-white px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none transition-all font-bold text-sm md:text-base" 
+            />
+          </div>
+          <button onClick={() => onSave(data.id, title, url)} className="w-full bg-indigo-600 text-white py-3 md:py-4 mt-2 rounded-xl md:rounded-2xl font-bold text-base md:text-lg shadow-lg hover:bg-indigo-700 transition-all">
+            저장하기
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const SubmissionEditModal = ({ data, onClose, onSave }) => {
   const [title, setTitle] = useState(data.title || '');
