@@ -19,7 +19,7 @@ import {
   Trophy,
   Filter,
   RotateCcw,
-  CheckSquare // 제출 관리용 아이콘 추가
+  CheckSquare
 } from 'lucide-react';
 
 // --- Local Storage Custom Hook ---
@@ -45,15 +45,40 @@ function useLocalStorage(key, initialValue) {
   return [storedValue, setStoredValue];
 }
 
-// --- Sound Player (마법 & 천둥 소리) ---
+// --- 자체 내장 Sound Player (끊김 없고 소리 크게) ---
 const playSound = (type) => {
   try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
     if (type === 'magic') {
-      new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b82e55eb.mp3').play().catch(()=>{});
+      // 칭찬 매직: 경쾌하고 맑은 띠링~ 소리
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime); // A5음
+      osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1); // A6음으로 슉 올라감
+      gain.gain.setValueAtTime(1, ctx.currentTime); // 볼륨 최대
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4); // 서서히 줄어듦
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
     } else if (type === 'thunder') {
-      new Audio('https://cdn.pixabay.com/download/audio/2022/03/24/audio_3415eb6740.mp3').play().catch(()=>{});
+      // 노력 매직: 낮고 묵직한 삐- 소리
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(150, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.2);
+      gain.gain.setValueAtTime(1, ctx.currentTime); 
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
     }
-  } catch(e) {}
+  } catch(e) {
+    console.log("오디오 재생 오류:", e);
+  }
 };
 
 const App = () => {
@@ -79,7 +104,7 @@ const App = () => {
   const [selectedDate, setSelectedDate] = useState(new Date()); 
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [expandedTask, setExpandedTask] = useState(null);
-  const [expandedSubmission, setExpandedSubmission] = useState(null); // 제출 관리 아코디언 상태
+  const [expandedSubmission, setExpandedSubmission] = useState(null); 
   
   const [assignmentDetailStudent, setAssignmentDetailStudent] = useState(null);
   const [assignmentFilter, setAssignmentFilter] = useState('all'); 
@@ -88,7 +113,7 @@ const App = () => {
 
   const [showSubjectModal, setShowSubjectModal] = useState(null); 
   const [showAssignmentModal, setShowAssignmentModal] = useState(null); 
-  const [showSubmissionModal, setShowSubmissionModal] = useState(null); // 제출물 추가 모달
+  const [showSubmissionModal, setShowSubmissionModal] = useState(null); 
   const [showStudentModal, setShowStudentModal] = useState(null); 
   const [expandedSubjects, setExpandedSubjects] = useState({});
 
@@ -96,9 +121,12 @@ const App = () => {
   const [selectedStudentsForMagic, setSelectedStudentsForMagic] = useState([]); 
   const [magicPointValue, setMagicPointValue] = useState(1); 
   const [magicSortOrder, setMagicSortOrder] = useState('num'); 
+  
+  // 리포트 전용 상태
   const [reportPeriod, setReportPeriod] = useState('all'); 
   const [customStartDate, setCustomStartDate] = useState(formatDate(new Date()));
   const [customEndDate, setCustomEndDate] = useState(formatDate(new Date()));
+  const [reportSortOrder, setReportSortOrder] = useState('desc'); // [추가] 리포트 정렬 상태
 
   const dateKey = formatDate(selectedDate);
 
@@ -108,11 +136,8 @@ const App = () => {
     { id: '2', num: '2', name: '이학생', memo: '메모 없음' },
   ]);
   const [attendanceData, setAttendanceData] = useLocalStorage('magic_attendance', {});
-  
-  // [추가] 제출 관리 데이터 (단순 O/X 제출물)
   const [submissions, setSubmissions] = useLocalStorage('magic_submissions', []);
   const [submissionStatus, setSubmissionStatus] = useLocalStorage('magic_submissionStatus', {});
-
   const [subjects, setSubjects] = useLocalStorage('magic_subjects', [{ id: 's1', title: '국어' }, { id: 's2', title: '수학' }]);
   const [assignments, setAssignments] = useLocalStorage('magic_assignments', []);
   const [assignmentStatus, setAssignmentStatus] = useLocalStorage('magic_assignmentStatus', {});
@@ -203,24 +228,18 @@ const App = () => {
     });
   };
 
-  // [추가] 제출 관리 핸들러
   const toggleSubmissionStatus = (submissionId, studentId) => {
     setSubmissionStatus(prev => {
       const currentSubStatus = prev[submissionId] || {};
       const isSubmitted = currentSubStatus[studentId] || false;
-      return {
-        ...prev,
-        [submissionId]: { ...currentSubStatus, [studentId]: !isSubmitted }
-      };
+      return { ...prev, [submissionId]: { ...currentSubStatus, [studentId]: !isSubmitted } };
     });
   };
 
   const bulkCompleteSubmission = (submissionId) => {
     setSubmissionStatus(prev => {
       const newStatus = { ...(prev[submissionId] || {}) };
-      students.forEach(s => {
-        newStatus[s.id] = true;
-      });
+      students.forEach(s => { newStatus[s.id] = true; });
       return { ...prev, [submissionId]: newStatus };
     });
   };
@@ -252,9 +271,7 @@ const App = () => {
     setAssignmentStatus(prev => {
       const dayData = prev[dateKey] || {};
       const newDayData = { ...dayData };
-      students.forEach(s => {
-        newDayData[s.id] = { ...(newDayData[s.id] || {}), [taskId]: 'done' };
-      });
+      students.forEach(s => { newDayData[s.id] = { ...(newDayData[s.id] || {}), [taskId]: 'done' }; });
       return { ...prev, [dateKey]: newDayData };
     });
   };
@@ -316,10 +333,8 @@ const App = () => {
     }
   };
 
-  // 매직 점수 부여
   const handleMagicPointAction = (studentIdsArray, type) => {
     if (studentIdsArray.length === 0) return alert('학생을 먼저 선택해주세요.');
-    
     playSound(type === 'plus' ? 'magic' : 'thunder');
 
     setMagicPoints(prev => {
@@ -346,6 +361,7 @@ const App = () => {
     }
   };
 
+  // 학생 리포트 통계 계산 및 정렬 (추가된 reportSortOrder 반영)
   const calculateReportData = () => {
     const now = new Date();
     const startOfToday = getStartOfDay(now).getTime();
@@ -354,8 +370,8 @@ const App = () => {
     const cStart = new Date(customStartDate).getTime();
     const cEnd = new Date(customEndDate).setHours(23, 59, 59, 999);
 
-    return students.map(student => {
-      // 1. 수동 부여 매직 점수 계산
+    const reportData = students.map(student => {
+      // 1. 수동 부여 점수 필터링
       const points = magicPoints[student.id] || [];
       const filteredPoints = points.filter(p => {
         if (reportPeriod === 'all') return true;
@@ -371,7 +387,7 @@ const App = () => {
       const plusCount = filteredPoints.filter(p => p.type === 'plus').length;
       const minusCount = filteredPoints.filter(p => p.type === 'minus').length;
 
-      // 2. 과제 연동 점수 기간별 계산
+      // 2. 과제 연동 점수 필터링
       let taskPts = 0;
       Object.entries(assignmentStatus || {}).forEach(([dateStr, dayData]) => {
         const dateTs = new Date(dateStr).getTime();
@@ -395,9 +411,15 @@ const App = () => {
       });
 
       const total = manualTotal + taskPts;
-
       return { ...student, total, plusCount, minusCount, taskPts };
-    }).sort((a, b) => b.total - a.total); 
+    });
+
+    // 정렬 로직 적용
+    return reportData.sort((a, b) => {
+      if (reportSortOrder === 'desc') return b.total - a.total;
+      if (reportSortOrder === 'asc') return a.total - b.total;
+      return parseInt(a.num) - parseInt(b.num); // 'num' 정렬
+    });
   };
 
   const sortedStudentsForMagic = [...students].sort((a, b) => {
@@ -406,55 +428,63 @@ const App = () => {
     return parseInt(a.num) - parseInt(b.num);
   });
 
-  // --- CSV Download ---
+  // --- AI 완벽 대응 CSV Download ---
   const downloadCSV = () => {
     let csvContent = '\uFEFF'; 
-    csvContent += '날짜,구분,학생번호,학생이름,항목,상태/점수,메모\n';
+    // AI가 인식하기 가장 좋은 Long Format 형태
+    csvContent += '학생번호,학생이름,날짜,기록분류,세부항목,상태_및_점수,비고_및_메모\n';
     const escape = (s) => `"${String(s || '').replace(/"/g, '""')}"`;
 
+    // 학생별 -> 날짜별로 정렬하여 내보냄 (AI가 맥락 파악하기 좋음)
+    const sortedExportStudents = [...students].sort((a, b) => parseInt(a.num) - parseInt(b.num));
+    
     const allDates = Array.from(new Set([
       ...Object.keys(attendanceData),
       ...assignments.map(a => a.dueDate),
       ...Object.keys(counselingData),
-      ...submissions.map(s => s.date) // 제출관리 날짜 포함
+      ...submissions.map(s => s.date),
+      ...Object.values(magicPoints).flat().map(p => p.date)
     ])).sort();
 
-    allDates.forEach(date => {
-      students.forEach(student => {
-        // 출석
+    sortedExportStudents.forEach(student => {
+      allDates.forEach(date => {
+        // 1. 출석
         const att = attendanceData[date]?.[student.id];
-        if (att) csvContent += `${date},출석,${student.num},${escape(student.name)},출석체크,${att.present?'출석':'결석'},${escape(att.mood + ' ' + att.memo)}\n`;
+        if (att) {
+          const emojiStr = att.mood !== '😊' ? att.mood : '';
+          csvContent += `${student.num},${escape(student.name)},${date},출석,일일출결,${att.present?'출석':'결석'},${escape(emojiStr + ' ' + att.memo)}\n`;
+        }
         
-        // 제출물
+        // 2. 제출물
         submissions.filter(s => s.date === date).forEach(subm => {
           const isSubm = submissionStatus[subm.id]?.[student.id];
-          csvContent += `${date},제출물,${student.num},${escape(student.name)},${escape(subm.title)},${isSubm?'제출완료':'미제출'},\n`;
+          csvContent += `${student.num},${escape(student.name)},${date},제출물,${escape(subm.title)},${isSubm?'제출완료':'미제출'},\n`;
         });
 
-        // 과제
+        // 3. 과제
         assignments.filter(a => a.dueDate === date).forEach(t => {
           const s = assignmentStatus[date]?.[student.id]?.[t.id];
-          csvContent += `${date},과제,${student.num},${escape(student.name)},${escape(t.title)},${getStatusLabel(s)},${escape(assignmentStatus[date]?.[student.id]?.[`memo_${t.id}`])}\n`;
+          if(s !== undefined && s !== null) { // 기록이 있는 경우만
+            csvContent += `${student.num},${escape(student.name)},${date},과제,${escape(t.title)},${getStatusLabel(s)},${escape(assignmentStatus[date]?.[student.id]?.[`memo_${t.id}`])}\n`;
+          }
         });
         
-        // 상담
+        // 4. 상담
         (counselingData[date] || []).filter(c => c.studentId === student.id).forEach(c => {
-          csvContent += `${date},상담,${student.num},${escape(student.name)},${escape(c.recorder)},${c.resolved?'완료':'미해결'},${escape(c.content + ' / ' + c.result)}\n`;
+          csvContent += `${student.num},${escape(student.name)},${date},상담기록,${escape('작성:'+c.recorder)},${c.resolved?'해결완료':'미해결'},${escape('내용:'+c.content + ' / 조치:' + c.result)}\n`;
         });
-      });
-    });
-    
-    // 매직점수
-    students.forEach(student => {
-      (magicPoints[student.id] || []).forEach(p => {
-        csvContent += `${p.date},매직점수,${student.num},${escape(student.name)},${p.type === 'plus' ? '칭찬매직' : '노력매직'},${p.amount},\n`;
+
+        // 5. 매직점수
+        (magicPoints[student.id] || []).filter(p => p.date === date).forEach(p => {
+          csvContent += `${student.num},${escape(student.name)},${date},매직점수,${p.type === 'plus' ? '칭찬' : '노력'},${p.amount > 0 ? '+'+p.amount : p.amount},\n`;
+        });
       });
     });
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `매직클래스_데이터_${formatDate(new Date())}.csv`;
+    link.download = `매직클래스_AI분석용데이터_${formatDate(new Date())}.csv`;
     link.click();
   };
 
@@ -471,7 +501,6 @@ const App = () => {
       <div className="hidden md:flex items-center gap-2 mb-8 px-2 text-indigo-600 font-bold text-xl"><Sparkles size={24} /><h1>매직클래스</h1></div>
       <button onClick={() => {setActiveTab('students'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'students' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><Users size={20} /> <span className="md:inline">학생 관리</span></button>
       <button onClick={() => {setActiveTab('attendance'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'attendance' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><Calendar size={20} /> <span className="md:inline">출석 관리</span></button>
-      {/* [추가] 제출 관리 메뉴 */}
       <button onClick={() => {setActiveTab('submissions'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'submissions' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><CheckSquare size={20} /> <span className="md:inline">제출 관리</span></button>
       <button onClick={() => {setActiveTab('assignments'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'assignments' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><BookOpen size={20} /> <span className="md:inline">과제 관리</span></button>
       <button onClick={() => {setActiveTab('status'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'status' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><BarChart2 size={20} /> <span className="md:inline">과제 현황</span></button>
@@ -479,7 +508,7 @@ const App = () => {
       <button onClick={() => {setActiveTab('magicpoints'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-3 p-3 md:p-3 rounded-xl transition-all whitespace-nowrap text-sm md:text-base ${activeTab === 'magicpoints' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}><Trophy size={20} /> <span className="md:inline">매직 점수</span></button>
       
       <div className="hidden md:block my-2 border-t border-gray-100"></div>
-      <button onClick={downloadCSV} className="hidden md:flex items-center gap-2 px-3 py-3 rounded-xl transition-all text-emerald-600 hover:bg-emerald-50 font-bold shadow-sm border border-emerald-100 text-sm whitespace-nowrap"><Download size={18} /> 엑셀 다운로드 (AI용)</button>
+      <button onClick={downloadCSV} className="hidden md:flex items-center gap-2 px-3 py-3 rounded-xl transition-all text-emerald-600 hover:bg-emerald-50 font-bold shadow-sm border border-emerald-100 text-sm whitespace-nowrap"><Download size={18} /> AI분석 엑셀 다운</button>
     </div>
   );
 
@@ -487,7 +516,7 @@ const App = () => {
     <div className="flex flex-col md:flex-row min-h-screen bg-slate-50 text-gray-900 font-sans pb-20 md:pb-0">
       <div className="md:hidden flex items-center justify-between p-4 bg-white border-b sticky top-0 z-40 shadow-sm">
         <div className="flex items-center gap-2 text-indigo-600 font-bold text-xl"><Sparkles size={24} /> 매직클래스</div>
-        <button onClick={downloadCSV} className="text-emerald-600 p-2 bg-emerald-50 rounded-xl hover:bg-emerald-100 flex items-center gap-1 text-xs font-bold"><Download size={16} /> <span className="hidden sm:inline">엑셀 백업</span></button>
+        <button onClick={downloadCSV} className="text-emerald-600 p-2 bg-emerald-50 rounded-xl hover:bg-emerald-100 flex items-center gap-1 text-xs font-bold"><Download size={16} /> <span className="hidden sm:inline">AI 엑셀</span></button>
       </div>
 
       <Sidebar />
@@ -581,7 +610,7 @@ const App = () => {
           </div>
         )}
 
-        {/* 2.5 [신규] 제출 관리 (단순 O/X) */}
+        {/* 2.5 제출 관리 */}
         {activeTab === 'submissions' && (
           <div className="space-y-6 no-print">
             <div className="flex justify-between items-center mb-4">
@@ -610,7 +639,6 @@ const App = () => {
                           <span className="font-bold text-lg lg:text-xl text-gray-700 truncate">{subm.title}</span>
                           <span className="text-[10px] font-bold text-gray-400 bg-white px-2 py-1 rounded-md border border-gray-100">{subm.date}</span>
                           
-                          {/* 진행률 미니 바 */}
                           <div className="hidden md:flex flex-1 items-center gap-2 ml-4 max-w-xs">
                             <div className="h-2 flex-1 bg-slate-100 rounded-full overflow-hidden">
                               <div className={`h-full transition-all ${percent === 100 ? 'bg-green-500' : 'bg-indigo-400'}`} style={{width: `${percent}%`}}></div>
@@ -841,6 +869,7 @@ const App = () => {
         {/* 6. 매직 점수 */}
         {activeTab === 'magicpoints' && (
           <div className="space-y-6 max-w-[1400px] mx-auto pb-10">
+            {/* 상단 컨트롤 패널 */}
             <div className="bg-white p-6 rounded-[32px] border border-indigo-100 shadow-sm flex flex-col lg:flex-row items-start lg:items-end justify-between gap-4">
               <div>
                 <h3 className="text-2xl font-black text-gray-800 flex items-center gap-2 mb-2"><Trophy className="text-indigo-600"/> 매직 점수 관리</h3>
@@ -917,6 +946,7 @@ const App = () => {
               })}
             </div>
 
+            {/* 학생 리포트 */}
             <div className="mt-12 bg-white rounded-[32px] p-6 md:p-8 border border-gray-100 shadow-sm">
               <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center border-b pb-6 mb-6 gap-4">
                 <div>
@@ -924,7 +954,7 @@ const App = () => {
                   <p className="text-sm text-gray-400 font-medium mt-1">과제 점수(+3, +2, +1)와 수동 매직 점수가 지정된 기간에 맞춰 필터링됩니다.</p>
                 </div>
                 
-                <div className="flex flex-col lg:flex-row bg-slate-100 p-1.5 rounded-2xl w-full xl:w-auto gap-2">
+                <div className="flex flex-col lg:flex-row bg-slate-100 p-1.5 rounded-2xl w-full xl:w-auto gap-2 items-center">
                   <div className="flex w-full lg:w-auto">
                     <button onClick={() => setReportPeriod('day')} className={`flex-1 lg:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-all ${reportPeriod === 'day' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>일간</button>
                     <button onClick={() => setReportPeriod('week')} className={`flex-1 lg:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-all ${reportPeriod === 'week' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>주간</button>
@@ -933,12 +963,24 @@ const App = () => {
                     <button onClick={() => setReportPeriod('custom')} className={`flex-1 lg:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-all ${reportPeriod === 'custom' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>직접지정</button>
                   </div>
                   {reportPeriod === 'custom' && (
-                    <div className="flex items-center gap-1.5 px-2 py-1 justify-center">
+                    <div className="flex items-center gap-1.5 px-2 py-1 justify-center w-full lg:w-auto">
                       <input type="date" value={customStartDate} onChange={e => setCustomStartDate(e.target.value)} className="bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-bold text-gray-600 outline-none shadow-sm" />
                       <span className="text-gray-400 font-bold text-xs">~</span>
                       <input type="date" value={customEndDate} onChange={e => setCustomEndDate(e.target.value)} className="bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-bold text-gray-600 outline-none shadow-sm" />
                     </div>
                   )}
+                </div>
+              </div>
+
+              {/* [추가] 리포트 정렬 드롭다운 */}
+              <div className="flex justify-end mb-4">
+                <div className="flex items-center gap-2">
+                  <Filter size={16} className="text-gray-400"/>
+                  <select value={reportSortOrder} onChange={(e)=>setReportSortOrder(e.target.value)} className="bg-transparent text-sm font-bold text-gray-600 outline-none cursor-pointer">
+                    <option value="desc">종합 점수 높은 순</option>
+                    <option value="asc">종합 점수 낮은 순</option>
+                    <option value="num">번호순 정렬</option>
+                  </select>
                 </div>
               </div>
 
@@ -1031,7 +1073,6 @@ const App = () => {
         )}
 
         {/* --- 개별 모달(상세 현황 및 과목/학생/제출물 추가) --- */}
-        {/* 제출물 추가 모달 */}
         {showSubmissionModal && (
           <SubmissionEditModal 
             key={showSubmissionModal.id || 'new_submission'}
@@ -1039,11 +1080,8 @@ const App = () => {
             onClose={() => setShowSubmissionModal(null)}
             onSave={(id, title, date) => {
               if(!title) return;
-              if (id) {
-                setSubmissions(prev => prev.map(s => s.id === id ? { ...s, title, date } : s));
-              } else {
-                setSubmissions(prev => [{ id: 'sm' + Date.now(), title, date }, ...prev]);
-              }
+              if (id) setSubmissions(prev => prev.map(s => s.id === id ? { ...s, title, date } : s));
+              else setSubmissions(prev => [{ id: 'sm' + Date.now(), title, date }, ...prev]);
               setShowSubmissionModal(null);
             }}
           />
@@ -1164,11 +1202,8 @@ const App = () => {
             onClose={() => setShowAssignmentModal(null)}
             onSave={(id, title, subId, date) => {
               if(!title) return;
-              if (id) {
-                setAssignments(prev => prev.map(a => a.id === id ? { ...a, title, subjectId: subId, dueDate: date } : a));
-              } else {
-                setAssignments(prev => [{ id: 'a' + Date.now(), subjectId: subId, title, dueDate: date }, ...prev]);
-              }
+              if (id) setAssignments(prev => prev.map(a => a.id === id ? { ...a, title, subjectId: subId, dueDate: date } : a));
+              else setAssignments(prev => [{ id: 'a' + Date.now(), subjectId: subId, title, dueDate: date }, ...prev]);
               setShowAssignmentModal(null);
             }}
           />
