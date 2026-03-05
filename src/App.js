@@ -26,7 +26,7 @@ import {
   ArrowDown
 } from 'lucide-react';
 
-// --- Local Storage Custom Hook (데이터 영구 누적 저장) ---
+// --- Local Storage Custom Hook ---
 function useLocalStorage(key, initialValue) {
   const [storedValue, setStoredValue] = useState(() => {
     try {
@@ -49,7 +49,7 @@ function useLocalStorage(key, initialValue) {
   return [storedValue, setStoredValue];
 }
 
-// --- 자체 내장 Sound Player (끊김 없고 소리 크게) ---
+// --- 자체 내장 Sound Player ---
 const playSound = (type) => {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -133,6 +133,11 @@ const App = () => {
   const [selectedExternalLink, setSelectedExternalLink] = useState(null);
 
   const dateKey = formatDate(selectedDate);
+
+  // [핵심 추가] 탭(메뉴) 이동 시 항상 컴퓨터의 현재 날짜(오늘)로 자동 현행화
+  useEffect(() => {
+    setSelectedDate(new Date());
+  }, [activeTab]);
 
   // --- Data States (Local Storage) ---
   const [students, setStudents] = useLocalStorage('magic_students', [
@@ -338,7 +343,6 @@ const App = () => {
     }
   };
 
-  // 매직 점수 부여
   const handleMagicPointAction = (studentIdsArray, type) => {
     if (studentIdsArray.length === 0) return alert('학생을 먼저 선택해주세요.');
     playSound(type === 'plus' ? 'magic' : 'thunder');
@@ -359,12 +363,11 @@ const App = () => {
     }
   };
 
-  // --- 외부 자료 핸들러 ---
   const saveExternalLink = (id, title, url) => {
     if (!title || !url) return;
     let formattedUrl = url;
     if (!/^https?:\/\//i.test(formattedUrl)) {
-      formattedUrl = 'https://' + formattedUrl; // 프로토콜 자동 추가
+      formattedUrl = 'https://' + formattedUrl; 
     }
 
     if (id) {
@@ -395,7 +398,6 @@ const App = () => {
     });
   };
 
-  // 학생 리포트 통계 계산 및 정렬
   const calculateReportData = () => {
     const now = new Date();
     const startOfToday = getStartOfDay(now).getTime();
@@ -459,7 +461,6 @@ const App = () => {
     return parseInt(a.num) - parseInt(b.num);
   });
 
-  // --- AI 완벽 대응 CSV Download ---
   const downloadCSV = () => {
     let csvContent = '\uFEFF'; 
     csvContent += '학생번호,학생이름,날짜,기록분류,세부항목,상태_및_점수,비고_및_메모\n';
@@ -570,7 +571,6 @@ const App = () => {
               <table className="w-full text-left min-w-[500px] table-fixed">
                 <thead className="bg-slate-50 text-gray-400 text-xs border-b font-black uppercase tracking-wider">
                   <tr>
-                    {/* [수정] 번호 너비를 줄이고 중앙 정렬 */}
                     <th className="px-4 md:px-6 py-4 md:py-5 w-16 md:w-24 text-center">번호</th>
                     <th className="px-6 md:px-10 py-4 md:py-5 w-48">이름</th>
                     <th className="px-6 md:px-10 py-4 md:py-5">학생 메모</th>
@@ -581,7 +581,6 @@ const App = () => {
                   {students.length === 0 && <tr><td colSpan="4" className="text-center py-10 text-gray-400 font-bold">등록된 학생이 없습니다.</td></tr>}
                   {students.map(s => (
                     <tr key={s.id} className="hover:bg-indigo-50/30 transition-colors">
-                      {/* [수정] 번호가 잘리지 않도록 truncate 삭제, 폰트 크기 및 굵기 상향, whitespace-nowrap 적용 */}
                       <td className="px-4 md:px-6 py-4 md:py-6 text-gray-600 font-black text-lg md:text-xl text-center whitespace-nowrap">{s.num}</td>
                       <td onClick={() => setSelectedStudent(s)} className="px-6 md:px-10 py-4 md:py-6 font-black text-xl md:text-2xl text-indigo-600 cursor-pointer hover:underline truncate whitespace-nowrap overflow-hidden text-ellipsis">{s.name}</td>
                       <td className="px-6 md:px-10 py-4 md:py-6 truncate"><input type="text" value={s.memo} onChange={e => handleInlineMemoUpdate(s.id, e.target.value)} placeholder="메모 입력" className="w-full bg-transparent border-none focus:ring-0 text-gray-600 font-medium truncate" /></td>
@@ -599,7 +598,11 @@ const App = () => {
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 no-print">
             <div className="shrink-0 w-full lg:w-80">
               <div className="bg-white p-5 lg:p-6 rounded-[32px] shadow-sm border border-gray-100">
-                <h3 className="font-bold text-lg mb-4 text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                {/* [수정] 오늘 날짜 현행화 버튼 (달력) */}
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-bold text-lg text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                  <button onClick={() => setSelectedDate(new Date())} className="text-xs bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-200 transition-colors">오늘</button>
+                </div>
                 <div className="grid grid-cols-7 gap-y-2 text-center mb-2 font-semibold text-xs">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d} className="text-gray-300">{d}</div>)}
                   {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() }, (_, i) => {
@@ -804,7 +807,10 @@ const App = () => {
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 no-print">
             <div className="shrink-0 w-full lg:w-80">
               <div className="bg-white p-5 lg:p-6 rounded-[32px] shadow-sm border border-gray-100">
-                <h3 className="font-bold text-lg mb-4 text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-bold text-lg text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                  <button onClick={() => setSelectedDate(new Date())} className="text-xs bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-200 transition-colors">오늘</button>
+                </div>
                 <div className="grid grid-cols-7 gap-y-2 text-center mb-2 font-semibold text-xs">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d} className="text-gray-300">{d}</div>)}
                   {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() }, (_, i) => {
@@ -854,7 +860,10 @@ const App = () => {
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 no-print overflow-hidden">
             <div className="shrink-0 w-full lg:w-80">
               <div className="bg-white p-5 lg:p-6 rounded-[32px] shadow-sm border border-gray-100">
-                <h3 className="font-bold text-lg mb-4 text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-bold text-lg text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                  <button onClick={() => setSelectedDate(new Date())} className="text-xs bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-200 transition-colors">오늘</button>
+                </div>
                 <div className="grid grid-cols-7 gap-y-2 text-center mb-2 font-semibold text-xs">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d} className="text-gray-300">{d}</div>)}
                   {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() }, (_, i) => {
@@ -901,6 +910,7 @@ const App = () => {
         {/* 6. 매직 점수 */}
         {activeTab === 'magicpoints' && (
           <div className="space-y-6 max-w-[1400px] mx-auto pb-10">
+            {/* 상단 컨트롤 패널 */}
             <div className="bg-white p-6 rounded-[32px] border border-indigo-100 shadow-sm flex flex-col lg:flex-row items-start lg:items-end justify-between gap-4">
               <div>
                 <h3 className="text-2xl font-black text-gray-800 flex items-center gap-2 mb-2"><Trophy className="text-indigo-600"/> 매직 점수 관리</h3>
@@ -977,6 +987,7 @@ const App = () => {
               })}
             </div>
 
+            {/* 학생 리포트 */}
             <div className="mt-12 bg-white rounded-[32px] p-6 md:p-8 border border-gray-100 shadow-sm">
               <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center border-b pb-6 mb-6 gap-4">
                 <div>
