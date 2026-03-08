@@ -23,10 +23,11 @@ import {
   Link as LinkIcon,
   ExternalLink,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Brain // [추가] 완전 학습용 아이콘
 } from 'lucide-react';
 
-// --- Local Storage Custom Hook ---
+// --- Local Storage Custom Hook (데이터 영구 누적 저장) ---
 function useLocalStorage(key, initialValue) {
   const [storedValue, setStoredValue] = useState(() => {
     try {
@@ -118,7 +119,9 @@ const App = () => {
   const [showSubmissionModal, setShowSubmissionModal] = useState(null); 
   const [showStudentModal, setShowStudentModal] = useState(null); 
   const [showLinkModal, setShowLinkModal] = useState(null); 
+  const [showConceptModal, setShowConceptModal] = useState(null); // [추가] 완전 학습 개념 모달
   const [expandedSubjects, setExpandedSubjects] = useState({});
+  const [expandedMasterySubjects, setExpandedMasterySubjects] = useState({}); // [추가] 완전학습 아코디언
 
   // 매직 점수 및 리포트 전용 상태
   const [selectedStudentsForMagic, setSelectedStudentsForMagic] = useState([]); 
@@ -134,6 +137,11 @@ const App = () => {
 
   const dateKey = formatDate(selectedDate);
 
+  // 탭 이동 시 날짜 현행화
+  useEffect(() => {
+    setSelectedDate(new Date());
+  }, [activeTab]);
+
   // --- Data States (Local Storage) ---
   const [students, setStudents] = useLocalStorage('magic_students', [
     { id: '1', num: '1', name: '김학생', memo: '메모 없음' },
@@ -148,6 +156,7 @@ const App = () => {
   const [counselingData, setCounselingData] = useLocalStorage('magic_counseling', {});
   const [magicPoints, setMagicPoints] = useLocalStorage('magic_points', {}); 
   const [externalLinks, setExternalLinks] = useLocalStorage('magic_external_links', []); 
+  const [masteryConcepts, setMasteryConcepts] = useLocalStorage('magic_mastery_concepts', []); // [추가] 완전학습 데이터
 
   const moods = ['😊', '🤩', '😐', '😴', '🤒', '😡', '😢', '😑'];
 
@@ -311,9 +320,10 @@ const App = () => {
 
   const deleteSubject = (id, e) => {
     e.stopPropagation();
-    if(window.confirm('과목을 삭제하시겠습니까? 등록된 과제도 함께 삭제됩니다.')) {
+    if(window.confirm('과목을 삭제하시겠습니까? 등록된 과제와 완전 학습 개념이 함께 삭제됩니다.')) {
       setSubjects(subjects.filter(s => s.id !== id));
       setAssignments(assignments.filter(a => a.subjectId !== id));
+      setMasteryConcepts(masteryConcepts.filter(c => c.subjectId !== id)); // 연계 삭제
     }
   };
 
@@ -338,6 +348,24 @@ const App = () => {
     }
   };
 
+  // 완전 학습 핸들러 [추가]
+  const saveConcept = (id, subjectId, term, hanja, meaning) => {
+    if(!term || !subjectId) return;
+    if (id) {
+      setMasteryConcepts(prev => prev.map(c => c.id === id ? { ...c, subjectId, term, hanja, meaning } : c));
+    } else {
+      setMasteryConcepts(prev => [{ id: 'mc' + Date.now(), subjectId, term, hanja, meaning }, ...prev]);
+    }
+    setShowConceptModal(null);
+  };
+
+  const deleteConcept = (id) => {
+    if(window.confirm('이 중요 개념을 삭제하시겠습니까?')) {
+      setMasteryConcepts(prev => prev.filter(c => c.id !== id));
+    }
+  };
+
+  // 매직 점수 부여
   const handleMagicPointAction = (studentIdsArray, type) => {
     if (studentIdsArray.length === 0) return alert('학생을 먼저 선택해주세요.');
     playSound(type === 'plus' ? 'magic' : 'thunder');
@@ -358,6 +386,7 @@ const App = () => {
     }
   };
 
+  // 외부 자료 핸들러
   const saveExternalLink = (id, title, url) => {
     if (!title || !url) return;
     let formattedUrl = url;
@@ -393,6 +422,7 @@ const App = () => {
     });
   };
 
+  // 학생 리포트 통계 계산 및 정렬
   const calculateReportData = () => {
     const now = new Date();
     const startOfToday = getStartOfDay(now).getTime();
@@ -525,6 +555,8 @@ const App = () => {
       <button onClick={() => {setActiveTab('submissions'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-4 p-3 md:p-4 rounded-2xl transition-all whitespace-nowrap text-base md:text-xl font-bold ${activeTab === 'submissions' ? 'bg-indigo-600 text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}><CheckSquare size={24} /> <span className="md:inline">제출 관리</span></button>
       <button onClick={() => {setActiveTab('assignments'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-4 p-3 md:p-4 rounded-2xl transition-all whitespace-nowrap text-base md:text-xl font-bold ${activeTab === 'assignments' ? 'bg-indigo-600 text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}><BookOpen size={24} /> <span className="md:inline">과제 관리</span></button>
       <button onClick={() => {setActiveTab('status'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-4 p-3 md:p-4 rounded-2xl transition-all whitespace-nowrap text-base md:text-xl font-bold ${activeTab === 'status' ? 'bg-indigo-600 text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}><BarChart2 size={24} /> <span className="md:inline">과제 현황</span></button>
+      {/* [추가] 완전 학습 탭 버튼 */}
+      <button onClick={() => {setActiveTab('mastery'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-4 p-3 md:p-4 rounded-2xl transition-all whitespace-nowrap text-base md:text-xl font-bold ${activeTab === 'mastery' ? 'bg-indigo-600 text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}><Brain size={24} /> <span className="md:inline">완전 학습</span></button>
       <button onClick={() => {setActiveTab('counseling'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-4 p-3 md:p-4 rounded-2xl transition-all whitespace-nowrap text-base md:text-xl font-bold ${activeTab === 'counseling' ? 'bg-indigo-600 text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}><MessageCircle size={24} /> <span className="md:inline">학생 상담</span></button>
       <button onClick={() => {setActiveTab('magicpoints'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-4 p-3 md:p-4 rounded-2xl transition-all whitespace-nowrap text-base md:text-xl font-bold ${activeTab === 'magicpoints' ? 'bg-indigo-600 text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}><Trophy size={24} /> <span className="md:inline">매직 점수</span></button>
       <button onClick={() => {setActiveTab('externals'); setSelectedStudent(null);}} className={`flex items-center gap-2 md:gap-4 p-3 md:p-4 rounded-2xl transition-all whitespace-nowrap text-base md:text-xl font-bold ${activeTab === 'externals' ? 'bg-indigo-600 text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}><LinkIcon size={24} /> <span className="md:inline">외부 자료</span></button>
@@ -551,6 +583,7 @@ const App = () => {
             {activeTab === 'submissions' && '제출 관리'}
             {activeTab === 'assignments' && '과제 관리'}
             {activeTab === 'status' && '과제 현황 종합'}
+            {activeTab === 'mastery' && '완전 학습 (중요 개념)'}
             {activeTab === 'counseling' && '학생 상담 기록'}
             {activeTab === 'magicpoints' && '매직 점수 관리'}
             {activeTab === 'externals' && '외부 자료 관리'}
@@ -863,6 +896,67 @@ const App = () => {
                       <div className="text-xs lg:text-sm font-black text-gray-400 pl-1">{done} / {total} 개 완료 (◎, ○ 포함)</div>
                     </div>
                     <div className={`w-16 lg:w-24 text-right text-2xl lg:text-4xl font-black shrink-0 ${percent === 100 ? 'text-green-500' : 'text-gray-300'}`}>{percent}%</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 4.5 [신규] 완전 학습 (중요 개념 관리) */}
+        {activeTab === 'mastery' && (
+          <div className="space-y-6 lg:space-y-8 no-print">
+            <div className="flex flex-col xl:flex-row justify-between xl:items-end gap-6 mb-4 border-b pb-6">
+              <div className="flex flex-col gap-2">
+                <h3 className="text-2xl lg:text-3xl font-black text-gray-800 flex items-center gap-3"><Brain className="text-indigo-600" size={32}/> 완전 학습 (중요 개념)</h3>
+                <p className="text-sm font-bold text-gray-500 mt-2">수업 중 다룬 중요한 단어나 문장을 누적하여 기록하세요.</p>
+              </div>
+              <div className="flex gap-3 w-full xl:w-auto">
+                <button onClick={() => setShowSubjectModal({id: null, title: ''})} className="flex-1 xl:flex-none bg-white text-gray-700 border-2 border-gray-200 px-6 py-3.5 rounded-2xl font-black shadow-sm hover:bg-gray-50 text-base lg:text-lg transition-colors">과목 추가</button>
+                <button onClick={() => {if(subjects.length===0)return alert('먼저 과목을 추가해주세요.'); setShowConceptModal({id: null, subjectId: subjects[0].id, term: '', hanja: '', meaning: ''});}} className="flex-1 xl:flex-none bg-indigo-600 text-white px-6 py-3.5 rounded-2xl font-black shadow-lg hover:bg-indigo-700 text-base lg:text-lg transition-transform active:scale-95">중요 개념 등록</button>
+              </div>
+            </div>
+            
+            <div className="space-y-6">
+              {subjects.length === 0 && <div className="text-center py-16 text-gray-400 font-bold text-lg bg-white rounded-[40px] border border-gray-100">등록된 과목이 없습니다.</div>}
+              {subjects.map(sub => {
+                const subConcepts = masteryConcepts.filter(c => c.subjectId === sub.id);
+                const isExpanded = expandedMasterySubjects[sub.id];
+                return (
+                  <div key={sub.id} className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
+                    <div className="flex items-center group relative">
+                      <button onClick={() => setExpandedMasterySubjects(p => ({ ...p, [sub.id]: !p[sub.id] }))} className="flex-1 px-6 lg:px-10 py-6 lg:py-8 flex justify-between items-center hover:bg-slate-50 transition-colors text-left">
+                        <div className="flex items-center gap-4 lg:gap-6 pr-16">
+                          <Brain className="text-indigo-500 shrink-0" size={28} />
+                          <span className="font-black text-xl lg:text-3xl text-gray-800 truncate">{sub.title}</span>
+                          <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg ml-2">{subConcepts.length}개 개념</span>
+                        </div>
+                        {isExpanded ? <ChevronUp className="text-gray-400" size={28} /> : <ChevronDown className="text-gray-400" size={28} />}
+                      </button>
+                    </div>
+                    {isExpanded && (
+                      <div className="px-6 lg:px-10 pb-6 lg:pb-8 space-y-4">
+                        {subConcepts.length === 0 ? <p className="text-gray-400 text-base py-4 font-bold text-center bg-slate-50 rounded-2xl">등록된 개념이 없습니다.</p> : 
+                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                            {subConcepts.map(c => (
+                              <div key={c.id} className="bg-slate-50 p-6 rounded-3xl border-2 border-indigo-50 flex flex-col justify-between items-start gap-4 hover:border-indigo-200 transition-colors relative group">
+                                <div className="w-full">
+                                  <div className="flex items-end gap-3 mb-3 flex-wrap">
+                                    <h5 className="font-black text-2xl lg:text-3xl text-gray-800">{c.term}</h5>
+                                    {c.hanja && <span className="text-lg lg:text-xl font-black text-gray-400 bg-white border border-gray-200 px-3 py-0.5 rounded-xl shadow-sm">{c.hanja}</span>}
+                                  </div>
+                                  <p className="text-gray-600 font-bold text-base lg:text-lg leading-relaxed whitespace-pre-wrap">{c.meaning}</p>
+                                </div>
+                                <div className="absolute top-4 right-4 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                  <button onClick={() => setShowConceptModal(c)} className="p-2.5 bg-white text-gray-400 hover:text-indigo-600 rounded-xl shadow-sm border border-gray-100"><Edit2 size={18}/></button>
+                                  <button onClick={() => deleteConcept(c.id)} className="p-2.5 bg-white text-gray-400 hover:text-red-500 rounded-xl shadow-sm border border-gray-100"><Trash2 size={18}/></button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        }
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -1226,6 +1320,15 @@ const App = () => {
           />
         )}
 
+        {showConceptModal && (
+          <ConceptEditModal
+            data={showConceptModal}
+            subjects={subjects}
+            onClose={() => setShowConceptModal(null)}
+            onSave={saveConcept}
+          />
+        )}
+
         {showSubmissionModal && (
           <SubmissionEditModal 
             key={showSubmissionModal.id || 'new_submission'}
@@ -1374,6 +1477,49 @@ const App = () => {
 
 // --- 독립된 모달 컴포넌트들 ---
 
+const ConceptEditModal = ({ data, subjects, onClose, onSave }) => {
+  const [subjectId, setSubjectId] = useState(data.subjectId || (subjects.length > 0 ? subjects[0].id : ''));
+  const [term, setTerm] = useState(data.term || '');
+  const [hanja, setHanja] = useState(data.hanja || '');
+  const [meaning, setMeaning] = useState(data.meaning || '');
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-8">
+          <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '개념 수정' : '중요 개념 등록'}</h4>
+          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
+        </div>
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">과목 선택</label>
+            <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none font-black text-lg appearance-none text-gray-700 transition-colors">
+              {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+            </select>
+          </div>
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className="block text-sm font-black text-gray-500 mb-2 ml-1">단어 / 문장</label>
+              <input autoFocus value={term} onChange={(e) => setTerm(e.target.value)} placeholder="예: 민주주의" className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" />
+            </div>
+            <div className="w-1/3">
+              <label className="block text-sm font-black text-gray-500 mb-2 ml-1">한자 (선택)</label>
+              <input value={hanja} onChange={(e) => setHanja(e.target.value)} placeholder="예: 民主主義" className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-4 py-5 rounded-2xl outline-none transition-all font-black text-lg text-center" />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">핵심 내용</label>
+            <textarea value={meaning} onChange={(e) => setMeaning(e.target.value)} rows={4} placeholder="개념의 뜻이나 중요한 설명을 적어주세요." className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-bold text-lg resize-none" />
+          </div>
+          <button onClick={() => onSave(data.id, subjectId, term, hanja, meaning)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
+            저장 완료
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const LinkEditModal = ({ data, onClose, onSave }) => {
   const [title, setTitle] = useState(data.title || '');
   const [url, setUrl] = useState(data.url || '');
@@ -1392,7 +1538,7 @@ const LinkEditModal = ({ data, onClose, onSave }) => {
               autoFocus 
               value={title} 
               onChange={(e) => setTitle(e.target.value)} 
-              placeholder="예: 디지털 교과서"
+              placeholder="예: 디지털 교과서, 아이스크림"
               className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" 
             />
           </div>
@@ -1486,7 +1632,7 @@ const AssignmentEditModal = ({ data, subjects, onClose, onSave }) => {
                   onSave(data.id, title, subjectId, dueDate);
                 }
               }}
-              placeholder="예: 수학 익힘책 12쪽"
+              placeholder="예: 국어활동 12쪽 풀기"
               className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" 
             />
           </div>
