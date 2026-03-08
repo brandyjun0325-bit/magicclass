@@ -24,11 +24,12 @@ import {
   ExternalLink,
   ArrowUp,
   ArrowDown,
-  Brain
+  Brain,
+  PlaySquare, // [추가] 슬라이드 아이콘
+  ChevronRight // [추가] 뷰어 우측 아이콘
 } from 'lucide-react';
 
 // --- 📖 매직클래스 내장 한자 사전 (초등 핵심 전과목 어휘 300+) ---
-// 시스템 코드 잘림 방지를 위해 초등 핵심 필수 어휘를 고밀도로 압축 탑재했습니다.
 const HANJA_DICT = {
   // [공통(학습/학교)]
   "학교":{hanja:"學校",meaning:"學(배울 학), 校(학교 교) : 배우고 생활하는 곳"},
@@ -350,6 +351,40 @@ function useLocalStorage(key, initialValue) {
   return [storedValue, setStoredValue];
 }
 
+// --- 자체 내장 Sound Player ---
+const playSound = (type) => {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if (type === 'magic') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1); 
+      gain.gain.setValueAtTime(1, ctx.currentTime); 
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4); 
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
+    } else if (type === 'thunder') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(150, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.2);
+      gain.gain.setValueAtTime(1, ctx.currentTime); 
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
+    }
+  } catch(e) {
+    console.log("오디오 재생 오류:", e);
+  }
+};
+
 const App = () => {
   // --- Helpers ---
   const formatDate = (date) => {
@@ -386,8 +421,13 @@ const App = () => {
   const [showStudentModal, setShowStudentModal] = useState(null); 
   const [showLinkModal, setShowLinkModal] = useState(null); 
   const [showConceptModal, setShowConceptModal] = useState(null); 
+  
   const [expandedSubjects, setExpandedSubjects] = useState({});
   const [expandedMasterySubjects, setExpandedMasterySubjects] = useState({}); 
+
+  // [추가] 완전학습 모달창들 상태
+  const [viewerTarget, setViewerTarget] = useState(null); // { subjectId, conceptId }
+  const [slideSubjectId, setSlideSubjectId] = useState(null);
 
   const [selectedStudentsForMagic, setSelectedStudentsForMagic] = useState([]); 
   const [magicPointValue, setMagicPointValue] = useState(1); 
@@ -590,7 +630,6 @@ const App = () => {
     }
   };
 
-  // [핵심 기능] 과목 순서 변경
   const moveSubject = (index, direction, e) => {
     e.stopPropagation();
     setSubjects(prev => {
@@ -757,6 +796,7 @@ const App = () => {
     return parseInt(a.num) - parseInt(b.num);
   });
 
+  // [핵심] CSV 엑셀 연동 - 완전학습 데이터 포함
   const downloadCSV = () => {
     let csvContent = '\uFEFF'; 
     csvContent += '학생번호,학생이름,날짜,기록분류,세부항목,상태_및_점수,비고_및_메모\n';
@@ -799,6 +839,19 @@ const App = () => {
           csvContent += `${student.num},${escape(student.name)},${date},매직점수,${p.type === 'plus' ? '칭찬' : '노력'},${p.amount > 0 ? '+'+p.amount : p.amount},\n`;
         });
       });
+    });
+
+    // 완전학습 데이터 첨부 (엑셀 맨 하단)
+    csvContent += '\n\n=== 완전 학습 (중요 개념 사전) ===\n';
+    csvContent += '과목,단어,한자,핵심내용\n';
+    const sortedConcepts = [...masteryConcepts].sort((a,b) => {
+      const subA = subjects.findIndex(s=>s.id===a.subjectId);
+      const subB = subjects.findIndex(s=>s.id===b.subjectId);
+      return subA - subB;
+    });
+    sortedConcepts.forEach(c => {
+      const subTitle = subjects.find(s => s.id === c.subjectId)?.title || '';
+      csvContent += `${escape(subTitle)},${escape(c.term)},${escape(c.hanja)},${escape(c.meaning)}\n`;
     });
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1181,9 +1234,10 @@ const App = () => {
           <div className="space-y-6 lg:space-y-8 no-print">
             <div className="flex flex-col xl:flex-row justify-between xl:items-end gap-6 mb-4 border-b pb-6">
               <div className="flex flex-col gap-2">
-                <h3 className="text-2xl lg:text-3xl font-black text-gray-800 flex items-center gap-3">
-                  <Brain className="text-indigo-600" size={32}/> 수업 중 다룬 중요한 단어나 문장을 누적하여 기록하세요.
+                <h3 className="text-3xl lg:text-4xl font-black text-indigo-700 flex items-center gap-3">
+                  수업 중 다룬 중요한 단어나 문장을 기록하세요.
                 </h3>
+                <p className="text-base font-bold text-gray-500 mt-2">등록된 개념은 뷰어와 슬라이드 모드를 통해 반복 학습할 수 있습니다.</p>
               </div>
               <div className="flex gap-3 w-full xl:w-auto shrink-0">
                 <button onClick={() => setShowSubjectModal({id: null, title: ''})} className="flex-1 xl:flex-none bg-white text-gray-700 border-2 border-gray-200 px-6 py-3.5 rounded-2xl font-black shadow-sm hover:bg-gray-50 text-base lg:text-lg transition-colors">과목 추가</button>
@@ -1200,14 +1254,19 @@ const App = () => {
                   <div key={sub.id} className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
                     <div className="flex items-center group relative">
                       <button onClick={() => setExpandedMasterySubjects(p => ({ ...p, [sub.id]: !p[sub.id] }))} className="flex-1 px-6 lg:px-10 py-6 lg:py-8 flex justify-between items-center hover:bg-slate-50 transition-colors text-left">
-                        <div className="flex items-center gap-4 lg:gap-6 pr-24 w-full">
+                        <div className="flex items-center gap-4 lg:gap-6 pr-32 w-full">
                           <Brain className="text-indigo-500 shrink-0" size={28} />
                           <span className="font-black text-xl lg:text-3xl text-gray-800 truncate">{sub.title}</span>
                           <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg ml-2 shrink-0">{subConcepts.length}개 개념</span>
                         </div>
                         {isExpanded ? <ChevronUp className="text-gray-400" size={28} /> : <ChevronDown className="text-gray-400" size={28} />}
                       </button>
-                      <div className="absolute right-16 lg:right-24 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-gradient-to-l from-white pl-6 transition-opacity">
+                      <div className="absolute right-16 lg:right-24 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-gradient-to-l from-white pl-6 transition-opacity items-center">
+                        {/* [추가] 슬라이드 플레이 버튼 */}
+                        <button onClick={(e) => { e.stopPropagation(); setSlideSubjectId(sub.id); }} className="p-3 text-emerald-500 hover:text-white bg-emerald-50 hover:bg-emerald-500 rounded-xl transition-colors shadow-sm flex items-center gap-1.5 mr-2">
+                          <PlaySquare size={20} strokeWidth={3}/>
+                          <span className="font-black text-sm hidden lg:inline">슬라이드</span>
+                        </button>
                         <div className="flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm mr-2 overflow-hidden">
                           <button onClick={(e) => moveSubject(idx, 'up', e)} disabled={idx===0} className="p-1 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30 border-b border-gray-100"><ArrowUp size={14} strokeWidth={3}/></button>
                           <button onClick={(e) => moveSubject(idx, 'down', e)} disabled={idx===subjects.length-1} className="p-1 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30"><ArrowDown size={14} strokeWidth={3}/></button>
@@ -1220,18 +1279,18 @@ const App = () => {
                       <div className="px-6 lg:px-10 pb-6 lg:pb-8 space-y-4">
                         {subConcepts.length === 0 ? <p className="text-gray-400 text-base py-4 font-bold text-center bg-slate-50 rounded-2xl">등록된 개념이 없습니다.</p> : 
                           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                            {subConcepts.map(c => (
-                              <div key={c.id} className="bg-slate-50 p-6 rounded-3xl border-2 border-indigo-50 flex flex-col justify-between items-start gap-4 hover:border-indigo-200 transition-colors relative group">
+                            {subConcepts.map((c, cIndex) => (
+                              <div key={c.id} onClick={() => setViewerTarget({subjectId: sub.id, conceptId: c.id})} className="cursor-pointer bg-slate-50 p-6 rounded-3xl border-2 border-indigo-50 flex flex-col justify-between items-start gap-4 hover:border-indigo-300 hover:shadow-md transition-all relative group">
                                 <div className="w-full">
                                   <div className="flex items-end gap-3 mb-3 flex-wrap pr-16">
                                     <h5 className="font-black text-2xl lg:text-3xl text-gray-800">{c.term}</h5>
-                                    {c.hanja && <span className="text-lg lg:text-xl font-black text-gray-400 bg-white border border-gray-200 px-3 py-0.5 rounded-xl shadow-sm">{c.hanja}</span>}
+                                    {c.hanja && <span className="text-lg lg:text-xl font-black text-gray-400 bg-white border border-gray-200 px-3 py-0.5 rounded-xl shadow-sm tracking-widest">{c.hanja}</span>}
                                   </div>
-                                  <p className="text-gray-600 font-bold text-base lg:text-lg leading-relaxed whitespace-pre-wrap">{c.meaning}</p>
+                                  <p className="text-gray-600 font-bold text-base lg:text-lg leading-relaxed whitespace-pre-wrap line-clamp-3">{c.meaning}</p>
                                 </div>
                                 <div className="absolute top-4 right-4 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                                  <button onClick={() => setShowConceptModal(c)} className="p-2.5 bg-white text-gray-400 hover:text-indigo-600 rounded-xl shadow-sm border border-gray-100"><Edit2 size={18}/></button>
-                                  <button onClick={() => deleteConcept(c.id)} className="p-2.5 bg-white text-gray-400 hover:text-red-500 rounded-xl shadow-sm border border-gray-100"><Trash2 size={18}/></button>
+                                  <button onClick={(e) => { e.stopPropagation(); setShowConceptModal(c); }} className="p-2.5 bg-white text-gray-400 hover:text-indigo-600 rounded-xl shadow-sm border border-gray-100"><Edit2 size={18}/></button>
+                                  <button onClick={(e) => { e.stopPropagation(); deleteConcept(c.id); }} className="p-2.5 bg-white text-gray-400 hover:text-red-500 rounded-xl shadow-sm border border-gray-100"><Trash2 size={18}/></button>
                                 </div>
                               </div>
                             ))}
@@ -1400,6 +1459,7 @@ const App = () => {
               })}
             </div>
 
+            {/* 학생 리포트 */}
             <div className="mt-16 bg-white rounded-[40px] p-8 md:p-10 border border-gray-100 shadow-sm">
               <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center border-b-2 pb-8 mb-8 gap-6">
                 <div>
@@ -1590,6 +1650,27 @@ const App = () => {
         )}
 
         {/* --- 개별 모달 --- */}
+
+        {/* [추가] 완전 학습 뷰어 모달 (대형 화면) */}
+        {viewerTarget && (
+          <ConceptViewerModal
+            subjectId={viewerTarget.subjectId}
+            initialConceptId={viewerTarget.conceptId}
+            concepts={masteryConcepts}
+            onClose={() => setViewerTarget(null)}
+          />
+        )}
+
+        {/* [추가] 완전 학습 슬라이드 모달 (전체 화면 4단계) */}
+        {slideSubjectId && (
+          <ConceptSlideModal
+            subjectId={slideSubjectId}
+            concepts={masteryConcepts}
+            subjects={subjects}
+            onClose={() => setSlideSubjectId(null)}
+          />
+        )}
+
         {showLinkModal && (
           <LinkEditModal 
             key={showLinkModal.id || 'new_link'}
@@ -1754,7 +1835,131 @@ const App = () => {
   );
 };
 
-// --- 독립된 모달 컴포넌트들 ---
+// --- 독립된 뷰어 및 모달 컴포넌트들 ---
+
+// [추가] 대형 뷰어 모달 (좌우 넘기기)
+const ConceptViewerModal = ({ subjectId, initialConceptId, concepts, onClose }) => {
+  const subjectConcepts = concepts.filter(c => c.subjectId === subjectId);
+  const [currentIndex, setCurrentIndex] = useState(() => Math.max(0, subjectConcepts.findIndex(c => c.id === initialConceptId)));
+
+  if(subjectConcepts.length === 0) return null;
+  const c = subjectConcepts[currentIndex];
+
+  const goPrev = (e) => { e.stopPropagation(); if(currentIndex > 0) setCurrentIndex(currentIndex - 1); };
+  const goNext = (e) => { e.stopPropagation(); if(currentIndex < subjectConcepts.length - 1) setCurrentIndex(currentIndex + 1); };
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-10" onClick={onClose}>
+      <div className="bg-white rounded-[40px] w-full max-w-5xl h-full max-h-[80vh] shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+        <button onClick={onClose} className="absolute top-6 right-6 p-4 bg-gray-100 hover:bg-gray-200 rounded-2xl transition-colors z-10"><X size={32} strokeWidth={3}/></button>
+
+        <div className="flex-1 flex flex-col items-center justify-center p-10 text-center relative overflow-y-auto">
+          {currentIndex > 0 && <button onClick={goPrev} className="absolute left-4 lg:left-10 p-5 text-gray-400 hover:text-indigo-600 bg-gray-50 hover:bg-indigo-50 rounded-full transition-all hover:scale-110 active:scale-95"><ChevronLeft size={48} strokeWidth={3}/></button>}
+          {currentIndex < subjectConcepts.length - 1 && <button onClick={goNext} className="absolute right-4 lg:right-10 p-5 text-gray-400 hover:text-indigo-600 bg-gray-50 hover:bg-indigo-50 rounded-full transition-all hover:scale-110 active:scale-95"><ChevronRight size={48} strokeWidth={3}/></button>}
+
+          <h2 className="text-5xl md:text-8xl font-black text-gray-900 mb-6 tracking-tight break-keep-all">{c.term}</h2>
+          {c.hanja && <h3 className="text-4xl md:text-6xl font-black text-indigo-600 mb-10 tracking-widest bg-indigo-50 px-8 py-3 rounded-3xl">{c.hanja}</h3>}
+          <p className="text-2xl md:text-4xl font-bold text-gray-600 leading-relaxed max-w-3xl whitespace-pre-wrap break-keep-all px-16">{c.meaning}</p>
+        </div>
+        <div className="text-center pb-8 font-black text-gray-300 text-2xl tracking-widest">{currentIndex + 1} / {subjectConcepts.length}</div>
+      </div>
+    </div>
+  );
+};
+
+// [추가] 4단계 슬라이드 모달
+const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
+  const subjectConcepts = concepts.filter(c => c.subjectId === subjectId);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [step, setStep] = useState(1);
+  const subjectTitle = subjects.find(s=>s.id===subjectId)?.title || '';
+
+  const parseMeaning = (meaningStr) => {
+    if (!meaningStr) return { hanjaBreakdown: '', explanation: '' };
+    if (meaningStr.includes(' : ')) {
+      const parts = meaningStr.split(' : ');
+      return { hanjaBreakdown: parts[0], explanation: meaningStr };
+    } else if (meaningStr.includes(':')) {
+      const parts = meaningStr.split(':');
+      return { hanjaBreakdown: parts[0], explanation: meaningStr };
+    }
+    return { hanjaBreakdown: meaningStr, explanation: meaningStr };
+  };
+
+  const advance = (e) => {
+    if (e) e.stopPropagation();
+    if (step < 4) setStep(step + 1);
+    else {
+      if (currentIndex < subjectConcepts.length - 1) {
+        setCurrentIndex(currentIndex + 1);
+        setStep(1);
+      } else {
+        onClose(); 
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if(e.key === ' ' || e.key === 'ArrowRight' || e.key === 'Enter') {
+        e.preventDefault();
+        advance();
+      } else if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [step, currentIndex, subjectConcepts]);
+
+  if (subjectConcepts.length === 0) {
+    return (
+      <div className="fixed inset-0 z-[300] bg-gray-900 flex items-center justify-center p-10 cursor-pointer" onClick={onClose}>
+        <div className="text-white text-3xl font-black">등록된 개념이 없습니다. 클릭하여 닫기</div>
+      </div>
+    );
+  }
+
+  const c = subjectConcepts[currentIndex];
+  const parsed = parseMeaning(c.meaning);
+
+  let content = '';
+  let subtitle = '';
+
+  if (step === 1) {
+    content = c.hanja || c.term;
+    subtitle = c.hanja ? "한자" : "단어";
+  } else if (step === 2) {
+    content = parsed.hanjaBreakdown || c.meaning;
+    subtitle = "뜻풀이";
+  } else if (step === 3) {
+    content = parsed.explanation || c.meaning;
+    subtitle = "핵심 의미";
+  } else if (step === 4) {
+    content = c.term;
+    subtitle = "정답 확인";
+  }
+
+  return (
+    <div className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-indigo-950 text-white p-4 cursor-pointer select-none animate-in fade-in duration-300" onClick={advance}>
+      <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="absolute top-8 right-8 p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-colors z-10"><X size={32} strokeWidth={3}/></button>
+      <div className="absolute top-10 left-10 text-2xl font-black text-white/40">{subjectTitle} - 복습 슬라이드 (클릭하여 다음장)</div>
+
+      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-6xl text-center px-10 relative">
+        <span className="text-3xl md:text-4xl font-black text-indigo-300 mb-8 tracking-widest">{subtitle}</span>
+        <h2 className={`font-black tracking-tight leading-tight ${content.length > 30 ? 'text-5xl md:text-7xl' : 'text-7xl md:text-[140px]'} break-keep-all whitespace-pre-wrap drop-shadow-xl`}>
+          {content}
+        </h2>
+      </div>
+
+      <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-3">
+        {subjectConcepts.map((_, idx) => (
+          <div key={idx} className={`h-4 rounded-full transition-all duration-500 ${idx === currentIndex ? 'w-16 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.5)]' : 'w-4 bg-white/20'}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const ConceptEditModal = ({ data, subjects, onClose, onSave }) => {
   const [subjectId, setSubjectId] = useState(data.subjectId || (subjects.length > 0 ? subjects[0].id : ''));
@@ -1764,6 +1969,7 @@ const ConceptEditModal = ({ data, subjects, onClose, onSave }) => {
 
   // [핵심 기능] 한자 사전 자동 완성
   const handleAutoComplete = () => {
+    if(!term) return alert('단어를 먼저 입력해주세요.');
     const found = HANJA_DICT[term];
     if (found) {
       setHanja(found.hanja);
@@ -1773,13 +1979,13 @@ const ConceptEditModal = ({ data, subjects, onClose, onSave }) => {
       });
       playSound('magic'); // 띠링! 소리 추가
     } else {
-      alert('내장 사전에 없는 단어입니다. 직접 입력해주세요.');
+      alert('내장 사전에 없는 단어입니다. 직접 한자와 뜻을 입력해주세요.');
     }
   };
 
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
-      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
+      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center mb-8">
           <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '개념 수정' : '중요 개념 등록'}</h4>
           <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
@@ -1787,24 +1993,24 @@ const ConceptEditModal = ({ data, subjects, onClose, onSave }) => {
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-black text-gray-500 mb-2 ml-1">과목 선택</label>
-            <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none font-black text-lg appearance-none text-gray-700 transition-colors">
+            <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none font-black text-lg appearance-none text-gray-700 transition-colors cursor-pointer">
               {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-sm font-black text-gray-500 mb-2 ml-1">단어 / 문장</label>
-            <div className="flex gap-2">
-              <input autoFocus value={term} onChange={(e) => setTerm(e.target.value)} placeholder="예: 민주주의" className="flex-1 w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" />
-              <button onClick={handleAutoComplete} className="bg-indigo-100 text-indigo-700 px-4 rounded-2xl font-black text-sm hover:bg-indigo-200 transition-transform active:scale-95 whitespace-nowrap shadow-sm border border-indigo-200 flex flex-col items-center justify-center leading-tight">한자·뜻<br/>자동완성</button>
+            <div className="flex gap-3">
+              <input autoFocus value={term} onChange={(e) => setTerm(e.target.value)} placeholder="예: 민주주의" className="flex-1 w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg md:text-xl" />
+              <button onClick={handleAutoComplete} className="bg-indigo-50 text-indigo-700 px-6 rounded-2xl font-black text-base hover:bg-indigo-100 transition-transform active:scale-95 shadow-sm border-2 border-indigo-200 flex flex-col items-center justify-center leading-tight whitespace-nowrap"><Sparkles size={20} className="mb-1"/>자동완성</button>
             </div>
           </div>
           <div>
             <label className="block text-sm font-black text-gray-500 mb-2 ml-1">한자 (선택)</label>
-            <input value={hanja} onChange={(e) => setHanja(e.target.value)} placeholder="예: 民主主義" className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg tracking-widest" />
+            <input value={hanja} onChange={(e) => setHanja(e.target.value)} placeholder="예: 民主主義" className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-xl tracking-[0.3em]" />
           </div>
           <div>
             <label className="block text-sm font-black text-gray-500 mb-2 ml-1">핵심 내용</label>
-            <textarea value={meaning} onChange={(e) => setMeaning(e.target.value)} rows={4} placeholder="개념의 뜻이나 중요한 설명을 적어주세요." className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-bold text-lg resize-none" />
+            <textarea value={meaning} onChange={(e) => setMeaning(e.target.value)} rows={5} placeholder="개념의 뜻이나 중요한 설명을 적어주세요." className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-bold text-lg resize-none leading-relaxed" />
           </div>
           <button onClick={() => onSave(data.id, subjectId, term, hanja, meaning)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
             저장 완료
@@ -1891,7 +2097,7 @@ const SubmissionEditModal = ({ data, onClose, onSave }) => {
           </div>
           <div>
             <label className="block text-sm font-black text-gray-500 mb-2 ml-1">날짜 지정</label>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 px-6 py-5 rounded-2xl font-black text-lg text-gray-700 outline-none transition-colors" />
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 px-6 py-5 rounded-2xl font-black text-lg text-gray-700 outline-none transition-colors cursor-pointer" />
           </div>
           <button onClick={() => onSave(data.id, title, date)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
             저장 완료
@@ -1933,13 +2139,13 @@ const AssignmentEditModal = ({ data, subjects, onClose, onSave }) => {
           </div>
           <div>
             <label className="block text-sm font-black text-gray-500 mb-2 ml-1">과목 선택</label>
-            <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none font-black text-lg appearance-none text-gray-700 transition-colors">
+            <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none font-black text-lg appearance-none text-gray-700 transition-colors cursor-pointer">
               {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-sm font-black text-gray-500 mb-2 ml-1">마감 기한</label>
-            <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl font-black text-lg text-gray-700 outline-none transition-colors" />
+            <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl font-black text-lg text-gray-700 outline-none transition-colors cursor-pointer" />
           </div>
           <button onClick={() => onSave(data.id, title, subjectId, dueDate)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
             저장 완료
