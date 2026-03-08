@@ -29,7 +29,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 
-// --- 📖 매직클래스 내장 한자 사전 (초등 핵심 전과목 어휘 300+) ---
+// --- 📖 매직클래스 내장 한자 사전 (초등 핵심 전과목 어휘 탑재) ---
 const HANJA_DICT = {
   // [공통(학습/학교)]
   "학교":{hanja:"學校",meaning:"學(배울 학), 校(학교 교) : 배우고 생활하는 곳"},
@@ -134,7 +134,7 @@ const HANJA_DICT = {
   "대칭":{hanja:"對稱",meaning:"對(대할 대), 稱(일컬을 칭) : 점이나 선을 중심으로 양쪽이 똑같은 모양"},
   "비례":{hanja:"比例",meaning:"比(견줄 비), 例(법식 례) : 두 수량의 비가 일정한 관계로 변하는 것"},
   "평균":{hanja:"平均",meaning:"平(평평할 평), 均(고를 균) : 여러 수의 합을 그 개수로 나눈 값"},
-  "확률":{hanja:"確率",meaning:"確(굳을 확), 率(비율 률) : 어떤 일이 일어날 가능성을 수로 나타낸 것"},
+  "확률":{hanja:"確率",meaning:"確(굳을 확), 率(비율 률) : 어떤 일이 일어날 가능성을 수로 나타낸 것"},
   "자연수":{hanja:"自然數",meaning:"自(스스로 자), 然(그럴 연), 數(셈 수) : 1부터 시작하여 1씩 커지는 수"},
   "정수":{hanja:"整數",meaning:"整(가지런할 정), 數(셈 수) : 양의 정수, 0, 음의 정수를 통틀어 이르는 말"},
   "방정식":{hanja:"方程式",meaning:"方(모 방), 程(한도 정), 式(법 식) : 미지수의 값에 따라 참/거짓이 되는 등식"},
@@ -232,7 +232,7 @@ const HANJA_DICT = {
   "기체":{hanja:"氣體",meaning:"氣(기운 기), 體(몸 체) : 공기처럼 퍼지는 상태의 물질"},
   "온도":{hanja:"溫度",meaning:"溫(따뜻할 온), 度(법도 도) : 뜨겁고 차가운 정도"},
   "압력":{hanja:"壓力",meaning:"壓(누를 압), 力(힘 력) : 누르는 힘"},
-  "용액":{hanja:"溶液",meaning:"溶(녹을 용), 液(진 액) : 어떤 물질이 녹아 있는 액체"},
+  "용액":{hanja:"溶液",meaning:"溶(녹을 용), 액(진 액) : 어떤 물질이 녹아 있는 액체"},
   "혼합":{hanja:"混合",meaning:"混(섞일 혼), 合(합할 합) : 여러 물질을 섞음"},
   "분리":{hanja:"分離",meaning:"分(나눌 분), 離(떼어낼 이) : 섞인 것을 따로 나눔"},
   "증발":{hanja:"蒸發",meaning:"蒸(찔 증), 發(필 발) : 액체가 기체로 변함"},
@@ -329,7 +329,6 @@ const HANJA_DICT = {
   "의사소통":{hanja:"意思疏通",meaning:"意(뜻 의), 思(생각 사), 疏(트일 소), 通(통할 통) : 뜻과 생각을 서로 나눔"}
 };
 
-
 // --- Local Storage Custom Hook ---
 function useLocalStorage(key, initialValue) {
   const [storedValue, setStoredValue] = useState(() => {
@@ -352,40 +351,6 @@ function useLocalStorage(key, initialValue) {
 
   return [storedValue, setStoredValue];
 }
-
-// --- 자체 내장 Sound Player ---
-const playSound = (type) => {
-  try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContext) return;
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    if (type === 'magic') {
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1); 
-      gain.gain.setValueAtTime(1, ctx.currentTime); 
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4); 
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.4);
-    } else if (type === 'thunder') {
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(150, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.2);
-      gain.gain.setValueAtTime(1, ctx.currentTime); 
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.4);
-    }
-  } catch(e) {
-    console.log("오디오 재생 오류:", e);
-  }
-};
 
 const App = () => {
   const formatDate = (date) => {
@@ -461,7 +426,6 @@ const App = () => {
 
   const moods = ['😊', '🤩', '😐', '😴', '🤒', '😡', '😢', '😑'];
 
-  // --- 자동 연계 로직 ---
   const getStudentTaskPoints = (studentId) => {
     let taskPts = 0;
     Object.values(assignmentStatus || {}).forEach(dayData => {
@@ -483,7 +447,6 @@ const App = () => {
     return manualPoints + taskPoints;
   };
 
-  // --- UI Helpers ---
   const getAttendanceDot = (date) => {
     const key = formatDate(date);
     const dayData = attendanceData[key];
@@ -902,7 +865,7 @@ const App = () => {
             {activeTab === 'submissions' && '제출 관리'}
             {activeTab === 'assignments' && '과제 관리'}
             {activeTab === 'status' && '과제 현황 종합'}
-            {activeTab === 'mastery' && '완전 학습 (개념 사전)'}
+            {activeTab === 'mastery' && '완전 학습 (중요 개념 관리)'}
             {activeTab === 'counseling' && '학생 상담 기록'}
             {activeTab === 'magicpoints' && '매직 점수 관리'}
             {activeTab === 'externals' && '외부 자료 관리'}
@@ -1655,7 +1618,7 @@ const App = () => {
           />
         )}
 
-        {/* [핵심] 스마트 슬라이드 모달 */}
+        {/* [핵심] 스마트 슬라이드 모달 (초대형 폰트 및 자동 맞춤) */}
         {slideSubjectId && (
           <ConceptSlideModal
             subjectId={slideSubjectId}
@@ -1860,7 +1823,7 @@ const ConceptViewerModal = ({ subjectId, initialConceptId, concepts, onClose }) 
   );
 };
 
-// [핵심] 스마트 슬라이드 컴포넌트 (조건 분기 및 반응형 글꼴)
+// [핵심] 스마트 슬라이드 컴포넌트 (조건 분기 및 대형 반응형 폰트 완벽 적용)
 const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
   const subjectConcepts = concepts.filter(c => c.subjectId === subjectId);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -1933,7 +1896,6 @@ const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
     }
   };
 
-  // 키보드 방향키 조작 지원
   useEffect(() => {
     const handleKeyDown = (e) => {
       if(e.key === ' ' || e.key === 'ArrowRight' || e.key === 'Enter') {
@@ -1950,11 +1912,12 @@ const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [step, currentIndex, subjectConcepts, maxSteps]);
 
-  // 글자 수에 따른 폰트 사이즈 자동 조절
-  let textSizeClass = 'text-7xl md:text-[140px]';
-  if (content.length > 60) textSizeClass = 'text-3xl md:text-5xl lg:text-6xl';
-  else if (content.length > 25) textSizeClass = 'text-4xl md:text-6xl lg:text-7xl';
-  else if (content.length > 10) textSizeClass = 'text-6xl md:text-8xl lg:text-[100px]';
+  // 글자 수에 따른 폰트 사이즈 대폭 상향 및 자동 조절 로직
+  let textSizeClass = 'text-[100px] md:text-[200px] lg:text-[240px]'; // 1~6자 (초대형)
+  if (content.length > 80) textSizeClass = 'text-4xl md:text-5xl lg:text-6xl';
+  else if (content.length > 40) textSizeClass = 'text-5xl md:text-6xl lg:text-7xl';
+  else if (content.length > 15) textSizeClass = 'text-6xl md:text-8xl lg:text-[100px]';
+  else if (content.length > 6) textSizeClass = 'text-7xl md:text-9xl lg:text-[150px]';
 
   return (
     <div className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-indigo-950 text-white p-4 cursor-pointer select-none animate-in fade-in duration-300" onClick={goNext}>
@@ -1969,9 +1932,9 @@ const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
         <ChevronRight size={64} strokeWidth={2}/>
       </button>
 
-      {/* 슬라이드 본문 */}
+      {/* 슬라이드 본문 (폰트 크기 및 줄간격 최적화) */}
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-7xl text-center px-16 md:px-32 relative overflow-y-auto max-h-[85vh] hide-scrollbar">
-        <span className="text-3xl md:text-4xl font-black text-indigo-300 mb-8 tracking-widest shrink-0">{subtitle}</span>
+        <span className="text-4xl md:text-5xl font-black text-indigo-300 mb-8 tracking-widest shrink-0">{subtitle}</span>
         <h2 className={`font-black tracking-tight leading-snug ${textSizeClass} break-keep-all whitespace-pre-wrap drop-shadow-xl w-full`}>
           {content}
         </h2>
@@ -1993,6 +1956,7 @@ const ConceptEditModal = ({ data, subjects, onClose, onSave }) => {
   const [hanja, setHanja] = useState(data.hanja || '');
   const [meaning, setMeaning] = useState(data.meaning || '');
 
+  // [핵심 기능] 한자 사전 자동 완성
   const handleAutoComplete = () => {
     if(!term) return alert('단어를 먼저 입력해주세요.');
     const found = HANJA_DICT[term];
