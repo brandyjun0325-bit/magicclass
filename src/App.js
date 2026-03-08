@@ -25,8 +25,8 @@ import {
   ArrowUp,
   ArrowDown,
   Brain,
-  PlaySquare, // [추가] 슬라이드 아이콘
-  ChevronRight // [추가] 뷰어 우측 아이콘
+  PlaySquare,
+  ChevronRight
 } from 'lucide-react';
 
 // --- 📖 매직클래스 내장 한자 사전 (초등 핵심 전과목 어휘 300+) ---
@@ -328,6 +328,8 @@ const HANJA_DICT = {
   "회화":{hanja:"會話",meaning:"會(모일 회), 話(말씀 화) : 말로 대화함"},
   "의사소통":{hanja:"意思疏通",meaning:"意(뜻 의), 思(생각 사), 疏(트일 소), 通(통할 통) : 뜻과 생각을 서로 나눔"}
 };
+
+
 // --- Local Storage Custom Hook ---
 function useLocalStorage(key, initialValue) {
   const [storedValue, setStoredValue] = useState(() => {
@@ -386,7 +388,6 @@ const playSound = (type) => {
 };
 
 const App = () => {
-  // --- Helpers ---
   const formatDate = (date) => {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -421,13 +422,8 @@ const App = () => {
   const [showStudentModal, setShowStudentModal] = useState(null); 
   const [showLinkModal, setShowLinkModal] = useState(null); 
   const [showConceptModal, setShowConceptModal] = useState(null); 
-  
   const [expandedSubjects, setExpandedSubjects] = useState({});
   const [expandedMasterySubjects, setExpandedMasterySubjects] = useState({}); 
-
-  // [추가] 완전학습 모달창들 상태
-  const [viewerTarget, setViewerTarget] = useState(null); // { subjectId, conceptId }
-  const [slideSubjectId, setSlideSubjectId] = useState(null);
 
   const [selectedStudentsForMagic, setSelectedStudentsForMagic] = useState([]); 
   const [magicPointValue, setMagicPointValue] = useState(1); 
@@ -438,6 +434,8 @@ const App = () => {
   const [reportSortOrder, setReportSortOrder] = useState('desc');
 
   const [selectedExternalLink, setSelectedExternalLink] = useState(null);
+  const [viewerTarget, setViewerTarget] = useState(null); 
+  const [slideSubjectId, setSlideSubjectId] = useState(null);
 
   const dateKey = formatDate(selectedDate);
 
@@ -796,7 +794,6 @@ const App = () => {
     return parseInt(a.num) - parseInt(b.num);
   });
 
-  // [핵심] CSV 엑셀 연동 - 완전학습 데이터 포함
   const downloadCSV = () => {
     let csvContent = '\uFEFF'; 
     csvContent += '학생번호,학생이름,날짜,기록분류,세부항목,상태_및_점수,비고_및_메모\n';
@@ -841,7 +838,6 @@ const App = () => {
       });
     });
 
-    // 완전학습 데이터 첨부 (엑셀 맨 하단)
     csvContent += '\n\n=== 완전 학습 (중요 개념 사전) ===\n';
     csvContent += '과목,단어,한자,핵심내용\n';
     const sortedConcepts = [...masteryConcepts].sort((a,b) => {
@@ -906,7 +902,7 @@ const App = () => {
             {activeTab === 'submissions' && '제출 관리'}
             {activeTab === 'assignments' && '과제 관리'}
             {activeTab === 'status' && '과제 현황 종합'}
-            {activeTab === 'mastery' && '완전 학습 (중요 개념 관리)'}
+            {activeTab === 'mastery' && '완전 학습 (개념 사전)'}
             {activeTab === 'counseling' && '학생 상담 기록'}
             {activeTab === 'magicpoints' && '매직 점수 관리'}
             {activeTab === 'externals' && '외부 자료 관리'}
@@ -1229,7 +1225,7 @@ const App = () => {
           </div>
         )}
 
-        {/* 4.5 [신규] 완전 학습 (중요 개념 관리) */}
+        {/* 4.5 완전 학습 (중요 개념 관리) */}
         {activeTab === 'mastery' && (
           <div className="space-y-6 lg:space-y-8 no-print">
             <div className="flex flex-col xl:flex-row justify-between xl:items-end gap-6 mb-4 border-b pb-6">
@@ -1262,7 +1258,6 @@ const App = () => {
                         {isExpanded ? <ChevronUp className="text-gray-400" size={28} /> : <ChevronDown className="text-gray-400" size={28} />}
                       </button>
                       <div className="absolute right-16 lg:right-24 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-gradient-to-l from-white pl-6 transition-opacity items-center">
-                        {/* [추가] 슬라이드 플레이 버튼 */}
                         <button onClick={(e) => { e.stopPropagation(); setSlideSubjectId(sub.id); }} className="p-3 text-emerald-500 hover:text-white bg-emerald-50 hover:bg-emerald-500 rounded-xl transition-colors shadow-sm flex items-center gap-1.5 mr-2">
                           <PlaySquare size={20} strokeWidth={3}/>
                           <span className="font-black text-sm hidden lg:inline">슬라이드</span>
@@ -1459,7 +1454,6 @@ const App = () => {
               })}
             </div>
 
-            {/* 학생 리포트 */}
             <div className="mt-16 bg-white rounded-[40px] p-8 md:p-10 border border-gray-100 shadow-sm">
               <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center border-b-2 pb-8 mb-8 gap-6">
                 <div>
@@ -1651,7 +1645,7 @@ const App = () => {
 
         {/* --- 개별 모달 --- */}
 
-        {/* [추가] 완전 학습 뷰어 모달 (대형 화면) */}
+        {/* 대형 뷰어 모달 */}
         {viewerTarget && (
           <ConceptViewerModal
             subjectId={viewerTarget.subjectId}
@@ -1661,7 +1655,7 @@ const App = () => {
           />
         )}
 
-        {/* [추가] 완전 학습 슬라이드 모달 (전체 화면 4단계) */}
+        {/* [핵심] 스마트 슬라이드 모달 */}
         {slideSubjectId && (
           <ConceptSlideModal
             subjectId={slideSubjectId}
@@ -1837,7 +1831,6 @@ const App = () => {
 
 // --- 독립된 뷰어 및 모달 컴포넌트들 ---
 
-// [추가] 대형 뷰어 모달 (좌우 넘기기)
 const ConceptViewerModal = ({ subjectId, initialConceptId, concepts, onClose }) => {
   const subjectConcepts = concepts.filter(c => c.subjectId === subjectId);
   const [currentIndex, setCurrentIndex] = useState(() => Math.max(0, subjectConcepts.findIndex(c => c.id === initialConceptId)));
@@ -1867,7 +1860,7 @@ const ConceptViewerModal = ({ subjectId, initialConceptId, concepts, onClose }) 
   );
 };
 
-// [추가] 4단계 슬라이드 모달
+// [핵심] 스마트 슬라이드 컴포넌트 (조건 분기 및 반응형 글꼴)
 const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
   const subjectConcepts = concepts.filter(c => c.subjectId === subjectId);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -1886,32 +1879,6 @@ const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
     return { hanjaBreakdown: meaningStr, explanation: meaningStr };
   };
 
-  const advance = (e) => {
-    if (e) e.stopPropagation();
-    if (step < 4) setStep(step + 1);
-    else {
-      if (currentIndex < subjectConcepts.length - 1) {
-        setCurrentIndex(currentIndex + 1);
-        setStep(1);
-      } else {
-        onClose(); 
-      }
-    }
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if(e.key === ' ' || e.key === 'ArrowRight' || e.key === 'Enter') {
-        e.preventDefault();
-        advance();
-      } else if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [step, currentIndex, subjectConcepts]);
-
   if (subjectConcepts.length === 0) {
     return (
       <div className="fixed inset-0 z-[300] bg-gray-900 flex items-center justify-center p-10 cursor-pointer" onClick={onClose}>
@@ -1921,38 +1888,97 @@ const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
   }
 
   const c = subjectConcepts[currentIndex];
-  const parsed = parseMeaning(c.meaning);
+  const hasHanja = !!c.hanja;
+  const maxSteps = hasHanja ? 4 : 2;
 
   let content = '';
   let subtitle = '';
+  const parsed = parseMeaning(c.meaning);
 
-  if (step === 1) {
-    content = c.hanja || c.term;
-    subtitle = c.hanja ? "한자" : "단어";
-  } else if (step === 2) {
-    content = parsed.hanjaBreakdown || c.meaning;
-    subtitle = "뜻풀이";
-  } else if (step === 3) {
-    content = parsed.explanation || c.meaning;
-    subtitle = "핵심 의미";
-  } else if (step === 4) {
-    content = c.term;
-    subtitle = "정답 확인";
+  if (hasHanja) {
+    if (step === 1) { content = c.hanja; subtitle = "한자"; }
+    else if (step === 2) { content = parsed.hanjaBreakdown || c.meaning; subtitle = "뜻풀이"; }
+    else if (step === 3) { content = parsed.explanation || c.meaning; subtitle = "핵심 의미"; }
+    else if (step === 4) { content = c.term; subtitle = "정답 확인"; }
+  } else {
+    if (step === 1) { content = c.term; subtitle = "핵심 개념"; }
+    else if (step === 2) { content = c.meaning; subtitle = "핵심 의미"; }
   }
 
-  return (
-    <div className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-indigo-950 text-white p-4 cursor-pointer select-none animate-in fade-in duration-300" onClick={advance}>
-      <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="absolute top-8 right-8 p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-colors z-10"><X size={32} strokeWidth={3}/></button>
-      <div className="absolute top-10 left-10 text-2xl font-black text-white/40">{subjectTitle} - 복습 슬라이드 (클릭하여 다음장)</div>
+  const goNext = (e) => {
+    if (e) e.stopPropagation();
+    if (step < maxSteps) {
+      setStep(step + 1);
+    } else {
+      if (currentIndex < subjectConcepts.length - 1) {
+        setCurrentIndex(currentIndex + 1);
+        setStep(1);
+      } else {
+        onClose();
+      }
+    }
+  };
 
-      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-6xl text-center px-10 relative">
-        <span className="text-3xl md:text-4xl font-black text-indigo-300 mb-8 tracking-widest">{subtitle}</span>
-        <h2 className={`font-black tracking-tight leading-tight ${content.length > 30 ? 'text-5xl md:text-7xl' : 'text-7xl md:text-[140px]'} break-keep-all whitespace-pre-wrap drop-shadow-xl`}>
+  const goPrev = (e) => {
+    if (e) e.stopPropagation();
+    if (step > 1) {
+      setStep(step - 1);
+    } else {
+      if (currentIndex > 0) {
+        const prevConcept = subjectConcepts[currentIndex - 1];
+        const prevMaxSteps = prevConcept.hanja ? 4 : 2;
+        setCurrentIndex(currentIndex - 1);
+        setStep(prevMaxSteps);
+      }
+    }
+  };
+
+  // 키보드 방향키 조작 지원
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if(e.key === ' ' || e.key === 'ArrowRight' || e.key === 'Enter') {
+        e.preventDefault();
+        goNext();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goPrev();
+      } else if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [step, currentIndex, subjectConcepts, maxSteps]);
+
+  // 글자 수에 따른 폰트 사이즈 자동 조절
+  let textSizeClass = 'text-7xl md:text-[140px]';
+  if (content.length > 60) textSizeClass = 'text-3xl md:text-5xl lg:text-6xl';
+  else if (content.length > 25) textSizeClass = 'text-4xl md:text-6xl lg:text-7xl';
+  else if (content.length > 10) textSizeClass = 'text-6xl md:text-8xl lg:text-[100px]';
+
+  return (
+    <div className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-indigo-950 text-white p-4 cursor-pointer select-none animate-in fade-in duration-300" onClick={goNext}>
+      <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="absolute top-8 right-8 p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-colors z-20"><X size={32} strokeWidth={3}/></button>
+      <div className="absolute top-10 left-10 text-xl md:text-2xl font-black text-white/40 z-20">{subjectTitle} - 복습 슬라이드 ({currentIndex + 1}/{subjectConcepts.length})</div>
+
+      {/* 좌우 이동 버튼 */}
+      <button onClick={goPrev} className="absolute left-4 lg:left-12 top-1/2 -translate-y-1/2 p-4 text-white/30 hover:text-white hover:bg-white/10 rounded-full transition-all z-20">
+        <ChevronLeft size={64} strokeWidth={2}/>
+      </button>
+      <button onClick={goNext} className="absolute right-4 lg:right-12 top-1/2 -translate-y-1/2 p-4 text-white/30 hover:text-white hover:bg-white/10 rounded-full transition-all z-20">
+        <ChevronRight size={64} strokeWidth={2}/>
+      </button>
+
+      {/* 슬라이드 본문 */}
+      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-7xl text-center px-16 md:px-32 relative overflow-y-auto max-h-[85vh] hide-scrollbar">
+        <span className="text-3xl md:text-4xl font-black text-indigo-300 mb-8 tracking-widest shrink-0">{subtitle}</span>
+        <h2 className={`font-black tracking-tight leading-snug ${textSizeClass} break-keep-all whitespace-pre-wrap drop-shadow-xl w-full`}>
           {content}
         </h2>
       </div>
 
-      <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-3">
+      {/* 진행 상태 바 */}
+      <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-3 z-20">
         {subjectConcepts.map((_, idx) => (
           <div key={idx} className={`h-4 rounded-full transition-all duration-500 ${idx === currentIndex ? 'w-16 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.5)]' : 'w-4 bg-white/20'}`} />
         ))}
@@ -1967,7 +1993,6 @@ const ConceptEditModal = ({ data, subjects, onClose, onSave }) => {
   const [hanja, setHanja] = useState(data.hanja || '');
   const [meaning, setMeaning] = useState(data.meaning || '');
 
-  // [핵심 기능] 한자 사전 자동 완성
   const handleAutoComplete = () => {
     if(!term) return alert('단어를 먼저 입력해주세요.');
     const found = HANJA_DICT[term];
@@ -1977,7 +2002,7 @@ const ConceptEditModal = ({ data, subjects, onClose, onSave }) => {
         const prefix = found.meaning;
         return prev ? `${prefix}\n\n[추가내용]\n${prev}` : prefix;
       });
-      playSound('magic'); // 띠링! 소리 추가
+      playSound('magic'); 
     } else {
       alert('내장 사전에 없는 단어입니다. 직접 한자와 뜻을 입력해주세요.');
     }
