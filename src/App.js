@@ -100,21 +100,21 @@ const HANJA_DICT = {
   "상징":{hanja:"象徵",meaning:"象(코끼리 상), 徵(징조 징) : 추상적인 것을 구체적인 사물로 나타냄"},
   "문단":{hanja:"文段",meaning:"文(글월 문), 段(구분 단) : 여러 문장이 모인 덩어리"},
   "서술":{hanja:"敍述",meaning:"敍(펼 서), 述(지을 술) : 사건이나 생각을 차례대로 적음"},
-  "요약":{hanja:"要約",meaning:"要(요긴할 요), 約(맺을 약) : 글의 요점을 간추림"},
+  "요약":{hanja:"要約",meaning:"要(요긴할 요), 약(맺을 약) : 글의 요점을 간추림"},
   "의견":{hanja:"意見",meaning:"意(뜻 의), 見(볼 견) : 어떤 일에 대한 자신의 생각"},
   "근거":{hanja:"根據",meaning:"根(뿌리 근), 據(의지할 거) : 주장의 바탕이 되는 이유"},
   "서론":{hanja:"序論",meaning:"序(차례 서), 論(논할 론) : 글을 시작하는 부분"},
   "본론":{hanja:"本論",meaning:"本(근본 본), 論(논할 론) : 글의 중심 주장이 담긴 부분"},
   "결론":{hanja:"結論",meaning:"結(맺을 결), 論(논할 론) : 글을 마무리하는 부분"},
   "관점":{hanja:"觀點",meaning:"觀(볼 관), 點(점 찍을 점) : 사물이나 현상을 바라보는 태도나 방향"},
-  "갈등":{hanja:"葛藤",meaning:"葛(칡 갈), 藤(등나무 등) : 목표나 이해관계가 달라 서로 부딪히는 상태"},
+  "갈등":{hanja:"葛藤",meaning:"葛(칡 갈), 藤(등나무 등) : 서로 부딪히는 상태"},
   "배경":{hanja:"背景",meaning:"背(등 배), 景(볕 경) : 사건이 일어나는 시간과 장소"},
   "독서":{hanja:"讀書",meaning:"讀(읽을 독), 書(책 서) : 책을 읽는 것"},
   "작문":{hanja:"作文",meaning:"作(지을 작), 文(글월 문) : 글을 짓는 것"},
   "독해":{hanja:"讀解",meaning:"讀(읽을 독), 解(풀 해) : 글을 읽고 뜻을 이해함"},
   "문학":{hanja:"文學",meaning:"文(글월 문), 學(배울 학) : 문학 작품을 읽고 즐기는 분야"},
   "문법":{hanja:"文法",meaning:"文(글월 문), 法(법 법) : 말과 글의 규칙"},
-  "주장":{hanja:"主張",meaning:"主(주인 주), 張(베풀 장) : 자신의 생각을 분명히 내세움"},
+  "주장":{hanja:"主張",meaning:"主(주인 주), 張(베풀 장) : 자신의 생각을 내세움"},
   "사실":{hanja:"事實",meaning:"事(일 사), 實(열매 실) : 실제로 있었던 일"},
   "논리":{hanja:"論理",meaning:"論(논할 론), 理(다스릴 리) : 생각이 맞게 이어지는 이치"},
   "비판":{hanja:"批判",meaning:"批(칠 비), 判(판단할 판) : 잘잘못을 따져 판단함"},
@@ -127,206 +127,43 @@ const HANJA_DICT = {
   "소수":{hanja:"小數",meaning:"小(작을 소), 數(셈 수) : 1보다 작은 크기를 나타내는 수"},
   "도형":{hanja:"圖形",meaning:"圖(그림 도), 形(모양 형) : 점, 선, 면 등으로 이루어진 모양"},
   "직사각형":{hanja:"直四角形",meaning:"直(곧을 직), 四(넉 사), 角(뿔 각), 形(모양 형) : 네 각이 모두 직각인 사각형"},
-  "삼각형":{hanja:"三角形",meaning:"三(석 삼), 角(뿔 각), 形(모양 형) : 세 개의 선분으로 둘러싸인 다각형"},
+  "삼각형":{hanja:"三角形",meaning:"三(석 삼), 角(뿔 각), 形(모양 형) : 세 선분으로 둘러싸인 다각형"},
   "부피":{hanja:"體積",meaning:"體(몸 체), 積(쌓을 적) : 물체가 공간에서 차지하는 크기"},
   "넓이":{hanja:"面積",meaning:"面(표면 면), 積(쌓을 적) : 평면이나 겉면이 차지하는 크기"},
-  "합동":{hanja:"合同",meaning:"合(합할 합), 同(같을 동) : 모양과 크기가 같아 완전히 포개어지는 관계"},
-  "대칭":{hanja:"對稱",meaning:"對(대할 대), 稱(일컬을 칭) : 점이나 선을 중심으로 양쪽이 똑같은 모양"},
-  "비례":{hanja:"比例",meaning:"比(견줄 비), 例(법식 례) : 두 수량의 비가 일정한 관계로 변하는 것"},
-  "평균":{hanja:"平均",meaning:"平(평평할 평), 均(고를 균) : 여러 수의 합을 그 개수로 나눈 값"},
-  "확률":{hanja:"確率",meaning:"確(굳을 확), 率(비율 률) : 어떤 일이 일어날 가능성을 수로 나타낸 것"},
-  "자연수":{hanja:"自然數",meaning:"自(스스로 자), 然(그럴 연), 數(셈 수) : 1부터 시작하여 1씩 커지는 수"},
-  "정수":{hanja:"整數",meaning:"整(가지런할 정), 數(셈 수) : 양의 정수, 0, 음의 정수를 통틀어 이르는 말"},
-  "방정식":{hanja:"方程式",meaning:"方(모 방), 程(한도 정), 式(법 식) : 미지수의 값에 따라 참/거짓이 되는 등식"},
-  "비례식":{hanja:"比例式",meaning:"比(견줄 비), 例(법식 례), 式(법 식) : 비율이 같은 두 비를 등호로 나타낸 식"},
+  "합동":{hanja:"合同",meaning:"合(합할 합), 同(같을 동) : 포개어지는 관계"},
+  "대칭":{hanja:"對稱",meaning:"對(대할 대), 稱(일컬을 칭) : 양쪽이 똑같은 모양"},
+  "비례":{hanja:"比例",meaning:"比(견줄 비), 例(법식 례) : 비가 일정한 관계로 변하는 것"},
+  "평균":{hanja:"平均",meaning:"平(평평할 평), 均(고를 균) : 합을 개수로 나눈 값"},
+  "확률":{hanja:"確率",meaning:"確(굳을 확), 率(비율 률) : 일어날 가능성을 수로 나타낸 것"},
+  "자연수":{hanja:"自然數",meaning:"自(스스로 자), 然(그럴 연), 數(셈 수) : 1부터 1씩 커지는 수"},
+  "정수":{hanja:"整數",meaning:"整(가지런할 정), 數(셈 수) : 양의 정수, 0, 음의 정수"},
+  "방정식":{hanja:"方程式",meaning:"方(모 방), 程(한도 정), 式(법 식) : 미지수에 따라 참/거짓이 되는 등식"},
+  "비례식":{hanja:"比例式",meaning:"比(견줄 비), 例(법식 례), 式(법 식) : 비율이 같은 두 비를 나타낸 식"},
   "계산":{hanja:"計算",meaning:"計(셀 계), 算(셈 산) : 수를 셈함"},
-  "단위":{hanja:"單位",meaning:"單(홑 단), 位(자리 위) : 측정의 기준이 되는 값"},
-  "분자":{hanja:"分子",meaning:"分(나눌 분), 子(아들 자) : 분수의 위에 있는 수"},
-  "분모":{hanja:"分母",meaning:"分(나눌 분), 母(어머니 모) : 분수의 아래에 있는 수"},
+  "단위":{hanja:"單位",meaning:"單(홑 단), 位(자리 위) : 측정의 기준"},
+  "분자":{hanja:"分子",meaning:"分(나눌 분), 子(아들 자) : 분수의 위"},
+  "분모":{hanja:"分母",meaning:"分(나눌 분), 母(어머니 모) : 분수의 아래"},
   "약분":{hanja:"約分",meaning:"約(맺을 약), 分(나눌 분) : 분자와 분모를 같은 수로 나눔"},
   "통분":{hanja:"通分",meaning:"通(통할 통), 分(나눌 분) : 분모를 같게 만듦"},
-  "기약분수":{hanja:"既約分數",meaning:"既(이미 기), 約(맺을 약), 分(나눌 분), 數(셈 수) : 더 이상 약분되지 않는 분수"},
-  "약수":{hanja:"約數",meaning:"約(맺을 약), 數(셈 수) : 어떤 수를 나누어떨어지게 하는 수"},
-  "배수":{hanja:"倍數",meaning:"倍(곱 배), 數(셈 수) : 어떤 수의 몇 배가 되는 수"},
-  "공약수":{hanja:"公約數",meaning:"公(공평할 공), 約(맺을 약), 數(셈 수) : 둘 이상의 수에 공통으로 되는 약수"},
-  "공배수":{hanja:"公倍數",meaning:"公(공평할 공), 倍(곱 배), 數(셈 수) : 둘 이상의 수에 공통으로 되는 배수"},
-  "최대공약수":{hanja:"最大公約數",meaning:"最(가장 최), 大(큰 대), 公(공평할 공), 約(맺을 약), 數(셈 수) : 공약수 중 가장 큰 수"},
-  "최소공배수":{hanja:"最小公倍數",meaning:"最(가장 최), 小(작을 소), 公(공평할 공), 倍(곱 배), 數(셈 수) : 공배수 중 가장 작은 수"},
-  "소인수":{hanja:"素因數",meaning:"素(본디 소), 因(인할 인), 數(셈 수) : 어떤 수를 나누는 소수인 약수"},
-  "소인수분해":{hanja:"素因數分解",meaning:"素(본디 소), 因(인할 인), 數(셈 수), 分(나눌 분), 解(풀 해) : 수를 소인수의 곱으로 나타냄"},
-  "사칙연산":{hanja:"四則演算",meaning:"四(넉 사), 則(법칙 칙), 演(펼 연), 算(셈 산) : 더하기, 빼기, 곱하기, 나누기"},
-  "연산":{hanja:"演算",meaning:"演(펼 연), 算(셈 산) : 계산을 하는 것"},
+  "기약분수":{hanja:"既約分數",meaning:"既(이미 기), 約(맺을 약), 分(나눌 분), 數(셈 수) : 더 이상 약분 안 되는 분수"},
+  "약수":{hanja:"約數",meaning:"約(맺을 약), 數(셈 수) : 나누어떨어지게 하는 수"},
+  "배수":{hanja:"倍數",meaning:"倍(곱 배), 數(셈 수) : 몇 배가 되는 수"},
+  "공약수":{hanja:"公約數",meaning:"公(공평할 공), 約(맺을 약), 數(셈 수) : 공통 약수"},
+  "공배수":{hanja:"公倍數",meaning:"公(공평할 공), 倍(곱 배), 數(셈 수) : 공통 배수"},
   "각도":{hanja:"角度",meaning:"角(뿔 각), 度(법도 도) : 각의 크기"},
-  "직각":{hanja:"直角",meaning:"直(곧을 직), 角(뿔 각) : 90도로 이루어진 각"},
-  "평행":{hanja:"平行",meaning:"平(평평할 평), 行(다닐 행) : 나란하여 만나지 않는 관계"},
-  "수직":{hanja:"垂直",meaning:"垂(드리울 수), 直(곧을 직) : 서로 직각으로 만나는 관계"},
-  "원주율":{hanja:"圓周率",meaning:"圓(둥글 원), 周(두루 주), 率(비율 률) : 원주를 지름으로 나눈 값"},
-  "직경":{hanja:"直徑",meaning:"直(곧을 직), 徑(지름 경) : 원의 가운데를 지나는 지름"},
-  "통계":{hanja:"統計",meaning:"統(거느릴 통), 計(셀 계) : 자료를 모아 분석하는 것"},
+  "직각":{hanja:"直角",meaning:"直(곧을 직), 角(뿔 각) : 90도 각"},
+  "평행":{hanja:"平行",meaning:"平(평평할 평), 行(다닐 행) : 만나지 않는 관계"},
+  "수직":{hanja:"垂直",meaning:"垂(드리울 수), 直(곧을 직) : 직각으로 만남"},
   "비율":{hanja:"比率",meaning:"比(견줄 비), 率(비율 률) : 비교한 비의 값"},
-
-  // [사회/역사]
+  
+  // [사회/과학]
   "민주주의":{hanja:"民主主義",meaning:"民(백성 민), 主(주인 주), 主(주인 주), 義(옳을 의) : 국민이 국가의 주인인 제도"},
-  "헌법":{hanja:"憲法",meaning:"憲(법 헌), 法(법 법) : 국가의 통치 조직과 기본 원리를 정한 최고의 법"},
-  "국회":{hanja:"國會",meaning:"國(나라 국), 會(모일 회) : 국민의 대표들이 모여 법을 만드는 기관"},
-  "정부":{hanja:"政府",meaning:"政(정사 정), 府(관청 부) : 국가의 행정을 맡아보는 기관"},
-  "법원":{hanja:"法院",meaning:"法(법 법), 院(집 원) : 법에 따라 재판을 하는 기관"},
-  "인권":{hanja:"人權",meaning:"人(사람 인), 權(권리 권) : 인간이 마땅히 누려야 할 권리"},
-  "경제":{hanja:"經濟",meaning:"經(다스릴 경), 濟(구제할 제) : 생활에 필요한 재화를 생산, 분배, 소비하는 활동"},
-  "생산":{hanja:"生産",meaning:"生(날 생), 産(낳을 산) : 사람이 생활하는 데 필요한 물건을 만드는 일"},
-  "소비":{hanja:"消費",meaning:"消(사라질 소), 費(쓸 비) : 욕구를 채우기 위해 돈이나 물건을 쓰는 일"},
-  "지형":{hanja:"地形",meaning:"地(땅 지), 形(모양 형) : 산, 강, 평야 등 땅의 겉면의 모양"},
-  "기후":{hanja:"氣候",meaning:"氣(기운 기), 候(기후 후) : 일정한 지역에서 오랜 기간 걸쳐 나타나는 날씨의 평균 상태"},
-  "인구":{hanja:"人口",meaning:"人(사람 인), 口(입 구) : 일정한 지역 안에 사는 사람의 총수"},
-  "도시":{hanja:"都市",meaning:"都(도읍 도), 市(저자 시) : 인구가 밀집되어 있고 정치/경제/문화의 중심이 되는 곳"},
-  "촌락":{hanja:"村落",meaning:"村(마을 촌), 落(마을 락) : 농업, 어업 등에 종사하는 사람들이 모여 사는 곳"},
-  "역사":{hanja:"歷史",meaning:"歷(지낼 력), 史(역사 사) : 인류 사회의 변천과 흥망의 과정, 또는 그 기록"},
-  "독립":{hanja:"獨立",meaning:"獨(홀로 독), 立(설 립) : 다른 것에 예속되거나 의존하지 않는 상태"},
-  "통일":{hanja:"統一",meaning:"統(거느릴 통), 一(한 일) : 나누어진 것들을 합쳐서 하나가 되게 함"},
-  "평등":{hanja:"平等",meaning:"平(평평할 평), 等(무리 등) : 권리, 의무, 자격 등이 차별 없이 고르고 한결같음"},
-  "자유":{hanja:"自由",meaning:"自(스스로 자), 由(말미암을 유) : 외부적인 구속이나 무엇에 얽매이지 않고 자기 마음대로 할 수 있는 상태"},
-  "권리":{hanja:"權利",meaning:"權(권리 권), 利(이로울 리) : 어떤 일을 하거나 타인에게 요구할 수 있는 정당한 힘"},
-  "의무":{hanja:"義務",meaning:"義(옳을 의), 務(힘쓸 무) : 마땅히 해야 할 일"},
-  "무역":{hanja:"貿易",meaning:"貿(바꿀 무), 易(바꿀 역) : 나라와 나라 사이에 서로 물건을 사고파는 일"},
-  "수출":{hanja:"輸出",meaning:"輸(보낼 수), 出(날 출) : 국내의 상품이나 기술을 외국으로 팔아 내보냄"},
-  "수입":{hanja:"輸入",meaning:"輸(보낼 수), 入(들 입) : 외국의 상품이나 기술을 국내로 사들임"},
-  "국가":{hanja:"國家",meaning:"國(나라 국), 家(집 가) : 사람들이 함께 살아가는 나라"},
-  "국민":{hanja:"國民",meaning:"國(나라 국), 民(백성 민) : 한 나라에 사는 사람들"},
-  "주권":{hanja:"主權",meaning:"主(주인 주), 權(권리 권) : 나라의 주인으로서 가지는 권리"},
-  "정치":{hanja:"政治",meaning:"政(정사 정), 治(다스릴 치) : 나라를 다스리는 일"},
-  "선거":{hanja:"選擧",meaning:"選(가릴 선), 擧(들 거) : 대표를 뽑는 일"},
-  "투표":{hanja:"投票",meaning:"投(던질 투), 票(표 표) : 후보에게 표를 던져 선택함"},
-  "삼권분립":{hanja:"三權分立",meaning:"三(셋 삼), 權(권리 권), 分(나눌 분), 立(설 립) : 나라 권력을 나누는 원리"},
-  "입법":{hanja:"立法",meaning:"立(설 립), 法(법 법) : 법을 만드는 일"},
-  "행정":{hanja:"行政",meaning:"行(다닐 행), 政(정사 정) : 나라 일을 실행하는 일"},
-  "사법":{hanja:"司法",meaning:"司(맡을 사), 法(법 법) : 재판으로 법을 적용하는 일"},
-  "지방자치":{hanja:"地方自治",meaning:"地(땅 지), 方(모 방), 自(스스로 자), 治(다스릴 치) : 지역이 스스로 다스림"},
-  "법률":{hanja:"法律",meaning:"法(법 법), 律(법칙 률) : 나라에서 정한 법"},
-  "재판":{hanja:"裁判",meaning:"裁(마를 재), 判(판단할 판) : 법에 따라 옳고 그름을 판단함"},
-  "국토":{hanja:"國土",meaning:"國(나라 국), 土(흙 토) : 나라의 땅"},
-  "지도":{hanja:"地圖",meaning:"地(땅 지), 圖(그림 도) : 땅의 모습을 그린 그림"},
-  "문화재":{hanja:"文化財",meaning:"文(글월 문), 化(될 화), 財(재물 재) : 지키고 남겨야 할 문화유산"},
-  "전통":{hanja:"傳統",meaning:"傳(전할 전), 統(거느릴 통) : 오래 전해 오는 것"},
-  "화폐":{hanja:"貨幣",meaning:"貨(재화 화), 幣(비단 폐) : 돈"},
-  "세금":{hanja:"稅金",meaning:"稅(세금 세), 金(쇠 금) : 나라나 공공기관에 내는 돈"},
-
-  // [과학]
-  "생태계":{hanja:"生態系",meaning:"生(날 생), 態(모양 태), 系(이을 계) : 생물과 이를 둘러싼 환경이 서로 영향을 주고받는 하나의 체계"},
-  "광합성":{hanja:"光合成",meaning:"光(빛 광), 合(합할 합), 成(이룰 성) : 녹색 식물이 빛 에너지를 이용하여 양분을 만드는 과정"},
-  "지구":{hanja:"地球",meaning:"地(땅 지), 球(공 구) : 우리가 살고 있는 천체"},
-  "우주":{hanja:"宇宙",meaning:"宇(집 우), 宙(집 주) : 무한한 시간과 만물을 포함하고 있는 끝없는 공간"},
-  "자전":{hanja:"自轉",meaning:"自(스스로 자), 轉(구를 전) : 천체가 스스로 고정된 축을 중심으로 회전하는 현상"},
-  "공전":{hanja:"公轉",meaning:"公(공평할 공), 轉(구를 전) : 한 천체가 다른 천체의 둘레를 주기적으로 도는 현상"},
-  "기온":{hanja:"氣溫",meaning:"氣(기운 기), 溫(따뜻할 온) : 대기의 온도"},
-  "습도":{hanja:"濕度",meaning:"濕(축축할 습), 度(법도 도) : 공기 중에 수증기가 포함되어 있는 정도"},
-  "지진":{hanja:"地震",meaning:"地(땅 지), 震(우레 진) : 지구 내부의 에너지가 밖으로 나와 땅이 갈라지며 흔들리는 현상"},
-  "화산":{hanja:"火山",meaning:"火(불 화), 山(뫼 산) : 지하 깊은 곳의 마그마가 지표 밖으로 분출하여 만들어진 산"},
-  "퇴적암":{hanja:"堆積岩",meaning:"堆(쌓을 퇴), 積(쌓을 적), 岩(바위 암) : 퇴적물이 굳어져서 만들어진 암석"},
-  "화성암":{hanja:"火成岩",meaning:"火(불 화), 成(이룰 성), 岩(바위 암) : 마그마가 식어서 굳어진 암석"},
-  "세포":{hanja:"細胞",meaning:"細(가늘 세), 胞(세포 포) : 생물체를 이루는 기본 단위"},
-  "유전":{hanja:"遺傳",meaning:"遺(남길 유), 傳(전할 전) : 부모의 성질이 자손에게 전해지는 현상"},
-  "물질":{hanja:"物質",meaning:"物(만물 물), 質(바탕 질) : 물체를 이루는 것"},
-  "상태":{hanja:"狀態",meaning:"狀(형상 상), 態(모양 태) : 물질의 모습이나 형편"},
-  "고체":{hanja:"固體",meaning:"固(굳을 고), 體(몸 체) : 모양이 일정한 상태의 물질"},
-  "액체":{hanja:"液體",meaning:"液(진 액), 體(몸 체) : 흐르는 상태의 물질"},
-  "기체":{hanja:"氣體",meaning:"氣(기운 기), 體(몸 체) : 공기처럼 퍼지는 상태의 물질"},
-  "온도":{hanja:"溫度",meaning:"溫(따뜻할 온), 度(법도 도) : 뜨겁고 차가운 정도"},
-  "압력":{hanja:"壓力",meaning:"壓(누를 압), 力(힘 력) : 누르는 힘"},
-  "용액":{hanja:"溶液",meaning:"溶(녹을 용), 液(진 액) : 어떤 물질이 녹아 있는 액체"},
-  "혼합":{hanja:"混合",meaning:"混(섞일 혼), 合(합할 합) : 여러 물질을 섞음"},
-  "분리":{hanja:"分離",meaning:"分(나눌 분), 離(떼어낼 이) : 섞인 것을 따로 나눔"},
-  "증발":{hanja:"蒸發",meaning:"蒸(찔 증), 發(필 발) : 액체가 기체로 변함"},
-  "응결":{hanja:"凝結",meaning:"凝(엉길 응), 結(맺을 결) : 기체가 액체로 변함"},
-  "순환":{hanja:"循環",meaning:"循(돌 순), 環(둘러쌀 환) : 돌아가며 반복됨"},
-  "전기":{hanja:"電氣",meaning:"電(번개 전), 氣(기운 기) : 전기의 힘"},
-  "전류":{hanja:"電流",meaning:"電(번개 전), 流(흐를 류) : 전기가 흐름"},
-  "자석":{hanja:"磁石",meaning:"磁(자석 자), 石(돌 석) : 쇠를 끌어당기는 성질을 가진 돌"},
-  "마찰":{hanja:"摩擦",meaning:"摩(갈 마), 擦(문지를 찰) : 서로 비빌 때 생기는 힘"},
-  "속도":{hanja:"速度",meaning:"速(빠를 속), 度(법도 도) : 움직이는 빠르기"},
-  "태양":{hanja:"太陽",meaning:"太(클 태), 陽(볕 양) : 지구에 빛을 주는 별"},
-  "대기":{hanja:"大氣",meaning:"大(큰 대), 氣(기운 기) : 지구를 둘러싼 공기"},
-  "암석":{hanja:"岩石",meaning:"岩(바위 암), 石(돌 석) : 지구를 이루는 돌"},
-  "침식":{hanja:"侵蝕",meaning:"侵(침노할 침), 蝕(갉아먹을 식) : 물과 바람이 땅을 깎아냄"},
-  "풍화":{hanja:"風化",meaning:"風(바람 풍), 化(될 화) : 바람, 비 등으로 바위가 부서짐"},
-
-  // [도덕]
-  "도덕":{hanja:"道德",meaning:"道(길 도), 德(덕 덕) : 사람으로서 지켜야 할 바른 마음과 행동"},
-  "윤리":{hanja:"倫理",meaning:"倫(인륜 륜), 理(다스릴 리) : 옳고 그름의 기준"},
-  "예절":{hanja:"禮節",meaning:"禮(예도 예), 節(마디 절) : 바른 몸가짐과 태도"},
-  "정직":{hanja:"正直",meaning:"正(바를 정), 直(곧을 직) : 거짓이 없이 바름"},
-  "성실":{hanja:"誠實",meaning:"誠(참 성), 實(열매 실) : 참되고 정성스럽게 행동함"},
-  "책임":{hanja:"責任",meaning:"責(꾸짖을 책), 任(맡길 임) : 맡은 일을 해야 할 의무"},
-  "자율":{hanja:"自律",meaning:"自(스스로 자), 律(법칙 률) : 스스로 규칙을 지킴"},
-  "절제":{hanja:"節制",meaning:"節(마디 절), 制(억제할 제) : 지나치지 않게 조절함"},
-  "반성":{hanja:"反省",meaning:"反(돌이킬 반), 省(살필 성) : 자신의 행동을 돌아봄"},
-  "협동":{hanja:"協同",meaning:"協(도울 협), 同(같을 동) : 힘을 합쳐 함께함"},
-  "양보":{hanja:"讓步",meaning:"讓(양보할 양), 步(걸음 보) : 남에게 먼저 내어 줌"},
-  "용서":{hanja:"容恕",meaning:"容(용납할 용), 恕(용서할 서) : 잘못을 이해하고 넘어감"},
-  "감사":{hanja:"感謝",meaning:"感(느낄 감), 謝(사례할 사) : 고마움을 느낌"},
-  "봉사":{hanja:"奉仕",meaning:"奉(받들 봉), 仕(벼슬 사) : 남을 위해 힘써 일함"},
-  "효도":{hanja:"孝道",meaning:"孝(효도 효), 道(길 도) : 부모님을 공경하는 마음과 행동"},
-
-  // [미술]
-  "미술":{hanja:"美術",meaning:"美(아름다울 미), 術(재주 술) : 아름다움을 표현하는 활동"},
-  "조형":{hanja:"造形",meaning:"造(지을 조), 形(모양 형) : 모양을 만들어 표현함"},
-  "색채":{hanja:"色彩",meaning:"色(색 색), 彩(채색 채) : 색의 느낌과 쓰임"},
-  "구도":{hanja:"構圖",meaning:"構(얽을 구), 圖(그림 도) : 그림의 화면 구성"},
-  "명암":{hanja:"明暗",meaning:"明(밝을 명), 暗(어두울 암) : 밝고 어두움의 대비"},
-  "질감":{hanja:"質感",meaning:"質(바탕 질), 感(느낄 감) : 만졌을 때 느껴지는 느낌"},
-  "형태":{hanja:"形態",meaning:"形(모양 형), 態(모양 태) : 물체의 모양"},
-  "대비":{hanja:"對比",meaning:"對(대할 대), 比(견줄 비) : 차이를 두어 돋보이게 함"},
-  "조화":{hanja:"調和",meaning:"調(고를 조), 和(화할 화) : 잘 어울림"},
-  "재료":{hanja:"材料",meaning:"材(재목 재), 料(헤아릴 료) : 만드는 데 쓰는 것"},
-  "기법":{hanja:"技法",meaning:"技(재주 기), 法(법 법) : 표현하는 방법"},
-  "서예":{hanja:"書藝",meaning:"書(글 서), 藝(재주 예) : 붓글씨 예술"},
-
-  // [음악]
-  "음악":{hanja:"音樂",meaning:"音(소리 음), 樂(즐길 악) : 소리로 즐기는 예술"},
-  "연주":{hanja:"演奏",meaning:"演(펼 연), 奏(아뢸 주) : 악기를 연주함"},
-  "감상":{hanja:"鑑賞",meaning:"鑑(거울 감), 賞(상 줄 상) : 보고 듣고 느낌을 나눔"},
-  "창작":{hanja:"創作",meaning:"創(비롯할 창), 作(지을 작) : 새로 만듦"},
-  "악기":{hanja:"樂器",meaning:"樂(즐길 악), 器(그릇 기) : 음악 소리를 내는 도구"},
-  "악보":{hanja:"樂譜",meaning:"樂(즐길 악), 譜(보 보) : 음악을 적어 놓은 것"},
-  "선율":{hanja:"旋律",meaning:"旋(돌 선), 律(법칙 률) : 가락의 흐름"},
-  "박자":{hanja:"拍子",meaning:"拍(칠 박), 子(아들 자) : 음악의 규칙적인 리듬"},
-  "화음":{hanja:"和音",meaning:"和(화할 화), 音(소리 음) : 여러 소리가 어울림"},
-  "합창":{hanja:"合唱",meaning:"合(합할 합), 唱(노래 부를 창) : 함께 노래 부름"},
-  "합주":{hanja:"合奏",meaning:"合(합할 합), 奏(아뢸 주) : 함께 연주함"},
-  "작곡":{hanja:"作曲",meaning:"作(지을 작), 曲(굽을 곡) : 음악을 만듦"},
-
-  // [체육]
-  "체육":{hanja:"體育",meaning:"體(몸 체), 育(기를 육) : 몸을 건강하게 기르는 활동"},
-  "운동":{hanja:"運動",meaning:"運(옮길 운), 動(움직일 동) : 몸을 움직여 활동함"},
-  "체력":{hanja:"體力",meaning:"體(몸 체), 力(힘 력) : 몸의 힘과 지구력"},
-  "근력":{hanja:"筋力",meaning:"筋(힘줄 근), 力(힘 력) : 근육의 힘"},
-  "지구력":{hanja:"持久力",meaning:"持(가질 지), 久(오래 구), 力(힘 력) : 오래 버티는 힘"},
-  "유연성":{hanja:"柔軟性",meaning:"柔(부드러울 유), 軟(부드러울 연), 性(성품 성) : 몸이 잘 구부러지는 성질"},
-  "순발력":{hanja:"瞬發力",meaning:"瞬(눈 깜짝할 순), 發(필 발), 力(힘 력) : 순간적으로 힘을 내는 능력"},
-  "준비운동":{hanja:"準備運動",meaning:"準(준비할 준), 備(갖출 비), 運(옮길 운), 動(움직일 동) : 운동 전 몸 풀기"},
-  "정리운동":{hanja:"整理運動",meaning:"整(가지런할 정), 理(다스릴 리), 運(옮길 운), 動(움직일 동) : 운동 후 몸을 풀어 마무리"},
-  "응급처치":{hanja:"應急處置",meaning:"應(응할 응), 急(급할 급), 處(처할 처), 置(둘 치) : 응급 상황에서 하는 도움"},
-
-  // [실과(기술·가정)/정보]
-  "실과":{hanja:"實科",meaning:"實(열매 실), 科(과목 과) : 생활에 필요한 것을 배우는 교과"},
-  "가정":{hanja:"家庭",meaning:"家(집 가), 庭(뜰 정) : 가족이 함께 생활하는 집"},
-  "의식주":{hanja:"衣食住",meaning:"衣(옷 의), 食(먹을 식), 住(살 주) : 옷, 먹을 것, 집"},
-  "식생활":{hanja:"食生活",meaning:"食(먹을 식), 生(날 생), 活(살 활) : 먹는 생활"},
-  "의생활":{hanja:"衣生活",meaning:"衣(옷 의), 生(날 생), 活(살 활) : 옷을 입는 생활"},
-  "주생활":{hanja:"住生活",meaning:"住(살 주), 生(날 생), 活(살 활) : 집에서 생활하는 모습"},
-  "위생":{hanja:"衛生",meaning:"衛(지킬 위), 生(날 생) : 건강을 지키는 깨끗한 습관"},
-  "절약":{hanja:"節約",meaning:"節(마디 절), 約(맺을 약) : 아껴 씀"},
-  "재활용":{hanja:"再活用",meaning:"再(다시 재), 活(살 활), 用(쓸 용) : 다시 사용함"},
-  "기술":{hanja:"技術",meaning:"技(재주 기), 術(재주 술) : 일을 할 수 있는 방법과 능력"},
-  "진로":{hanja:"進路",meaning:"進(나아갈 진), 路(길 로) : 앞으로 나아갈 길"},
-  "직업":{hanja:"職業",meaning:"職(직업 직), 業(일 업) : 일을 하며 생활하는 일"},
-
-  // [영어]
-  "영어":{hanja:"英語",meaning:"英(꽃부리 영), 語(말씀 어) : 영어(English)"},
-  "발음":{hanja:"發音",meaning:"發(필 발), 音(소리 음) : 소리를 내는 방법"},
-  "강세":{hanja:"强勢",meaning:"强(강할 강), 勢(기세 세) : 소리를 강하게 주는 부분"},
-  "철자":{hanja:"綴字",meaning:"綴(꿰맬 철), 字(글자 자) : 단어를 이루는 글자"},
-  "회화":{hanja:"會話",meaning:"會(모일 회), 話(말씀 화) : 말로 대화함"},
-  "의사소통":{hanja:"意思疏通",meaning:"意(뜻 의), 思(생각 사), 疏(트일 소), 通(통할 통) : 뜻과 생각을 서로 나눔"}
+  "경제":{hanja:"經濟",meaning:"經(다스릴 경), 濟(구제할 제) : 재화를 생산, 분배, 소비하는 활동"},
+  "도시":{hanja:"都市",meaning:"都(도읍 도), 市(저자 시) : 인구가 밀집된 정치, 경제 중심지"},
+  "역사":{hanja:"歷史",meaning:"歷(지낼 력), 史(역사 사) : 인류 사회의 변천 과정"},
+  "생태계":{hanja:"生態系",meaning:"生(날 생), 態(모양 태), 系(이을 계) : 생물과 환경이 영향을 주고받는 체계"},
+  "광합성":{hanja:"光合成",meaning:"光(빛 광), 合(합할 합), 成(이룰 성) : 빛 에너지로 양분을 만드는 과정"},
+  "지구":{hanja:"地球",meaning:"地(땅 지), 球(공 구) : 우리가 사는 천체"}
 };
 
 // --- Local Storage Custom Hook ---
@@ -431,12 +268,14 @@ const App = () => {
   const [customStartDate, setCustomStartDate] = useState(formatDate(new Date()));
   const [customEndDate, setCustomEndDate] = useState(formatDate(new Date()));
   const [reportSortOrder, setReportSortOrder] = useState('desc');
-  
   const [magicReasonInput, setMagicReasonInput] = useState('');
 
   const [selectedExternalLink, setSelectedExternalLink] = useState(null);
   const [viewerTarget, setViewerTarget] = useState(null); 
   const [slideSubjectId, setSlideSubjectId] = useState(null);
+  
+  // [신규] 안내장 출력 모달용 상태
+  const [reportStudent, setReportStudent] = useState(null);
 
   const dateKey = formatDate(selectedDate);
 
@@ -1433,7 +1272,7 @@ const App = () => {
           </div>
         )}
 
-        {/* 6. 매직 점수 (복구: 개별 내역 리스트 추가/삭제 및 사유 입력) */}
+        {/* 6. 매직 점수 */}
         {activeTab === 'magicpoints' && (
           <div className="space-y-8 max-w-[1600px] mx-auto pb-10">
             <div className="bg-white p-6 lg:p-8 rounded-[40px] border border-indigo-100 shadow-sm flex flex-col lg:flex-row items-start lg:items-end justify-between gap-6">
@@ -1462,22 +1301,20 @@ const App = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto p-5 bg-slate-50 rounded-3xl border border-gray-200 shadow-inner">
-                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-2xl border border-gray-200 shadow-sm">
-                  <span className="text-base font-black text-gray-600 whitespace-nowrap">부여 점수</span>
+                <div className="flex items-center gap-2">
                   <select 
                     value={magicPointValue} 
                     onChange={(e) => setMagicPointValue(Number(e.target.value))}
-                    className="w-20 bg-transparent text-xl font-black text-indigo-700 text-center appearance-none outline-none cursor-pointer"
+                    className="w-16 bg-white border border-gray-200 px-2 py-3 rounded-2xl font-black text-indigo-700 text-center appearance-none outline-none cursor-pointer shadow-sm text-lg"
                   >
                     {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}점</option>)}
                   </select>
-                  {/* [복구] 사유 입력칸 추가 */}
                   <input 
                     value={magicReasonInput} 
                     onChange={(e) => setMagicReasonInput(e.target.value)} 
                     onKeyDown={(e) => {if(e.key === 'Enter') handleMagicPointAction(selectedStudentsForMagic, 'plus')}}
                     placeholder="사유 (예: 발표)" 
-                    className="flex-1 w-32 sm:w-48 bg-transparent border-l border-gray-200 pl-4 py-2 font-bold text-gray-700 outline-none placeholder-gray-300"
+                    className="flex-1 w-32 sm:w-40 bg-white border border-gray-200 px-4 py-3 rounded-2xl font-bold text-gray-700 outline-none focus:border-indigo-400 shadow-sm"
                   />
                 </div>
                 <div className="flex gap-3 w-full sm:w-auto">
@@ -1497,9 +1334,9 @@ const App = () => {
                   <div 
                     key={student.id} 
                     onClick={() => setSelectedStudentsForMagic(p => p.includes(student.id) ? p.filter(id => id !== student.id) : [...p, student.id])}
-                    className={`bg-white rounded-[32px] p-6 shadow-sm border-4 cursor-pointer transition-all hover:shadow-lg flex flex-col items-center justify-between min-h-[300px] ${isSelected ? 'border-indigo-500 bg-indigo-50/30 transform scale-[1.02]' : 'border-transparent hover:border-indigo-200'}`}
+                    className={`bg-white rounded-[32px] p-5 shadow-sm border-4 cursor-pointer transition-all hover:shadow-lg flex flex-col items-center justify-between min-h-[300px] ${isSelected ? 'border-indigo-500 bg-indigo-50/30 transform scale-[1.02]' : 'border-transparent hover:border-indigo-200'}`}
                   >
-                    <div className="w-full flex justify-between items-start mb-3">
+                    <div className="w-full flex justify-between items-start mb-2">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 transition-colors ${isSelected ? 'bg-indigo-500 border-indigo-500 text-white' : 'border-gray-200 bg-gray-50'}`}>
                         {isSelected && <Check size={18} strokeWidth={4} />}
                       </div>
@@ -1509,28 +1346,27 @@ const App = () => {
                       {student.num}. {student.name}
                     </div>
                     
-                    <div className={`text-7xl font-black my-4 transition-all ${total > 0 ? 'text-blue-600 drop-shadow-sm' : total < 0 ? 'text-red-500 drop-shadow-sm' : 'text-gray-300'}`}>
+                    <div className={`text-6xl font-black my-3 transition-all ${total > 0 ? 'text-blue-600 drop-shadow-sm' : total < 0 ? 'text-red-500 drop-shadow-sm' : 'text-gray-300'}`}>
                       {total > 0 ? `+${total}` : total}
                     </div>
 
-                    <div className="flex gap-3 w-full mt-2">
-                      <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'plus'); }} className="flex-1 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white font-black py-3 rounded-2xl transition-colors text-lg border border-blue-100 shadow-sm">칭찬</button>
-                      <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'minus'); }} className="flex-1 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white font-black py-3 rounded-2xl transition-colors text-lg border border-red-100 shadow-sm">노력</button>
+                    <div className="flex gap-2 w-full mt-1">
+                      <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'plus'); }} className="flex-1 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white font-black py-2.5 rounded-xl transition-colors text-base border border-blue-100 shadow-sm">칭찬</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'minus'); }} className="flex-1 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white font-black py-2.5 rounded-xl transition-colors text-base border border-red-100 shadow-sm">노력</button>
                     </div>
 
-                    {/* [복구 완료] 최근 기록 리스트 및 X(삭제) 버튼 부활 */}
-                    <div className="mt-4 w-full bg-slate-50 rounded-2xl p-3 border border-gray-100 min-h-[80px] flex flex-col justify-start" onClick={(e) => e.stopPropagation()}>
-                      <h5 className="text-[12px] font-black text-gray-400 mb-1.5 text-left px-1">최근 기록</h5>
+                    <div className="mt-3 w-full bg-slate-50 rounded-2xl p-3 border border-gray-100 min-h-[70px] flex flex-col justify-start" onClick={(e) => e.stopPropagation()}>
+                      <h5 className="text-[11px] font-black text-gray-400 mb-1 text-left px-1">최근 기록</h5>
                       {points.slice(0, 2).map(p => (
-                        <div key={p.id} className="flex justify-between items-center text-sm group py-1 px-1.5 rounded-lg hover:bg-white transition-colors">
+                        <div key={p.id} className="flex justify-between items-center text-xs group py-0.5 px-1 rounded hover:bg-white transition-colors">
                           <div className="flex items-center gap-2 truncate pr-2">
                             <span className={`font-black shrink-0 ${p.type==='plus'?'text-blue-600':'text-red-500'}`}>{p.amount > 0 ? `+${p.amount}` : p.amount}</span>
                             <span className="text-gray-600 font-bold truncate">{p.reason}</span>
                           </div>
-                          <button onClick={() => deleteMagicPoint(student.id, p.id)} className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 shrink-0 transition-opacity"><X size={16} strokeWidth={3}/></button>
+                          <button onClick={() => deleteMagicPoint(student.id, p.id)} className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 shrink-0 transition-opacity"><X size={14} strokeWidth={3}/></button>
                         </div>
                       ))}
-                      {points.length === 0 && <p className="text-center py-2 text-gray-400 text-xs font-bold opacity-50">기록 없음</p>}
+                      {points.length === 0 && <p className="text-center py-1 text-gray-400 text-xs font-bold opacity-50">기록 없음</p>}
                     </div>
                   </div>
                 );
@@ -1574,7 +1410,7 @@ const App = () => {
               </div>
 
               <div className="overflow-x-auto rounded-3xl border border-gray-100 shadow-sm">
-                <table className="w-full text-left min-w-[700px]">
+                <table className="w-full text-left min-w-[800px]">
                   <thead className="bg-slate-100 text-gray-500 text-sm uppercase font-black border-b-2 border-gray-200">
                     <tr>
                       <th className="px-8 py-6 w-24 text-center">순위</th>
@@ -1582,7 +1418,9 @@ const App = () => {
                       <th className="px-8 py-6 text-blue-600 text-center">수동 칭찬 (+)</th>
                       <th className="px-8 py-6 text-red-500 text-center">수동 노력 (-)</th>
                       <th className="px-8 py-6 text-emerald-600 text-center">과제 연동</th>
-                      <th className="px-8 py-6 text-right w-48">최종 종합 점수</th>
+                      <th className="px-8 py-6 text-right w-40">최종 종합 점수</th>
+                      {/* [신규 추가] 안내장 인쇄 버튼 열 */}
+                      <th className="px-8 py-6 text-center w-32">안내장</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 bg-white">
@@ -1597,6 +1435,15 @@ const App = () => {
                           <span className={`inline-flex items-center justify-center min-w-[80px] px-5 py-2.5 rounded-2xl font-black text-3xl shadow-sm border ${student.total > 0 ? 'bg-blue-50 text-blue-600 border-blue-200' : student.total < 0 ? 'bg-red-50 text-red-600 border-red-200' : 'bg-gray-100 text-gray-600 border-gray-200'}`}>
                             {student.total > 0 ? `+${student.total}` : student.total}
                           </span>
+                        </td>
+                        {/* [신규 추가] 안내장 인쇄 버튼 */}
+                        <td className="px-8 py-6 text-center">
+                          <button 
+                            onClick={() => setReportStudent({ student, reportData: student })} 
+                            className="px-5 py-3 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white rounded-xl font-black transition-all whitespace-nowrap shadow-sm"
+                          >
+                            🖨️ 인쇄
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -1672,93 +1519,97 @@ const App = () => {
           </div>
         )}
 
-        {/* --- 개별 모달 --- */}
+        {/* --- 공통 팝업 영역 --- */}
 
-        {/* [복구 및 개선] 과제 관리 학생 상세 모달창 - 팝업 없이 버튼 바로 노출 */}
-        {assignmentDetailStudent && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-4 md:p-6 pb-20 md:pb-6">
-            <div className="bg-white rounded-[40px] w-full max-w-4xl h-[85vh] md:max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
-              <div className="p-6 md:p-10 border-b-2 border-gray-100 flex justify-between items-start shrink-0 bg-indigo-50/50">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-lg font-black tracking-wide">학생 상세 현황</span>
-                    <h4 className="text-3xl md:text-4xl font-black text-gray-800">{assignmentDetailStudent.num}. {assignmentDetailStudent.name}</h4>
+        {/* --- [신규] 개별 학생 안내장 인쇄 모달 --- */}
+        {reportStudent && (() => {
+          const sCounseling = [];
+          Object.entries(counselingData).forEach(([d, records]) => {
+            records.forEach(r => {
+              if (r.studentId === reportStudent.student.id) sCounseling.push({ date: d, ...r });
+            });
+          });
+          sCounseling.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+          return (
+            <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 print:block print:relative print:inset-auto print:bg-white print:p-0" onClick={() => setReportStudent(null)}>
+              <div 
+                className="bg-white rounded-[40px] w-full max-w-3xl max-h-[90vh] shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-200 print:shadow-none print:w-full print:h-auto print:max-h-none print:rounded-none overflow-hidden" 
+                onClick={e => e.stopPropagation()}
+              >
+                <div className="flex justify-between items-center p-8 border-b-2 border-gray-100 bg-indigo-50/50 no-print shrink-0">
+                  <div className="flex items-center gap-3">
+                    <span className="bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-black text-sm">안내장 미리보기</span>
+                    <h4 className="text-2xl lg:text-3xl font-black text-gray-800">가정통신문 인쇄</h4>
                   </div>
-                  <p className="text-gray-500 font-bold text-sm md:text-base ml-1">과제별 성취도 확인 및 평가 (버튼을 눌러 바로 평가하세요)</p>
+                  <div className="flex gap-3">
+                    <button onClick={() => window.print()} className="px-6 py-3 bg-indigo-600 text-white rounded-2xl font-black shadow-lg hover:bg-indigo-700 transition-transform active:scale-95 flex items-center gap-2">
+                      🖨️ 바로 인쇄
+                    </button>
+                    <button onClick={() => setReportStudent(null)} className="p-3 bg-white hover:bg-red-50 hover:text-red-500 rounded-2xl shadow-sm border border-gray-200 transition-colors"><X size={24} strokeWidth={3}/></button>
+                  </div>
                 </div>
-                <button onClick={() => {setAssignmentDetailStudent(null); setAssignmentFilter('all');}} className="p-3 md:p-4 bg-white hover:bg-red-50 hover:text-red-500 rounded-2xl shadow-sm border border-gray-200 transition-colors"><X size={24} strokeWidth={3} /></button>
-              </div>
 
-              <div className="px-6 md:px-10 py-4 md:py-5 bg-white border-b border-gray-100 flex gap-3 shrink-0 overflow-x-auto hide-scrollbar">
-                <button onClick={() => setAssignmentFilter('all')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'all' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>전체보기</button>
-                <button onClick={() => setAssignmentFilter('incomplete')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'incomplete' ? 'bg-red-500 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>미완료 (△, -)</button>
-                <button onClick={() => setAssignmentFilter('complete')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'complete' ? 'bg-green-500 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>완료 (◎, ○)</button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-4 md:space-y-6 bg-slate-50/50">
-                {assignments
-                  .filter(a => {
-                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
-                    if (assignmentFilter === 'complete') return status === 'done' || status === 'ing';
-                    if (assignmentFilter === 'incomplete') return status !== 'done' && status !== 'ing';
-                    return true;
-                  })
-                  .map(a => {
-                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
-                    const memo = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[`memo_${a.id}`] || '';
-                    const subject = assignmentSubjects.find(s => s.id === a.subjectId);
-                    
-                    return (
-                      <div key={a.id} className="bg-white p-5 md:p-8 rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col gap-4 hover:border-indigo-200 transition-colors">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                          <div className="flex-1 overflow-hidden pr-4">
-                            <div className="flex items-center gap-3 mb-2">
-                              <span className="text-xs font-black px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded-md uppercase">{subject?.title || '기타'}</span>
-                              <span className="text-sm font-bold text-gray-400">{a.dueDate}</span>
-                            </div>
-                            <h5 className="font-black text-gray-800 text-2xl truncate">{a.title}</h5>
-                          </div>
-                          
-                          {/* [복구 완료] 매우잘함, 잘함, 미흡, 미완료를 팝업 없이 바로 클릭하여 선택 */}
-                          <div className="flex gap-2 w-full md:w-auto shrink-0">
-                            {[
-                              { s: 'done', l: '◎' },
-                              { s: 'ing', l: '○' },
-                              { s: 'bad', l: '△' },
-                              { s: null, l: '-' }
-                            ].map(item => (
-                              <button 
-                                key={item.l}
-                                onClick={() => {
-                                  if(item.s !== null) playSound('magic'); 
-                                  // [복구 완료] 선택한 날짜를 기준으로 점수 업데이트 (매직 점수 연동 완벽 적용)
-                                  setTaskStatus(assignmentDetailStudent.id, a.id, item.s, a.dueDate);
-                                }}
-                                className={`flex-1 md:w-16 py-3 rounded-2xl text-2xl font-black transition-all border-2 ${status === item.s ? getStatusColorClass(item.s) + ' border-transparent scale-105 shadow-md' : 'bg-slate-50 text-gray-400 border-gray-100 hover:bg-indigo-50 hover:text-indigo-400'}`}
-                              >
-                                {item.l}
-                              </button>
-                            ))}
-                          </div>
+                <div id="print-section" className="p-10 lg:p-12 overflow-y-auto print:overflow-visible print:p-0 text-gray-800 flex-1 hide-scrollbar">
+                  <div className="text-center mb-10 border-b-4 border-indigo-600 pb-8">
+                    <h2 className="text-4xl lg:text-5xl font-black text-gray-900 mb-4">{reportStudent.student.name} 학생 학교 생활 안내장</h2>
+                    <p className="text-lg font-bold text-gray-500">학부모님 안녕하십니까? {reportStudent.student.name} 학생의 학교 생활 종합 안내입니다.</p>
+                  </div>
+                  
+                  <div className="space-y-8">
+                    <div className="bg-slate-50 p-8 rounded-3xl border-2 border-indigo-50 print:border-gray-200">
+                      <h3 className="text-2xl font-black text-indigo-700 mb-6 flex items-center gap-2"><BarChart2 size={28}/> 1. 학습 및 생활 태도 요약</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xl font-black text-gray-700">
+                        <div className="flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                          <span>✅ 과제 수행 점수</span> <span className="text-emerald-600 text-2xl">+{reportStudent.reportData.taskPts}점</span>
                         </div>
-                        
-                        <div className="w-full">
-                          <input 
-                            value={memo} 
-                            onChange={(e) => updateTaskMemo(assignmentDetailStudent.id, a.id, e.target.value, a.dueDate)}
-                            placeholder="개별 메모 입력 (선택)" 
-                            className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-400 focus:bg-white px-5 py-3.5 rounded-2xl outline-none text-base font-bold text-gray-700 transition-colors"
-                          />
+                        <div className="flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                          <span>✨ 칭찬 매직 횟수</span> <span className="text-blue-600 text-2xl">{reportStudent.reportData.plusCount}회</span>
+                        </div>
+                        <div className="flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                          <span>⚡ 노력 매직 횟수</span> <span className="text-red-500 text-2xl">{reportStudent.reportData.minusCount}회</span>
+                        </div>
+                        <div className="flex justify-between items-center bg-indigo-600 text-white p-5 rounded-2xl shadow-md">
+                          <span>🏆 종합 매직 점수</span> <span className="text-3xl">{reportStudent.reportData.total > 0 ? `+${reportStudent.reportData.total}` : reportStudent.reportData.total}점</span>
                         </div>
                       </div>
-                    );
-                  })
-                }
-                {assignments.length === 0 && <div className="text-center py-20 text-gray-400 font-bold text-lg">할당된 과제가 없습니다.</div>}
+                    </div>
+
+                    <div className="bg-indigo-50/50 p-8 rounded-3xl border-2 border-indigo-100 print:border-gray-200">
+                      <h3 className="text-2xl font-black text-indigo-800 mb-4 flex items-center gap-2"><MessageCircle size={28}/> 2. 담임 선생님 코멘트</h3>
+                      <p className="text-xl font-bold text-gray-700 leading-relaxed whitespace-pre-wrap bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        {reportStudent.student.memo || "우리 반의 소중한 학생입니다. 앞으로도 긍정적인 모습으로 학교생활을 할 수 있도록 가정에서도 많은 격려 부탁드립니다."}
+                      </p>
+                    </div>
+
+                    {sCounseling.length > 0 && (
+                      <div className="bg-slate-50 p-8 rounded-3xl border-2 border-gray-200 print:border-gray-200">
+                        <h3 className="text-2xl font-black text-gray-800 mb-6 flex items-center gap-2"><Users size={28}/> 3. 주요 상담 및 관찰 기록</h3>
+                        <div className="space-y-4">
+                          {sCounseling.map(r => (
+                            <div key={r.id} className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col gap-2">
+                              <div className="flex items-center justify-between">
+                                <span className="font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg text-sm">{r.date}</span>
+                                <span className={`font-black text-sm px-3 py-1 rounded-lg ${r.resolved ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'}`}>{r.resolved ? '해결 완료' : '미해결/관찰중'}</span>
+                              </div>
+                              <p className="font-bold text-gray-700 text-lg mt-2">상담 내용: {r.content}</p>
+                              {r.result && <p className="font-bold text-gray-500 text-base mt-1">조치 결과: {r.result}</p>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="text-center pt-8 mt-8 border-t-2 border-dashed border-gray-300 print:block hidden">
+                      <p className="text-xl font-black text-gray-800 mb-2">위와 같이 긍정적으로 학교생활에 참여하고 있음을 안내해 드립니다.</p>
+                      <p className="text-2xl font-black text-gray-900 mt-8">담임 교사 ________________ (인)</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* 대형 뷰어 모달 */}
         {viewerTarget && (
@@ -1856,6 +1707,13 @@ const App = () => {
       <style dangerouslySetContent={{__html: `
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @media print {
+          body * { visibility: hidden; }
+          #print-section, #print-section * { visibility: visible; }
+          #print-section { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 20px; }
+          .no-print { display: none !important; }
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+        }
       `}} />
     </div>
   );
