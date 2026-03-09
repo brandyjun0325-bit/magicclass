@@ -352,6 +352,40 @@ function useLocalStorage(key, initialValue) {
   return [storedValue, setStoredValue];
 }
 
+// --- 자체 내장 Sound Player ---
+const playSound = (type) => {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if (type === 'magic') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1); 
+      gain.gain.setValueAtTime(1, ctx.currentTime); 
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4); 
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
+    } else if (type === 'thunder') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(150, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.2);
+      gain.gain.setValueAtTime(1, ctx.currentTime); 
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
+    }
+  } catch(e) {
+    console.log("오디오 재생 오류:", e);
+  }
+};
+
 const App = () => {
   const formatDate = (date) => {
     const y = date.getFullYear();
@@ -397,7 +431,8 @@ const App = () => {
   const [customStartDate, setCustomStartDate] = useState(formatDate(new Date()));
   const [customEndDate, setCustomEndDate] = useState(formatDate(new Date()));
   const [reportSortOrder, setReportSortOrder] = useState('desc');
-  // [복구 1] 사유 입력칸 부활
+  
+  // [복구 완료] 매직 점수 사유 입력 상태
   const [magicReasonInput, setMagicReasonInput] = useState('');
 
   const [selectedExternalLink, setSelectedExternalLink] = useState(null);
@@ -448,7 +483,7 @@ const App = () => {
   };
 
   const getStudentTotalPoints = (studentId) => {
-    const manualPoints = (magicPoints[studentId] || []).reduce((acc, p) => acc + p.amount, 0);
+    const manualPoints = (magicPoints[studentId] || []).reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
     const taskPoints = getStudentTaskPoints(studentId);
     return manualPoints + taskPoints;
   };
@@ -535,28 +570,30 @@ const App = () => {
     }
   };
 
-  const setTaskStatus = (studentId, taskId, status, dueDate) => {
+  // [복구 3] 과제 상태 변경 시 dateKey(현재 보고 있는 날짜)로 연계 되도록 복구
+  const setTaskStatus = (studentId, taskId, status, date) => {
     setAssignmentStatus(prev => {
-      const dayData = prev[dueDate] || {};
+      const dayData = prev[date] || {};
       const studentData = dayData[studentId] || {};
-      return { ...prev, [dueDate]: { ...dayData, [studentId]: { ...studentData, [taskId]: status } } };
+      return { ...prev, [date]: { ...dayData, [studentId]: { ...studentData, [taskId]: status } } };
+    });
+    setStatusPickerTarget(null);
+  };
+
+  const updateTaskMemo = (studentId, taskId, memo, date) => {
+    setAssignmentStatus(prev => {
+      const dayData = prev[date] || {};
+      const studentData = dayData[studentId] || {};
+      return { ...prev, [date]: { ...dayData, [studentId]: { ...studentData, [`memo_${taskId}`]: memo } } };
     });
   };
 
-  const updateTaskMemo = (studentId, taskId, memo, dueDate) => {
+  const bulkTaskDone = (taskId, date) => {
     setAssignmentStatus(prev => {
-      const dayData = prev[dueDate] || {};
-      const studentData = dayData[studentId] || {};
-      return { ...prev, [dueDate]: { ...dayData, [studentId]: { ...studentData, [`memo_${taskId}`]: memo } } };
-    });
-  };
-
-  const bulkTaskDone = (taskId, dueDate) => {
-    setAssignmentStatus(prev => {
-      const dayData = prev[dueDate] || {};
+      const dayData = prev[date] || {};
       const newDayData = { ...dayData };
       students.forEach(s => { newDayData[s.id] = { ...(newDayData[s.id] || {}), [taskId]: 'done' }; });
-      return { ...prev, [dueDate]: newDayData };
+      return { ...prev, [date]: newDayData };
     });
   };
 
@@ -659,41 +696,45 @@ const App = () => {
     }
   };
 
-  // [복구 2] 매직 점수 내역 삭제 함수 완벽 복구
+  // [복구 2] 매직 점수 개별 내역 삭제 함수 완벽 복구
   const deleteMagicPoint = (studentId, pointId) => {
-    setMagicPoints(prev => ({
-      ...prev,
-      [studentId]: (prev[studentId] || []).filter(p => p.id !== pointId)
-    }));
+    setMagicPoints(prev => {
+      const newPoints = { ...prev };
+      if (newPoints[studentId]) {
+        newPoints[studentId] = newPoints[studentId].filter(p => p.id !== pointId);
+      }
+      return newPoints;
+    });
   };
 
-  // [복구 3] 매직 점수 부여 시 사유 반영되도록 수정
+  // [복구 3] 매직 점수 부여 시 사유까지 함께 저장
   const handleMagicPointAction = (studentIdsArray, type) => {
     if (studentIdsArray.length === 0) return alert('학생을 먼저 선택해주세요.');
     playSound(type === 'plus' ? 'magic' : 'thunder');
     
     const reasonText = magicReasonInput.trim() || (type === 'plus' ? '칭찬' : '노력');
+    const amount = type === 'plus' ? Number(magicPointValue) : -Number(magicPointValue);
 
     setMagicPoints(prev => {
       const newPoints = { ...prev };
-      const amount = type === 'plus' ? magicPointValue : -magicPointValue;
-      
       studentIdsArray.forEach(studentId => {
         const newRecord = { 
-          id: 'p' + Date.now() + Math.random(), 
+          id: 'p' + Date.now() + Math.random().toString(36).substr(2, 9), 
           date: dateKey, 
           timestamp: new Date().getTime(), 
           type, 
           amount,
           reason: reasonText 
         };
-        newPoints[studentId] = [newRecord, ...(newPoints[studentId] || [])];
+        const existingRecords = Array.isArray(newPoints[studentId]) ? newPoints[studentId] : [];
+        newPoints[studentId] = [newRecord, ...existingRecords];
       });
       return newPoints;
     });
 
-    // 부여 후 선택 해제 (연속 클릭 방지)
+    // 점수 부여 후 선택 및 사유 초기화
     setSelectedStudentsForMagic([]);
+    setMagicReasonInput('');
   };
 
   const handleResetMagicPoints = () => {
@@ -755,7 +796,7 @@ const App = () => {
         return true;
       });
 
-      const manualTotal = filteredPoints.reduce((acc, curr) => acc + curr.amount, 0);
+      const manualTotal = filteredPoints.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
       const plusCount = filteredPoints.filter(p => p.type === 'plus').length;
       const minusCount = filteredPoints.filter(p => p.type === 'minus').length;
 
@@ -836,7 +877,7 @@ const App = () => {
           csvContent += `${student.num},${escape(student.name)},${date},상담기록,${escape('작성:'+c.recorder)},${c.resolved?'해결완료':'미해결'},${escape('내용:'+c.content + ' / 조치:' + c.result)}\n`;
         });
 
-        // [복구 4] CSV 다운로드 시 사유도 함께 출력되도록 수정
+        // CSV 다운로드 시 매직점수 사유 출력
         (magicPoints[student.id] || []).filter(p => p.date === date).forEach(p => {
           csvContent += `${student.num},${escape(student.name)},${date},매직점수,${p.type === 'plus' ? '칭찬' : '노력'},${p.amount > 0 ? '+'+p.amount : p.amount},${escape(p.reason)}\n`;
         });
@@ -971,7 +1012,7 @@ const App = () => {
                     const dotColor = getAttendanceDot(curDate);
                     return (
                       <div key={d} className="relative flex flex-col items-center">
-                        <button onClick={() => setSelectedDate(curDate)} className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold transition-all ${selectedDate.getDate() === d ? 'bg-indigo-600 text-white shadow-lg scale-110' : 'hover:bg-indigo-50 text-gray-700'}`}>{d}</button>
+                        <button onClick={() => setSelectedDate(curDate)} className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold transition-all ${selectedDate.getDate() === d ? 'bg-indigo-600 text-white shadow-md scale-110' : 'hover:bg-indigo-50 text-gray-700'}`}>{d}</button>
                         {dotColor && <div className={`absolute bottom-0 w-2 h-2 rounded-full ${dotColor}`} />}
                       </div>
                     );
@@ -994,7 +1035,6 @@ const App = () => {
                       <button onClick={() => toggleAttendance(student.id)} className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center transition-all shrink-0 ${state.present ? 'bg-green-500 text-white shadow-md scale-105' : 'bg-gray-200 text-white'}`}><CheckCircle size={28} strokeWidth={3} /></button>
                       <div className="w-24 lg:w-32 font-black text-2xl lg:text-3xl text-gray-800 shrink-0 truncate whitespace-nowrap">{student.name}</div>
                       <div className="relative shrink-0">
-                        {/* [수정] 기분 버튼 비활성화 해제. 클릭하면 출석 처리되며 기분 창 띄움 */}
                         <button 
                           onClick={(e) => setMoodPickerTarget({ studentId: student.id, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 260, 160) })} 
                           className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-3xl lg:text-4xl transition-all shadow-sm hover:border-indigo-300 hover:shadow-md ${state.present ? 'opacity-100' : 'opacity-40'}`}
@@ -1148,36 +1188,23 @@ const App = () => {
                                 <div className="mt-2 p-5 lg:p-8 bg-slate-50 border-t-2 border-indigo-100 rounded-b-2xl">
                                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-3">
                                     <h5 className="font-black text-indigo-700 text-base lg:text-lg flex items-center gap-2"><Sparkles size={18}/> 성취도 기록 (매직 점수 자동 연계)</h5>
-                                    <button onClick={() => bulkTaskDone(a.id, a.dueDate)} className="text-sm bg-blue-600 text-white px-5 py-2.5 rounded-xl font-black shadow-md hover:bg-blue-700 transition-transform active:scale-95">전원 ◎ 완료</button>
+                                    <button onClick={() => bulkTaskDone(a.id, dateKey)} className="text-sm bg-blue-600 text-white px-5 py-2.5 rounded-xl font-black shadow-md hover:bg-blue-700 transition-transform active:scale-95">전원 ◎ 완료</button>
                                   </div>
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-5">
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
                                     {students.map(s => {
-                                      const status = assignmentStatus[a.dueDate]?.[s.id]?.[a.id] || null;
+                                      // [복구 2] dateKey를 사용하여 과제 점수 상태를 매직점수 및 당일 통계와 연동
+                                      const status = assignmentStatus[dateKey]?.[s.id]?.[a.id] || null;
                                       return (
                                         <div key={s.id} className="flex flex-col gap-3 p-4 lg:p-5 rounded-[24px] bg-white border-2 border-gray-100 shadow-sm relative hover:border-indigo-200 transition-colors">
-                                          <div className="flex items-center justify-between mb-1">
+                                          {/* [복구 1] 팝업창을 여는 예전 UI 방식 완벽 복구 */}
+                                          <div onClick={(e) => setStatusPickerTarget({ studentId: s.id, taskId: a.id, date: dateKey, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 200, 220) })} className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-all border-2 shadow-sm hover:scale-[1.03] active:scale-95 ${getStatusColorClass(status)}`}>
                                             <span className="font-black text-xl truncate pr-2 whitespace-nowrap">{s.num}. {s.name}</span>
+                                            <div className="flex flex-col items-end">
+                                              <span className="font-black text-3xl leading-none">{getStatusIcon(status)}</span>
+                                              <span className="text-[10px] opacity-80 font-bold mt-1">클릭하여 변경</span>
+                                            </div>
                                           </div>
-                                          <div className="flex gap-2 w-full">
-                                            {[
-                                              { s: 'done', l: '◎' },
-                                              { s: 'ing', l: '○' },
-                                              { s: 'bad', l: '△' },
-                                              { s: null, l: '-' }
-                                            ].map(item => (
-                                              <button 
-                                                key={item.l}
-                                                onClick={() => {
-                                                  if(item.s !== null) playSound('magic'); 
-                                                  setTaskStatus(s.id, a.id, item.s, a.dueDate);
-                                                }}
-                                                className={`flex-1 py-3 rounded-xl text-2xl font-black transition-all border-2 ${status === item.s ? getStatusColorClass(item.s) + ' border-transparent scale-105 shadow-md' : 'bg-slate-50 text-gray-400 border-gray-100 hover:bg-indigo-50 hover:text-indigo-400'}`}
-                                              >
-                                                {item.l}
-                                              </button>
-                                            ))}
-                                          </div>
-                                          <input value={assignmentStatus[a.dueDate]?.[s.id]?.[`memo_${a.id}`] || ''} onChange={(e) => updateTaskMemo(s.id, a.id, e.target.value, a.dueDate)} placeholder="개별 메모 입력 (선택)" className="w-full bg-slate-50 border border-gray-200 px-4 py-3 rounded-xl outline-none focus:border-indigo-400 focus:bg-white text-sm font-bold text-gray-700 transition-all mt-1" />
+                                          <input value={assignmentStatus[dateKey]?.[s.id]?.[`memo_${a.id}`] || ''} onChange={(e) => updateTaskMemo(s.id, a.id, e.target.value, dateKey)} placeholder="개별 메모 입력" className="w-full bg-slate-50 border border-gray-200 px-4 py-3 rounded-xl outline-none focus:border-indigo-400 focus:bg-white text-sm font-bold text-gray-700 transition-all" />
                                         </div>
                                       );
                                     })}
@@ -1400,7 +1427,7 @@ const App = () => {
           </div>
         )}
 
-        {/* 6. 매직 점수 */}
+        {/* 6. 매직 점수 (복구: 개별 내역 리스트 추가/삭제 및 사유 입력) */}
         {activeTab === 'magicpoints' && (
           <div className="space-y-8 max-w-[1600px] mx-auto pb-10">
             <div className="bg-white p-6 lg:p-8 rounded-[40px] border border-indigo-100 shadow-sm flex flex-col lg:flex-row items-start lg:items-end justify-between gap-6">
@@ -1429,20 +1456,22 @@ const App = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto p-5 bg-slate-50 rounded-3xl border border-gray-200 shadow-inner">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-2xl border border-gray-200 shadow-sm">
+                  <span className="text-base font-black text-gray-600 whitespace-nowrap">부여 점수</span>
                   <select 
                     value={magicPointValue} 
                     onChange={(e) => setMagicPointValue(Number(e.target.value))}
-                    className="w-16 bg-white border border-gray-200 px-2 py-3 rounded-2xl font-black text-indigo-700 text-center appearance-none outline-none cursor-pointer shadow-sm text-lg"
+                    className="w-20 bg-transparent text-xl font-black text-indigo-700 text-center appearance-none outline-none cursor-pointer"
                   >
                     {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}점</option>)}
                   </select>
+                  {/* [복구] 사유 입력칸 추가 */}
                   <input 
                     value={magicReasonInput} 
                     onChange={(e) => setMagicReasonInput(e.target.value)} 
                     onKeyDown={(e) => {if(e.key === 'Enter') handleMagicPointAction(selectedStudentsForMagic, 'plus')}}
                     placeholder="사유 (예: 발표)" 
-                    className="flex-1 w-32 sm:w-40 bg-white border border-gray-200 px-4 py-3 rounded-2xl font-bold text-gray-700 outline-none focus:border-indigo-400 shadow-sm"
+                    className="flex-1 w-32 sm:w-48 bg-transparent border-l border-gray-200 pl-4 py-2 font-bold text-gray-700 outline-none placeholder-gray-300"
                   />
                 </div>
                 <div className="flex gap-3 w-full sm:w-auto">
@@ -1462,40 +1491,40 @@ const App = () => {
                   <div 
                     key={student.id} 
                     onClick={() => setSelectedStudentsForMagic(p => p.includes(student.id) ? p.filter(id => id !== student.id) : [...p, student.id])}
-                    className={`bg-white rounded-[32px] p-5 shadow-sm border-4 cursor-pointer transition-all hover:shadow-lg flex flex-col items-center justify-between min-h-[260px] ${isSelected ? 'border-indigo-500 bg-indigo-50/30 transform scale-[1.02]' : 'border-transparent hover:border-indigo-200'}`}
+                    className={`bg-white rounded-[32px] p-6 shadow-sm border-4 cursor-pointer transition-all hover:shadow-lg flex flex-col items-center justify-between min-h-[300px] ${isSelected ? 'border-indigo-500 bg-indigo-50/30 transform scale-[1.02]' : 'border-transparent hover:border-indigo-200'}`}
                   >
-                    <div className="w-full flex justify-between items-start mb-2">
+                    <div className="w-full flex justify-between items-start mb-3">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 transition-colors ${isSelected ? 'bg-indigo-500 border-indigo-500 text-white' : 'border-gray-200 bg-gray-50'}`}>
                         {isSelected && <Check size={18} strokeWidth={4} />}
                       </div>
                     </div>
                     
-                    <div className="text-2xl md:text-3xl font-black text-gray-800 text-center w-full truncate px-2 whitespace-nowrap tracking-tight">
+                    <div className="text-3xl font-black text-gray-800 text-center w-full truncate px-2 whitespace-nowrap tracking-tight">
                       {student.num}. {student.name}
                     </div>
                     
-                    <div className={`text-6xl font-black my-3 transition-all ${total > 0 ? 'text-blue-600 drop-shadow-sm' : total < 0 ? 'text-red-500 drop-shadow-sm' : 'text-gray-300'}`}>
+                    <div className={`text-7xl font-black my-4 transition-all ${total > 0 ? 'text-blue-600 drop-shadow-sm' : total < 0 ? 'text-red-500 drop-shadow-sm' : 'text-gray-300'}`}>
                       {total > 0 ? `+${total}` : total}
                     </div>
 
-                    <div className="flex gap-2 w-full mt-1">
-                      <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'plus'); }} className="flex-1 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white font-black py-2.5 rounded-xl transition-colors text-base border border-blue-100 shadow-sm">칭찬</button>
-                      <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'minus'); }} className="flex-1 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white font-black py-2.5 rounded-xl transition-colors text-base border border-red-100 shadow-sm">노력</button>
+                    <div className="flex gap-3 w-full mt-2">
+                      <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'plus'); }} className="flex-1 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white font-black py-3 rounded-2xl transition-colors text-lg border border-blue-100 shadow-sm">칭찬</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'minus'); }} className="flex-1 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white font-black py-3 rounded-2xl transition-colors text-lg border border-red-100 shadow-sm">노력</button>
                     </div>
 
-                    {/* [복구] 지워졌던 최근 내역 리스트 완벽 부활 */}
-                    <div className="mt-3 w-full bg-slate-50 rounded-2xl p-3 border border-gray-100 min-h-[70px] flex flex-col justify-start" onClick={(e) => e.stopPropagation()}>
-                      <h5 className="text-[11px] font-black text-gray-400 mb-1 text-left px-1">최근 기록</h5>
+                    {/* [복구 완료] 최근 기록 리스트 및 X(삭제) 버튼 */}
+                    <div className="mt-4 w-full bg-slate-50 rounded-2xl p-3 border border-gray-100 min-h-[80px] flex flex-col justify-start" onClick={(e) => e.stopPropagation()}>
+                      <h5 className="text-[12px] font-black text-gray-400 mb-1.5 text-left px-1">최근 기록</h5>
                       {points.slice(0, 2).map(p => (
-                        <div key={p.id} className="flex justify-between items-center text-xs group py-0.5 px-1 rounded hover:bg-white transition-colors">
+                        <div key={p.id} className="flex justify-between items-center text-sm group py-1 px-1.5 rounded-lg hover:bg-white transition-colors">
                           <div className="flex items-center gap-2 truncate pr-2">
                             <span className={`font-black shrink-0 ${p.type==='plus'?'text-blue-600':'text-red-500'}`}>{p.amount > 0 ? `+${p.amount}` : p.amount}</span>
                             <span className="text-gray-600 font-bold truncate">{p.reason}</span>
                           </div>
-                          <button onClick={() => deleteMagicPoint(student.id, p.id)} className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 shrink-0 transition-opacity"><X size={14} strokeWidth={3}/></button>
+                          <button onClick={() => deleteMagicPoint(student.id, p.id)} className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 shrink-0 transition-opacity"><X size={16} strokeWidth={3}/></button>
                         </div>
                       ))}
-                      {points.length === 0 && <p className="text-center py-1 text-gray-400 text-xs font-bold opacity-50">기록 없음</p>}
+                      {points.length === 0 && <p className="text-center py-2 text-gray-400 text-xs font-bold opacity-50">기록 없음</p>}
                     </div>
                   </div>
                 );
@@ -1639,6 +1668,72 @@ const App = () => {
 
         {/* --- 공통 팝업 영역 --- */}
 
+        {/* [복구 완료] 과제 상태 변경 팝업창 (Z-index 및 위치 최적화) */}
+        {statusPickerTarget && (
+          <div className="fixed inset-0 z-[9999]" onClick={() => setStatusPickerTarget(null)}>
+            <div 
+              className="absolute bg-white rounded-3xl shadow-2xl border-2 border-indigo-100 p-3 flex flex-col gap-2 w-52 animate-in zoom-in-95 duration-150"
+              style={{ left: Math.max(10, statusPickerTarget.x), top: Math.max(10, statusPickerTarget.y) }}
+              onClick={e => e.stopPropagation()}
+            >
+              {[
+                { s: 'done', l: '매우잘함 (+3점)' },
+                { s: 'ing', l: '잘함 (+2점)' },
+                { s: 'bad', l: '미흡 (+1점)' },
+                { s: null, l: '미완료 (0점)' }
+              ].map(item => (
+                <button 
+                  key={item.l}
+                  onClick={() => {
+                    playSound('magic'); 
+                    // [복구 완료] 선택한 날짜에 맞게 점수 연계 처리
+                    setTaskStatus(statusPickerTarget.studentId, statusPickerTarget.taskId, item.s, statusPickerTarget.date);
+                  }}
+                  className={`flex items-center justify-between px-4 py-4 rounded-2xl text-sm font-black transition-all border ${getStatusColorClass(item.s)} hover:scale-[1.03] active:scale-95`}
+                >
+                  <span className="text-2xl font-black">{getStatusIcon(item.s)}</span>
+                  <span>{item.l}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {moodPickerTarget && (
+          <div className="fixed inset-0 z-[9999]" onClick={() => setMoodPickerTarget(null)}>
+            <div 
+              className="absolute bg-white p-5 rounded-[32px] shadow-2xl border-2 border-gray-100 grid grid-cols-4 gap-3 w-64 animate-in zoom-in-95 duration-150"
+              style={{ left: Math.max(10, moodPickerTarget.x), top: Math.max(10, moodPickerTarget.y) }}
+              onClick={e => e.stopPropagation()}
+            >
+              {moods.map(m => (
+                <button 
+                  key={m} 
+                  onClick={() => {
+                    setAttendanceData(p => ({
+                      ...p, 
+                      [dateKey]: {
+                        ...p[dateKey], 
+                        [moodPickerTarget.studentId]: {
+                          ...(p[dateKey]?.[moodPickerTarget.studentId] || { memo: '' }), 
+                          present: true, 
+                          mood: m
+                        }
+                      }
+                    }));
+                    setMoodPickerTarget(null);
+                  }} 
+                  className="w-12 h-12 text-3xl hover:bg-slate-100 rounded-2xl transition-transform hover:scale-110 active:scale-95 flex items-center justify-center"
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* --- 개별 모달 --- */}
+
         {/* 대형 뷰어 모달 */}
         {viewerTarget && (
           <ConceptViewerModal
@@ -1703,15 +1798,6 @@ const App = () => {
               else setSubmissions(prev => [{ id: 'sm' + Date.now(), title, date }, ...prev]);
               setShowSubmissionModal(null);
             }}
-          />
-        )}
-
-        {showStudentModal && (
-          <StudentEditModal 
-            key={showStudentModal.id || `new_student_${showStudentModal.num}`}
-            data={showStudentModal} 
-            onClose={() => setShowStudentModal(null)} 
-            onSave={saveStudent} 
           />
         )}
 
