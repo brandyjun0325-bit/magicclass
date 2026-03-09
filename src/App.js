@@ -352,40 +352,6 @@ function useLocalStorage(key, initialValue) {
   return [storedValue, setStoredValue];
 }
 
-// --- 자체 내장 Sound Player ---
-const playSound = (type) => {
-  try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContext) return;
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    if (type === 'magic') {
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1); 
-      gain.gain.setValueAtTime(1, ctx.currentTime); 
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4); 
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.4);
-    } else if (type === 'thunder') {
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(150, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.2);
-      gain.gain.setValueAtTime(1, ctx.currentTime); 
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.4);
-    }
-  } catch(e) {
-    console.log("오디오 재생 오류:", e);
-  }
-};
-
 const App = () => {
   const formatDate = (date) => {
     const y = date.getFullYear();
@@ -451,7 +417,6 @@ const App = () => {
   const [submissions, setSubmissions] = useLocalStorage('magic_submissions', []);
   const [submissionStatus, setSubmissionStatus] = useLocalStorage('magic_submissionStatus', {});
   
-  // [수정] 과제 과목과 완전학습 과목 상태를 완전 분리
   const [assignmentSubjects, setAssignmentSubjects] = useLocalStorage('magic_assignment_subjects', [{ id: 'as1', title: '국어' }, { id: 'as2', title: '수학' }]);
   const [masterySubjects, setMasterySubjects] = useLocalStorage('magic_mastery_subjects', [{ id: 'ms1', title: '국어' }, { id: 'ms2', title: '수학' }]);
   
@@ -614,7 +579,6 @@ const App = () => {
     }
   };
 
-  // [수정] 과목 저장 시 Type(assignment/mastery) 구분
   const saveSubject = (id, title, type) => {
     if(!title) return;
     if (type === 'assignment') {
@@ -627,7 +591,6 @@ const App = () => {
     setShowSubjectModal(null);
   };
 
-  // [수정] 과목 삭제 시 Type 구분
   const deleteSubject = (id, type, e) => {
     e.stopPropagation();
     if (type === 'assignment') {
@@ -643,7 +606,6 @@ const App = () => {
     }
   };
 
-  // [수정] 과목 순서 변경 시 Type 구분
   const moveSubject = (index, direction, type, e) => {
     e.stopPropagation();
     const setFn = type === 'assignment' ? setAssignmentSubjects : setMasterySubjects;
@@ -919,7 +881,7 @@ const App = () => {
             {activeTab === 'submissions' && '제출 관리'}
             {activeTab === 'assignments' && '과제 관리'}
             {activeTab === 'status' && '과제 현황 종합'}
-            {activeTab === 'mastery' && '완전 학습 (개념 사전)'}
+            {activeTab === 'mastery' && '완전 학습 (중요 개념 관리)'}
             {activeTab === 'counseling' && '학생 상담 기록'}
             {activeTab === 'magicpoints' && '매직 점수 관리'}
             {activeTab === 'externals' && '외부 자료 관리'}
@@ -1006,7 +968,13 @@ const App = () => {
                       <button onClick={() => toggleAttendance(student.id)} className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center transition-all shrink-0 ${state.present ? 'bg-green-500 text-white shadow-md scale-105' : 'bg-gray-200 text-white'}`}><CheckCircle size={28} strokeWidth={3} /></button>
                       <div className="w-24 lg:w-32 font-black text-2xl lg:text-3xl text-gray-800 shrink-0 truncate whitespace-nowrap">{student.name}</div>
                       <div className="relative shrink-0">
-                        <button disabled={!state.present} onClick={(e) => setMoodPickerTarget({ studentId: student.id, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 260, 160) })} className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-3xl lg:text-4xl transition-all shadow-sm ${state.present ? 'hover:border-indigo-300 hover:shadow-md' : 'opacity-30'}`}>{state.mood}</button>
+                        {/* [수정] 기분 버튼 disabled 해제, 클릭 시 출석되도록 수정 */}
+                        <button 
+                          onClick={(e) => setMoodPickerTarget({ studentId: student.id, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 260, 160) })} 
+                          className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-3xl lg:text-4xl transition-all shadow-sm hover:border-indigo-300 hover:shadow-md ${state.present ? 'opacity-100' : 'opacity-40'}`}
+                        >
+                          {state.mood}
+                        </button>
                       </div>
                       <div className="flex-1"><input value={state.memo} onChange={(e) => setAttendanceData(p => ({...p, [dateKey]: {...p[dateKey], [student.id]: {...state, memo: e.target.value}}}))} placeholder="비고 입력 (선택)" className="w-full bg-white border border-gray-100 px-5 py-4 rounded-2xl focus:ring-2 focus:ring-indigo-200 outline-none text-base lg:text-lg font-bold text-gray-700 shadow-sm" /></div>
                     </div>
@@ -1164,7 +1132,6 @@ const App = () => {
                                           <div className="flex items-center justify-between mb-1">
                                             <span className="font-black text-xl truncate pr-2 whitespace-nowrap">{s.num}. {s.name}</span>
                                           </div>
-                                          {/* [복구 및 개선] 팝업 없이 카드 안에 성취도 버튼 4개 직접 노출 */}
                                           <div className="flex gap-2 w-full">
                                             {[
                                               { s: 'done', l: '◎' },
@@ -1623,6 +1590,67 @@ const App = () => {
         )}
 
         {/* --- 공통 팝업 영역 --- */}
+        {statusPickerTarget && (
+          <div className="fixed inset-0 z-[9999]" onClick={() => setStatusPickerTarget(null)}>
+            <div 
+              className="absolute bg-white rounded-3xl shadow-2xl border-2 border-indigo-100 p-3 flex flex-col gap-2 w-52 animate-in zoom-in-95 duration-150"
+              style={{ left: Math.max(10, statusPickerTarget.x), top: Math.max(10, statusPickerTarget.y) }}
+              onClick={e => e.stopPropagation()}
+            >
+              {[
+                { s: 'done', l: '매우잘함 (+3점)' },
+                { s: 'ing', l: '잘함 (+2점)' },
+                { s: 'bad', l: '미흡 (+1점)' },
+                { s: null, l: '미완료 (0점)' }
+              ].map(item => (
+                <button 
+                  key={item.l}
+                  onClick={() => {
+                    playSound('magic'); 
+                    setTaskStatus(statusPickerTarget.studentId, statusPickerTarget.taskId, item.s, statusPickerTarget.date);
+                  }}
+                  className={`flex items-center justify-between px-4 py-4 rounded-2xl text-sm font-black transition-all border ${getStatusColorClass(item.s)} hover:scale-[1.03] active:scale-95`}
+                >
+                  <span className="text-2xl font-black">{getStatusIcon(item.s)}</span>
+                  <span>{item.l}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {moodPickerTarget && (
+          <div className="fixed inset-0 z-[9999]" onClick={() => setMoodPickerTarget(null)}>
+            <div 
+              className="absolute bg-white p-5 rounded-[32px] shadow-2xl border-2 border-gray-100 grid grid-cols-4 gap-3 w-64 animate-in zoom-in-95 duration-150"
+              style={{ left: Math.max(10, moodPickerTarget.x), top: Math.max(10, moodPickerTarget.y) }}
+              onClick={e => e.stopPropagation()}
+            >
+              {moods.map(m => (
+                <button 
+                  key={m} 
+                  onClick={() => {
+                    setAttendanceData(p => ({
+                      ...p, 
+                      [dateKey]: {
+                        ...p[dateKey], 
+                        [moodPickerTarget.studentId]: {
+                          ...(p[dateKey]?.[moodPickerTarget.studentId] || { memo: '' }), 
+                          present: true, // 기분 선택 시 자동으로 출석 처리
+                          mood: m
+                        }
+                      }
+                    }));
+                    setMoodPickerTarget(null);
+                  }} 
+                  className="w-12 h-12 text-3xl hover:bg-slate-100 rounded-2xl transition-transform hover:scale-110 active:scale-95 flex items-center justify-center"
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* --- 개별 모달 --- */}
 
@@ -1841,7 +1869,6 @@ const ConceptViewerModal = ({ subjectId, initialConceptId, concepts, onClose }) 
   );
 };
 
-// [핵심] 스마트 슬라이드 컴포넌트 (조건 분기 및 대형 반응형 폰트 완벽 적용)
 const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
   const subjectConcepts = concepts.filter(c => c.subjectId === subjectId);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -1931,7 +1958,7 @@ const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
   }, [step, currentIndex, subjectConcepts, maxSteps]);
 
   // 글자 수에 따른 폰트 사이즈 대폭 상향 및 자동 조절 로직
-  let textSizeClass = 'text-[100px] md:text-[200px] lg:text-[240px]'; // 1~6자 (초대형)
+  let textSizeClass = 'text-[100px] md:text-[200px] lg:text-[240px]'; 
   if (content.length > 80) textSizeClass = 'text-4xl md:text-5xl lg:text-6xl';
   else if (content.length > 40) textSizeClass = 'text-5xl md:text-6xl lg:text-7xl';
   else if (content.length > 15) textSizeClass = 'text-6xl md:text-8xl lg:text-[100px]';
@@ -1942,7 +1969,6 @@ const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
       <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="absolute top-8 right-8 p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-colors z-20"><X size={32} strokeWidth={3}/></button>
       <div className="absolute top-10 left-10 text-xl md:text-2xl font-black text-white/40 z-20">{subjectTitle} - 복습 슬라이드 ({currentIndex + 1}/{subjectConcepts.length})</div>
 
-      {/* 좌우 이동 버튼 */}
       <button onClick={goPrev} className="absolute left-4 lg:left-12 top-1/2 -translate-y-1/2 p-4 text-white/30 hover:text-white hover:bg-white/10 rounded-full transition-all z-20">
         <ChevronLeft size={64} strokeWidth={2}/>
       </button>
@@ -1950,7 +1976,6 @@ const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
         <ChevronRight size={64} strokeWidth={2}/>
       </button>
 
-      {/* 슬라이드 본문 (폰트 크기 및 줄간격 최적화) */}
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-7xl text-center px-16 md:px-32 relative overflow-y-auto max-h-[85vh] hide-scrollbar">
         <span className="text-4xl md:text-5xl font-black text-indigo-300 mb-8 tracking-widest shrink-0">{subtitle}</span>
         <h2 className={`font-black tracking-tight leading-snug ${textSizeClass} break-keep-all whitespace-pre-wrap drop-shadow-xl w-full`}>
@@ -1958,7 +1983,6 @@ const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
         </h2>
       </div>
 
-      {/* 진행 상태 바 */}
       <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-3 z-20">
         {subjectConcepts.map((_, idx) => (
           <div key={idx} className={`h-4 rounded-full transition-all duration-500 ${idx === currentIndex ? 'w-16 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.5)]' : 'w-4 bg-white/20'}`} />
@@ -1974,7 +1998,6 @@ const ConceptEditModal = ({ data, subjects, onClose, onSave }) => {
   const [hanja, setHanja] = useState(data.hanja || '');
   const [meaning, setMeaning] = useState(data.meaning || '');
 
-  // [핵심 기능] 한자 사전 자동 완성
   const handleAutoComplete = () => {
     if(!term) return alert('단어를 먼저 입력해주세요.');
     const found = HANJA_DICT[term];
