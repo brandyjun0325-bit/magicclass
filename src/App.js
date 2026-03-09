@@ -29,7 +29,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 
-// --- 📖 매직클래스 내장 한자 사전 (초등 핵심 전과목 어휘 탑재) ---
+// --- 📖 매직클래스 내장 한자 사전 (초등 핵심 전과목 어휘 300+) ---
 const HANJA_DICT = {
   // [공통(학습/학교)]
   "학교":{hanja:"學校",meaning:"學(배울 학), 校(학교 교) : 배우고 생활하는 곳"},
@@ -232,7 +232,7 @@ const HANJA_DICT = {
   "기체":{hanja:"氣體",meaning:"氣(기운 기), 體(몸 체) : 공기처럼 퍼지는 상태의 물질"},
   "온도":{hanja:"溫度",meaning:"溫(따뜻할 온), 度(법도 도) : 뜨겁고 차가운 정도"},
   "압력":{hanja:"壓力",meaning:"壓(누를 압), 力(힘 력) : 누르는 힘"},
-  "용액":{hanja:"溶液",meaning:"溶(녹을 용), 액(진 액) : 어떤 물질이 녹아 있는 액체"},
+  "용액":{hanja:"溶液",meaning:"溶(녹을 용), 液(진 액) : 어떤 물질이 녹아 있는 액체"},
   "혼합":{hanja:"混合",meaning:"混(섞일 혼), 合(합할 합) : 여러 물질을 섞음"},
   "분리":{hanja:"分離",meaning:"分(나눌 분), 離(떼어낼 이) : 섞인 것을 따로 나눔"},
   "증발":{hanja:"蒸發",meaning:"蒸(찔 증), 發(필 발) : 액체가 기체로 변함"},
@@ -352,6 +352,40 @@ function useLocalStorage(key, initialValue) {
   return [storedValue, setStoredValue];
 }
 
+// --- 자체 내장 Sound Player ---
+const playSound = (type) => {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if (type === 'magic') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1); 
+      gain.gain.setValueAtTime(1, ctx.currentTime); 
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4); 
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
+    } else if (type === 'thunder') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(150, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.2);
+      gain.gain.setValueAtTime(1, ctx.currentTime); 
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
+    }
+  } catch(e) {
+    console.log("오디오 재생 오류:", e);
+  }
+};
+
 const App = () => {
   const formatDate = (date) => {
     const y = date.getFullYear();
@@ -408,7 +442,7 @@ const App = () => {
     setSelectedDate(new Date());
   }, [activeTab]);
 
-  // --- Data States (Local Storage) ---
+  // --- Data States (Local Storage 분리) ---
   const [students, setStudents] = useLocalStorage('magic_students', [
     { id: '1', num: '1', name: '김학생', memo: '메모 없음' },
     { id: '2', num: '2', name: '이학생', memo: '메모 없음' },
@@ -416,7 +450,11 @@ const App = () => {
   const [attendanceData, setAttendanceData] = useLocalStorage('magic_attendance', {});
   const [submissions, setSubmissions] = useLocalStorage('magic_submissions', []);
   const [submissionStatus, setSubmissionStatus] = useLocalStorage('magic_submissionStatus', {});
-  const [subjects, setSubjects] = useLocalStorage('magic_subjects', [{ id: 's1', title: '국어' }, { id: 's2', title: '수학' }]);
+  
+  // [수정] 과제 과목과 완전학습 과목 상태를 완전 분리
+  const [assignmentSubjects, setAssignmentSubjects] = useLocalStorage('magic_assignment_subjects', [{ id: 'as1', title: '국어' }, { id: 'as2', title: '수학' }]);
+  const [masterySubjects, setMasterySubjects] = useLocalStorage('magic_mastery_subjects', [{ id: 'ms1', title: '국어' }, { id: 'ms2', title: '수학' }]);
+  
   const [assignments, setAssignments] = useLocalStorage('magic_assignments', []);
   const [assignmentStatus, setAssignmentStatus] = useLocalStorage('magic_assignmentStatus', {});
   const [counselingData, setCounselingData] = useLocalStorage('magic_counseling', {});
@@ -426,6 +464,7 @@ const App = () => {
 
   const moods = ['😊', '🤩', '😐', '😴', '🤒', '😡', '😢', '😑'];
 
+  // --- 자동 연계 로직 ---
   const getStudentTaskPoints = (studentId) => {
     let taskPts = 0;
     Object.values(assignmentStatus || {}).forEach(dayData => {
@@ -447,6 +486,7 @@ const App = () => {
     return manualPoints + taskPoints;
   };
 
+  // --- UI Helpers ---
   const getAttendanceDot = (date) => {
     const key = formatDate(date);
     const dayData = attendanceData[key];
@@ -528,29 +568,28 @@ const App = () => {
     }
   };
 
-  const setTaskStatus = (studentId, taskId, status, date = dateKey) => {
+  const setTaskStatus = (studentId, taskId, status, dueDate) => {
     setAssignmentStatus(prev => {
-      const dayData = prev[date] || {};
+      const dayData = prev[dueDate] || {};
       const studentData = dayData[studentId] || {};
-      return { ...prev, [date]: { ...dayData, [studentId]: { ...studentData, [taskId]: status } } };
-    });
-    setStatusPickerTarget(null);
-  };
-
-  const updateTaskMemo = (studentId, taskId, memo, date = dateKey) => {
-    setAssignmentStatus(prev => {
-      const dayData = prev[date] || {};
-      const studentData = dayData[studentId] || {};
-      return { ...prev, [date]: { ...dayData, [studentId]: { ...studentData, [`memo_${taskId}`]: memo } } };
+      return { ...prev, [dueDate]: { ...dayData, [studentId]: { ...studentData, [taskId]: status } } };
     });
   };
 
-  const bulkTaskDone = (taskId) => {
+  const updateTaskMemo = (studentId, taskId, memo, dueDate) => {
     setAssignmentStatus(prev => {
-      const dayData = prev[dateKey] || {};
+      const dayData = prev[dueDate] || {};
+      const studentData = dayData[studentId] || {};
+      return { ...prev, [dueDate]: { ...dayData, [studentId]: { ...studentData, [`memo_${taskId}`]: memo } } };
+    });
+  };
+
+  const bulkTaskDone = (taskId, dueDate) => {
+    setAssignmentStatus(prev => {
+      const dayData = prev[dueDate] || {};
       const newDayData = { ...dayData };
       students.forEach(s => { newDayData[s.id] = { ...(newDayData[s.id] || {}), [taskId]: 'done' }; });
-      return { ...prev, [dateKey]: newDayData };
+      return { ...prev, [dueDate]: newDayData };
     });
   };
 
@@ -575,25 +614,40 @@ const App = () => {
     }
   };
 
-  const saveSubject = (id, title) => {
+  // [수정] 과목 저장 시 Type(assignment/mastery) 구분
+  const saveSubject = (id, title, type) => {
     if(!title) return;
-    if (id) setSubjects(subjects.map(s => s.id === id ? {...s, title} : s));
-    else setSubjects([...subjects, { id: 's' + Date.now(), title }]);
+    if (type === 'assignment') {
+      if (id) setAssignmentSubjects(assignmentSubjects.map(s => s.id === id ? {...s, title} : s));
+      else setAssignmentSubjects([...assignmentSubjects, { id: 'as' + Date.now(), title }]);
+    } else {
+      if (id) setMasterySubjects(masterySubjects.map(s => s.id === id ? {...s, title} : s));
+      else setMasterySubjects([...masterySubjects, { id: 'ms' + Date.now(), title }]);
+    }
     setShowSubjectModal(null);
   };
 
-  const deleteSubject = (id, e) => {
+  // [수정] 과목 삭제 시 Type 구분
+  const deleteSubject = (id, type, e) => {
     e.stopPropagation();
-    if(window.confirm('과목을 삭제하시겠습니까? 등록된 과제와 완전 학습 개념이 함께 삭제됩니다.')) {
-      setSubjects(subjects.filter(s => s.id !== id));
-      setAssignments(assignments.filter(a => a.subjectId !== id));
-      setMasteryConcepts(masteryConcepts.filter(c => c.subjectId !== id)); 
+    if (type === 'assignment') {
+      if(window.confirm('과목을 삭제하시겠습니까? 등록된 과제가 함께 삭제됩니다.')) {
+        setAssignmentSubjects(assignmentSubjects.filter(s => s.id !== id));
+        setAssignments(assignments.filter(a => a.subjectId !== id));
+      }
+    } else {
+      if(window.confirm('과목을 삭제하시겠습니까? 등록된 완전 학습 개념이 함께 삭제됩니다.')) {
+        setMasterySubjects(masterySubjects.filter(s => s.id !== id));
+        setMasteryConcepts(masteryConcepts.filter(c => c.subjectId !== id)); 
+      }
     }
   };
 
-  const moveSubject = (index, direction, e) => {
+  // [수정] 과목 순서 변경 시 Type 구분
+  const moveSubject = (index, direction, type, e) => {
     e.stopPropagation();
-    setSubjects(prev => {
+    const setFn = type === 'assignment' ? setAssignmentSubjects : setMasterySubjects;
+    setFn(prev => {
       const newSubs = [...prev];
       if (direction === 'up' && index > 0) {
         [newSubs[index - 1], newSubs[index]] = [newSubs[index], newSubs[index - 1]];
@@ -804,12 +858,12 @@ const App = () => {
     csvContent += '\n\n=== 완전 학습 (중요 개념 사전) ===\n';
     csvContent += '과목,단어,한자,핵심내용\n';
     const sortedConcepts = [...masteryConcepts].sort((a,b) => {
-      const subA = subjects.findIndex(s=>s.id===a.subjectId);
-      const subB = subjects.findIndex(s=>s.id===b.subjectId);
+      const subA = masterySubjects.findIndex(s=>s.id===a.subjectId);
+      const subB = masterySubjects.findIndex(s=>s.id===b.subjectId);
       return subA - subB;
     });
     sortedConcepts.forEach(c => {
-      const subTitle = subjects.find(s => s.id === c.subjectId)?.title || '';
+      const subTitle = masterySubjects.find(s => s.id === c.subjectId)?.title || '';
       csvContent += `${escape(subTitle)},${escape(c.term)},${escape(c.hanja)},${escape(c.meaning)}\n`;
     });
 
@@ -865,7 +919,7 @@ const App = () => {
             {activeTab === 'submissions' && '제출 관리'}
             {activeTab === 'assignments' && '과제 관리'}
             {activeTab === 'status' && '과제 현황 종합'}
-            {activeTab === 'mastery' && '완전 학습 (중요 개념 관리)'}
+            {activeTab === 'mastery' && '완전 학습 (개념 사전)'}
             {activeTab === 'counseling' && '학생 상담 기록'}
             {activeTab === 'magicpoints' && '매직 점수 관리'}
             {activeTab === 'externals' && '외부 자료 관리'}
@@ -1054,14 +1108,14 @@ const App = () => {
                 </div>
               </div>
               <div className="flex gap-3 w-full xl:w-auto">
-                <button onClick={() => setShowSubjectModal({id: null, title: ''})} className="flex-1 xl:flex-none bg-white text-gray-700 border-2 border-gray-200 px-6 py-3.5 rounded-2xl font-black shadow-sm hover:bg-gray-50 text-base lg:text-lg transition-colors">과목 추가</button>
-                <button onClick={() => {if(subjects.length===0)return alert('먼저 과목을 추가해주세요.'); setShowAssignmentModal({id: null, title: '', subjectId: subjects[0].id, dueDate: dateKey});}} className="flex-1 xl:flex-none bg-indigo-600 text-white px-6 py-3.5 rounded-2xl font-black shadow-lg hover:bg-indigo-700 text-base lg:text-lg transition-transform active:scale-95">새 과제 등록</button>
+                <button onClick={() => setShowSubjectModal({id: null, title: '', type: 'assignment'})} className="flex-1 xl:flex-none bg-white text-gray-700 border-2 border-gray-200 px-6 py-3.5 rounded-2xl font-black shadow-sm hover:bg-gray-50 text-base lg:text-lg transition-colors">과목 추가</button>
+                <button onClick={() => {if(assignmentSubjects.length===0)return alert('먼저 과목을 추가해주세요.'); setShowAssignmentModal({id: null, title: '', subjectId: assignmentSubjects[0].id, dueDate: dateKey});}} className="flex-1 xl:flex-none bg-indigo-600 text-white px-6 py-3.5 rounded-2xl font-black shadow-lg hover:bg-indigo-700 text-base lg:text-lg transition-transform active:scale-95">새 과제 등록</button>
               </div>
             </div>
             
             <div className="space-y-6">
-              {subjects.length === 0 && <div className="text-center py-16 text-gray-400 font-bold text-lg bg-white rounded-[40px] border border-gray-100">등록된 과목이 없습니다.</div>}
-              {subjects.map((sub, idx) => {
+              {assignmentSubjects.length === 0 && <div className="text-center py-16 text-gray-400 font-bold text-lg bg-white rounded-[40px] border border-gray-100">등록된 과목이 없습니다.</div>}
+              {assignmentSubjects.map((sub, idx) => {
                 const subAssignments = assignments.filter(a => a.subjectId === sub.id);
                 const isExpanded = expandedSubjects[sub.id];
                 return (
@@ -1076,11 +1130,11 @@ const App = () => {
                       </button>
                       <div className="absolute right-16 lg:right-24 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-gradient-to-l from-white pl-6 transition-opacity">
                         <div className="flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm mr-2 overflow-hidden">
-                          <button onClick={(e) => moveSubject(idx, 'up', e)} disabled={idx===0} className="p-1 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30 border-b border-gray-100"><ArrowUp size={14} strokeWidth={3}/></button>
-                          <button onClick={(e) => moveSubject(idx, 'down', e)} disabled={idx===subjects.length-1} className="p-1 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30"><ArrowDown size={14} strokeWidth={3}/></button>
+                          <button onClick={(e) => moveSubject(idx, 'up', 'assignment', e)} disabled={idx===0} className="p-1 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30 border-b border-gray-100"><ArrowUp size={14} strokeWidth={3}/></button>
+                          <button onClick={(e) => moveSubject(idx, 'down', 'assignment', e)} disabled={idx===assignmentSubjects.length-1} className="p-1 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30"><ArrowDown size={14} strokeWidth={3}/></button>
                         </div>
-                        <button onClick={() => setShowSubjectModal({id: sub.id, title: sub.title})} className="p-3 text-gray-400 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-100 rounded-xl transition-colors"><Edit2 size={20} /></button>
-                        <button onClick={(e) => deleteSubject(sub.id, e)} className="p-3 text-gray-400 hover:text-red-500 bg-slate-100 hover:bg-red-100 rounded-xl transition-colors"><Trash2 size={20} /></button>
+                        <button onClick={() => setShowSubjectModal({id: sub.id, title: sub.title, type: 'assignment'})} className="p-3 text-gray-400 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-100 rounded-xl transition-colors"><Edit2 size={20} /></button>
+                        <button onClick={(e) => deleteSubject(sub.id, 'assignment', e)} className="p-3 text-gray-400 hover:text-red-500 bg-slate-100 hover:bg-red-100 rounded-xl transition-colors"><Trash2 size={20} /></button>
                       </div>
                     </div>
                     {isExpanded && (
@@ -1100,21 +1154,37 @@ const App = () => {
                                 <div className="mt-2 p-5 lg:p-8 bg-slate-50 border-t-2 border-indigo-100 rounded-b-2xl">
                                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-3">
                                     <h5 className="font-black text-indigo-700 text-base lg:text-lg flex items-center gap-2"><Sparkles size={18}/> 성취도 기록 (매직 점수 자동 연계)</h5>
-                                    <button onClick={() => bulkTaskDone(a.id)} className="text-sm bg-blue-600 text-white px-5 py-2.5 rounded-xl font-black shadow-md hover:bg-blue-700 transition-transform active:scale-95">전원 ◎ 완료</button>
+                                    <button onClick={() => bulkTaskDone(a.id, a.dueDate)} className="text-sm bg-blue-600 text-white px-5 py-2.5 rounded-xl font-black shadow-md hover:bg-blue-700 transition-transform active:scale-95">전원 ◎ 완료</button>
                                   </div>
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-5">
                                     {students.map(s => {
-                                      const status = assignmentStatus[dateKey]?.[s.id]?.[a.id] || null;
+                                      const status = assignmentStatus[a.dueDate]?.[s.id]?.[a.id] || null;
                                       return (
                                         <div key={s.id} className="flex flex-col gap-3 p-4 lg:p-5 rounded-[24px] bg-white border-2 border-gray-100 shadow-sm relative hover:border-indigo-200 transition-colors">
-                                          <div onClick={(e) => setStatusPickerTarget({ studentId: s.id, taskId: a.id, date: dateKey, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 200, 220) })} className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-all border-2 shadow-sm hover:scale-[1.03] active:scale-95 ${getStatusColorClass(status)}`}>
+                                          <div className="flex items-center justify-between mb-1">
                                             <span className="font-black text-xl truncate pr-2 whitespace-nowrap">{s.num}. {s.name}</span>
-                                            <div className="flex flex-col items-end">
-                                              <span className="font-black text-3xl leading-none">{getStatusIcon(status)}</span>
-                                              <span className="text-[10px] opacity-80 font-bold mt-1">클릭하여 변경</span>
-                                            </div>
                                           </div>
-                                          <input value={assignmentStatus[dateKey]?.[s.id]?.[`memo_${a.id}`] || ''} onChange={(e) => updateTaskMemo(s.id, a.id, e.target.value)} placeholder="개별 메모 입력" className="w-full bg-slate-50 border border-gray-200 px-4 py-3 rounded-xl outline-none focus:border-indigo-400 focus:bg-white text-sm font-bold text-gray-700 transition-all" />
+                                          {/* [복구 및 개선] 팝업 없이 카드 안에 성취도 버튼 4개 직접 노출 */}
+                                          <div className="flex gap-2 w-full">
+                                            {[
+                                              { s: 'done', l: '◎' },
+                                              { s: 'ing', l: '○' },
+                                              { s: 'bad', l: '△' },
+                                              { s: null, l: '-' }
+                                            ].map(item => (
+                                              <button 
+                                                key={item.l}
+                                                onClick={() => {
+                                                  if(item.s !== null) playSound('magic'); 
+                                                  setTaskStatus(s.id, a.id, item.s, a.dueDate);
+                                                }}
+                                                className={`flex-1 py-3 rounded-xl text-2xl font-black transition-all border-2 ${status === item.s ? getStatusColorClass(item.s) + ' border-transparent scale-105 shadow-md' : 'bg-slate-50 text-gray-400 border-gray-100 hover:bg-indigo-50 hover:text-indigo-400'}`}
+                                              >
+                                                {item.l}
+                                              </button>
+                                            ))}
+                                          </div>
+                                          <input value={assignmentStatus[a.dueDate]?.[s.id]?.[`memo_${a.id}`] || ''} onChange={(e) => updateTaskMemo(s.id, a.id, e.target.value, a.dueDate)} placeholder="개별 메모 입력 (선택)" className="w-full bg-slate-50 border border-gray-200 px-4 py-3 rounded-xl outline-none focus:border-indigo-400 focus:bg-white text-sm font-bold text-gray-700 transition-all mt-1" />
                                         </div>
                                       );
                                     })}
@@ -1150,7 +1220,7 @@ const App = () => {
                     const dotColor = getAssignmentDot(curDate);
                     return (
                       <div key={d} className="relative flex flex-col items-center">
-                        <button onClick={() => setSelectedDate(curDate)} className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold transition-all ${selectedDate.getDate() === d ? 'bg-indigo-600 text-white shadow-lg scale-110' : 'hover:bg-indigo-50 text-gray-700'}`}>{d}</button>
+                        <button onClick={() => setSelectedDate(curDate)} className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold transition-all ${selectedDate.getDate() === d ? 'bg-indigo-600 text-white shadow-md scale-110' : 'hover:bg-indigo-50 text-gray-700'}`}>{d}</button>
                         {dotColor && <div className={`absolute bottom-0 w-2 h-2 rounded-full ${dotColor}`} />}
                       </div>
                     );
@@ -1199,14 +1269,14 @@ const App = () => {
                 <p className="text-base font-bold text-gray-500 mt-2">등록된 개념은 뷰어와 슬라이드 모드를 통해 반복 학습할 수 있습니다.</p>
               </div>
               <div className="flex gap-3 w-full xl:w-auto shrink-0">
-                <button onClick={() => setShowSubjectModal({id: null, title: ''})} className="flex-1 xl:flex-none bg-white text-gray-700 border-2 border-gray-200 px-6 py-3.5 rounded-2xl font-black shadow-sm hover:bg-gray-50 text-base lg:text-lg transition-colors">과목 추가</button>
-                <button onClick={() => {if(subjects.length===0)return alert('먼저 과목을 추가해주세요.'); setShowConceptModal({id: null, subjectId: subjects[0].id, term: '', hanja: '', meaning: ''});}} className="flex-1 xl:flex-none bg-indigo-600 text-white px-6 py-3.5 rounded-2xl font-black shadow-lg hover:bg-indigo-700 text-base lg:text-lg transition-transform active:scale-95">중요 개념 등록</button>
+                <button onClick={() => setShowSubjectModal({id: null, title: '', type: 'mastery'})} className="flex-1 xl:flex-none bg-white text-gray-700 border-2 border-gray-200 px-6 py-3.5 rounded-2xl font-black shadow-sm hover:bg-gray-50 text-base lg:text-lg transition-colors">과목 추가</button>
+                <button onClick={() => {if(masterySubjects.length===0)return alert('먼저 과목을 추가해주세요.'); setShowConceptModal({id: null, subjectId: masterySubjects[0].id, term: '', hanja: '', meaning: ''});}} className="flex-1 xl:flex-none bg-indigo-600 text-white px-6 py-3.5 rounded-2xl font-black shadow-lg hover:bg-indigo-700 text-base lg:text-lg transition-transform active:scale-95">중요 개념 등록</button>
               </div>
             </div>
             
             <div className="space-y-6">
-              {subjects.length === 0 && <div className="text-center py-16 text-gray-400 font-bold text-lg bg-white rounded-[40px] border border-gray-100">등록된 과목이 없습니다.</div>}
-              {subjects.map((sub, idx) => {
+              {masterySubjects.length === 0 && <div className="text-center py-16 text-gray-400 font-bold text-lg bg-white rounded-[40px] border border-gray-100">등록된 과목이 없습니다.</div>}
+              {masterySubjects.map((sub, idx) => {
                 const subConcepts = masteryConcepts.filter(c => c.subjectId === sub.id);
                 const isExpanded = expandedMasterySubjects[sub.id];
                 return (
@@ -1226,11 +1296,11 @@ const App = () => {
                           <span className="font-black text-sm hidden lg:inline">슬라이드</span>
                         </button>
                         <div className="flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm mr-2 overflow-hidden">
-                          <button onClick={(e) => moveSubject(idx, 'up', e)} disabled={idx===0} className="p-1 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30 border-b border-gray-100"><ArrowUp size={14} strokeWidth={3}/></button>
-                          <button onClick={(e) => moveSubject(idx, 'down', e)} disabled={idx===subjects.length-1} className="p-1 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30"><ArrowDown size={14} strokeWidth={3}/></button>
+                          <button onClick={(e) => moveSubject(idx, 'up', 'mastery', e)} disabled={idx===0} className="p-1 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30 border-b border-gray-100"><ArrowUp size={14} strokeWidth={3}/></button>
+                          <button onClick={(e) => moveSubject(idx, 'down', 'mastery', e)} disabled={idx===masterySubjects.length-1} className="p-1 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30"><ArrowDown size={14} strokeWidth={3}/></button>
                         </div>
-                        <button onClick={() => setShowSubjectModal({id: sub.id, title: sub.title})} className="p-3 text-gray-400 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-100 rounded-xl transition-colors"><Edit2 size={20}/></button>
-                        <button onClick={(e) => deleteSubject(sub.id, e)} className="p-3 text-gray-400 hover:text-red-500 bg-slate-100 hover:bg-red-100 rounded-xl transition-colors"><Trash2 size={20}/></button>
+                        <button onClick={() => setShowSubjectModal({id: sub.id, title: sub.title, type: 'mastery'})} className="p-3 text-gray-400 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-100 rounded-xl transition-colors"><Edit2 size={20}/></button>
+                        <button onClick={(e) => deleteSubject(sub.id, 'mastery', e)} className="p-3 text-gray-400 hover:text-red-500 bg-slate-100 hover:bg-red-100 rounded-xl transition-colors"><Trash2 size={20}/></button>
                       </div>
                     </div>
                     {isExpanded && (
@@ -1554,58 +1624,6 @@ const App = () => {
 
         {/* --- 공통 팝업 영역 --- */}
 
-        {statusPickerTarget && (
-          <div className="fixed inset-0 z-[200]" onClick={() => setStatusPickerTarget(null)}>
-            <div 
-              className="absolute bg-white rounded-3xl shadow-2xl border-2 border-indigo-100 p-3 flex flex-col gap-2 w-52 animate-in zoom-in-95 duration-150"
-              style={{ left: statusPickerTarget.x, top: statusPickerTarget.y }}
-              onClick={e => e.stopPropagation()}
-            >
-              {[
-                { s: 'done', l: '매우잘함 (+3점)' },
-                { s: 'ing', l: '잘함 (+2점)' },
-                { s: 'bad', l: '미흡 (+1점)' },
-                { s: null, l: '미완료 (0점)' }
-              ].map(item => (
-                <button 
-                  key={item.l}
-                  onClick={() => {
-                    playSound('magic'); 
-                    setTaskStatus(statusPickerTarget.studentId, statusPickerTarget.taskId, item.s, statusPickerTarget.date);
-                  }}
-                  className={`flex items-center justify-between px-4 py-4 rounded-2xl text-sm font-black transition-all border ${getStatusColorClass(item.s)} hover:scale-[1.03] active:scale-95`}
-                >
-                  <span className="text-2xl font-black">{getStatusIcon(item.s)}</span>
-                  <span>{item.l}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {moodPickerTarget && (
-          <div className="fixed inset-0 z-[200]" onClick={() => setMoodPickerTarget(null)}>
-            <div 
-              className="absolute bg-white p-5 rounded-[32px] shadow-2xl border-2 border-gray-100 grid grid-cols-4 gap-3 w-64 animate-in zoom-in-95 duration-150"
-              style={{ left: moodPickerTarget.x, top: moodPickerTarget.y }}
-              onClick={e => e.stopPropagation()}
-            >
-              {moods.map(m => (
-                <button 
-                  key={m} 
-                  onClick={() => {
-                    setAttendanceData(p => ({...p, [dateKey]: {...p[dateKey], [moodPickerTarget.studentId]: {...p[dateKey]?.[moodPickerTarget.studentId], mood: m}}}));
-                    setMoodPickerTarget(null);
-                  }} 
-                  className="w-12 h-12 text-3xl hover:bg-slate-100 rounded-2xl transition-transform hover:scale-110 active:scale-95 flex items-center justify-center"
-                >
-                  {m}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* --- 개별 모달 --- */}
 
         {/* 대형 뷰어 모달 */}
@@ -1623,7 +1641,7 @@ const App = () => {
           <ConceptSlideModal
             subjectId={slideSubjectId}
             concepts={masteryConcepts}
-            subjects={subjects}
+            subjects={masterySubjects}
             onClose={() => setSlideSubjectId(null)}
           />
         )}
@@ -1640,10 +1658,25 @@ const App = () => {
         {showConceptModal && (
           <ConceptEditModal
             data={showConceptModal}
-            subjects={subjects}
+            subjects={masterySubjects}
             onClose={() => setShowConceptModal(null)}
             onSave={saveConcept}
           />
+        )}
+
+        {showSubjectModal && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+            <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
+              <div className="flex justify-between items-center mb-8">
+                <h4 className="text-2xl md:text-3xl font-black text-gray-800">{showSubjectModal.id ? '과목 수정' : '새 과목 생성'}</h4>
+                <button onClick={() => setShowSubjectModal(null)} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
+              </div>
+              <div className="space-y-6">
+                <input id="sub_input" autoFocus defaultValue={showSubjectModal.title} onKeyDown={(e) => {if(e.key==='Enter') saveSubject(showSubjectModal.id, e.target.value, showSubjectModal.type)}} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" placeholder="과목명 (예: 국어)" />
+                <button onClick={() => saveSubject(showSubjectModal.id, document.getElementById('sub_input').value, showSubjectModal.type)} className="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">저장 완료</button>
+              </div>
+            </div>
+          </div>
         )}
 
         {showSubmissionModal && (
@@ -1691,7 +1724,7 @@ const App = () => {
                   .map(a => {
                     const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
                     const memo = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[`memo_${a.id}`] || '';
-                    const subject = subjects.find(s => s.id === a.subjectId);
+                    const subject = assignmentSubjects.find(s => s.id === a.subjectId);
                     
                     return (
                       <div key={a.id} className="bg-white p-5 md:p-8 rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col md:flex-row gap-5 md:gap-8 items-start md:items-center hover:border-indigo-200 transition-colors">
@@ -1743,21 +1776,6 @@ const App = () => {
           </div>
         )}
 
-        {showSubjectModal && (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
-            <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
-              <div className="flex justify-between items-center mb-8">
-                <h4 className="text-2xl md:text-3xl font-black text-gray-800">{showSubjectModal.id ? '과목 수정' : '새 과목 생성'}</h4>
-                <button onClick={() => setShowSubjectModal(null)} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
-              </div>
-              <div className="space-y-6">
-                <input id="sub_input" autoFocus defaultValue={showSubjectModal.title} onKeyDown={(e) => {if(e.key==='Enter') saveSubject(showSubjectModal.id, e.target.value)}} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" placeholder="과목명 (예: 국어)" />
-                <button onClick={() => saveSubject(showSubjectModal.id, document.getElementById('sub_input').value)} className="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">저장 완료</button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {showStudentModal && (
           <StudentEditModal 
             key={showStudentModal.id || `new_student_${showStudentModal.num}`}
@@ -1771,7 +1789,7 @@ const App = () => {
           <AssignmentEditModal 
             key={showAssignmentModal.id || 'new_assignment'}
             data={showAssignmentModal}
-            subjects={subjects}
+            subjects={assignmentSubjects}
             onClose={() => setShowAssignmentModal(null)}
             onSave={(id, title, subId, date) => {
               if(!title) return;
