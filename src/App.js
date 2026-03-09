@@ -432,7 +432,6 @@ const App = () => {
   const [customEndDate, setCustomEndDate] = useState(formatDate(new Date()));
   const [reportSortOrder, setReportSortOrder] = useState('desc');
   
-  // [복구 완료] 매직 점수 사유 입력 상태
   const [magicReasonInput, setMagicReasonInput] = useState('');
 
   const [selectedExternalLink, setSelectedExternalLink] = useState(null);
@@ -570,30 +569,28 @@ const App = () => {
     }
   };
 
-  // [복구 3] 과제 상태 변경 시 dateKey(현재 보고 있는 날짜)로 연계 되도록 복구
-  const setTaskStatus = (studentId, taskId, status, date) => {
+  const setTaskStatus = (studentId, taskId, status, dueDate) => {
     setAssignmentStatus(prev => {
-      const dayData = prev[date] || {};
+      const dayData = prev[dueDate] || {};
       const studentData = dayData[studentId] || {};
-      return { ...prev, [date]: { ...dayData, [studentId]: { ...studentData, [taskId]: status } } };
-    });
-    setStatusPickerTarget(null);
-  };
-
-  const updateTaskMemo = (studentId, taskId, memo, date) => {
-    setAssignmentStatus(prev => {
-      const dayData = prev[date] || {};
-      const studentData = dayData[studentId] || {};
-      return { ...prev, [date]: { ...dayData, [studentId]: { ...studentData, [`memo_${taskId}`]: memo } } };
+      return { ...prev, [dueDate]: { ...dayData, [studentId]: { ...studentData, [taskId]: status } } };
     });
   };
 
-  const bulkTaskDone = (taskId, date) => {
+  const updateTaskMemo = (studentId, taskId, memo, dueDate) => {
     setAssignmentStatus(prev => {
-      const dayData = prev[date] || {};
+      const dayData = prev[dueDate] || {};
+      const studentData = dayData[studentId] || {};
+      return { ...prev, [dueDate]: { ...dayData, [studentId]: { ...studentData, [`memo_${taskId}`]: memo } } };
+    });
+  };
+
+  const bulkTaskDone = (taskId, dueDate) => {
+    setAssignmentStatus(prev => {
+      const dayData = prev[dueDate] || {};
       const newDayData = { ...dayData };
       students.forEach(s => { newDayData[s.id] = { ...(newDayData[s.id] || {}), [taskId]: 'done' }; });
-      return { ...prev, [date]: newDayData };
+      return { ...prev, [dueDate]: newDayData };
     });
   };
 
@@ -696,7 +693,6 @@ const App = () => {
     }
   };
 
-  // [복구 2] 매직 점수 개별 내역 삭제 함수 완벽 복구
   const deleteMagicPoint = (studentId, pointId) => {
     setMagicPoints(prev => {
       const newPoints = { ...prev };
@@ -707,7 +703,6 @@ const App = () => {
     });
   };
 
-  // [복구 3] 매직 점수 부여 시 사유까지 함께 저장
   const handleMagicPointAction = (studentIdsArray, type) => {
     if (studentIdsArray.length === 0) return alert('학생을 먼저 선택해주세요.');
     playSound(type === 'plus' ? 'magic' : 'thunder');
@@ -732,7 +727,6 @@ const App = () => {
       return newPoints;
     });
 
-    // 점수 부여 후 선택 및 사유 초기화
     setSelectedStudentsForMagic([]);
     setMagicReasonInput('');
   };
@@ -877,7 +871,6 @@ const App = () => {
           csvContent += `${student.num},${escape(student.name)},${date},상담기록,${escape('작성:'+c.recorder)},${c.resolved?'해결완료':'미해결'},${escape('내용:'+c.content + ' / 조치:' + c.result)}\n`;
         });
 
-        // CSV 다운로드 시 매직점수 사유 출력
         (magicPoints[student.id] || []).filter(p => p.date === date).forEach(p => {
           csvContent += `${student.num},${escape(student.name)},${date},매직점수,${p.type === 'plus' ? '칭찬' : '노력'},${p.amount > 0 ? '+'+p.amount : p.amount},${escape(p.reason)}\n`;
         });
@@ -1188,23 +1181,36 @@ const App = () => {
                                 <div className="mt-2 p-5 lg:p-8 bg-slate-50 border-t-2 border-indigo-100 rounded-b-2xl">
                                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-3">
                                     <h5 className="font-black text-indigo-700 text-base lg:text-lg flex items-center gap-2"><Sparkles size={18}/> 성취도 기록 (매직 점수 자동 연계)</h5>
-                                    <button onClick={() => bulkTaskDone(a.id, dateKey)} className="text-sm bg-blue-600 text-white px-5 py-2.5 rounded-xl font-black shadow-md hover:bg-blue-700 transition-transform active:scale-95">전원 ◎ 완료</button>
+                                    <button onClick={() => bulkTaskDone(a.id, a.dueDate)} className="text-sm bg-blue-600 text-white px-5 py-2.5 rounded-xl font-black shadow-md hover:bg-blue-700 transition-transform active:scale-95">전원 ◎ 완료</button>
                                   </div>
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-5">
                                     {students.map(s => {
-                                      // [복구 2] dateKey를 사용하여 과제 점수 상태를 매직점수 및 당일 통계와 연동
-                                      const status = assignmentStatus[dateKey]?.[s.id]?.[a.id] || null;
+                                      const status = assignmentStatus[a.dueDate]?.[s.id]?.[a.id] || null;
                                       return (
                                         <div key={s.id} className="flex flex-col gap-3 p-4 lg:p-5 rounded-[24px] bg-white border-2 border-gray-100 shadow-sm relative hover:border-indigo-200 transition-colors">
-                                          {/* [복구 1] 팝업창을 여는 예전 UI 방식 완벽 복구 */}
-                                          <div onClick={(e) => setStatusPickerTarget({ studentId: s.id, taskId: a.id, date: dateKey, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 200, 220) })} className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-all border-2 shadow-sm hover:scale-[1.03] active:scale-95 ${getStatusColorClass(status)}`}>
+                                          <div className="flex items-center justify-between mb-1">
                                             <span className="font-black text-xl truncate pr-2 whitespace-nowrap">{s.num}. {s.name}</span>
-                                            <div className="flex flex-col items-end">
-                                              <span className="font-black text-3xl leading-none">{getStatusIcon(status)}</span>
-                                              <span className="text-[10px] opacity-80 font-bold mt-1">클릭하여 변경</span>
-                                            </div>
                                           </div>
-                                          <input value={assignmentStatus[dateKey]?.[s.id]?.[`memo_${a.id}`] || ''} onChange={(e) => updateTaskMemo(s.id, a.id, e.target.value, dateKey)} placeholder="개별 메모 입력" className="w-full bg-slate-50 border border-gray-200 px-4 py-3 rounded-xl outline-none focus:border-indigo-400 focus:bg-white text-sm font-bold text-gray-700 transition-all" />
+                                          <div className="flex gap-2 w-full">
+                                            {[
+                                              { s: 'done', l: '◎' },
+                                              { s: 'ing', l: '○' },
+                                              { s: 'bad', l: '△' },
+                                              { s: null, l: '-' }
+                                            ].map(item => (
+                                              <button 
+                                                key={item.l}
+                                                onClick={() => {
+                                                  if(item.s !== null) playSound('magic'); 
+                                                  setTaskStatus(s.id, a.id, item.s, a.dueDate);
+                                                }}
+                                                className={`flex-1 py-3 rounded-xl text-2xl font-black transition-all border-2 ${status === item.s ? getStatusColorClass(item.s) + ' border-transparent scale-105 shadow-md' : 'bg-slate-50 text-gray-400 border-gray-100 hover:bg-indigo-50 hover:text-indigo-400'}`}
+                                              >
+                                                {item.l}
+                                              </button>
+                                            ))}
+                                          </div>
+                                          <input value={assignmentStatus[a.dueDate]?.[s.id]?.[`memo_${a.id}`] || ''} onChange={(e) => updateTaskMemo(s.id, a.id, e.target.value, a.dueDate)} placeholder="개별 메모 입력 (선택)" className="w-full bg-slate-50 border border-gray-200 px-4 py-3 rounded-xl outline-none focus:border-indigo-400 focus:bg-white text-sm font-bold text-gray-700 transition-all mt-1" />
                                         </div>
                                       );
                                     })}
@@ -1512,7 +1518,7 @@ const App = () => {
                       <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'minus'); }} className="flex-1 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white font-black py-3 rounded-2xl transition-colors text-lg border border-red-100 shadow-sm">노력</button>
                     </div>
 
-                    {/* [복구 완료] 최근 기록 리스트 및 X(삭제) 버튼 */}
+                    {/* [복구 완료] 최근 기록 리스트 및 X(삭제) 버튼 부활 */}
                     <div className="mt-4 w-full bg-slate-50 rounded-2xl p-3 border border-gray-100 min-h-[80px] flex flex-col justify-start" onClick={(e) => e.stopPropagation()}>
                       <h5 className="text-[12px] font-black text-gray-400 mb-1.5 text-left px-1">최근 기록</h5>
                       {points.slice(0, 2).map(p => (
@@ -1666,73 +1672,93 @@ const App = () => {
           </div>
         )}
 
-        {/* --- 공통 팝업 영역 --- */}
-
-        {/* [복구 완료] 과제 상태 변경 팝업창 (Z-index 및 위치 최적화) */}
-        {statusPickerTarget && (
-          <div className="fixed inset-0 z-[9999]" onClick={() => setStatusPickerTarget(null)}>
-            <div 
-              className="absolute bg-white rounded-3xl shadow-2xl border-2 border-indigo-100 p-3 flex flex-col gap-2 w-52 animate-in zoom-in-95 duration-150"
-              style={{ left: Math.max(10, statusPickerTarget.x), top: Math.max(10, statusPickerTarget.y) }}
-              onClick={e => e.stopPropagation()}
-            >
-              {[
-                { s: 'done', l: '매우잘함 (+3점)' },
-                { s: 'ing', l: '잘함 (+2점)' },
-                { s: 'bad', l: '미흡 (+1점)' },
-                { s: null, l: '미완료 (0점)' }
-              ].map(item => (
-                <button 
-                  key={item.l}
-                  onClick={() => {
-                    playSound('magic'); 
-                    // [복구 완료] 선택한 날짜에 맞게 점수 연계 처리
-                    setTaskStatus(statusPickerTarget.studentId, statusPickerTarget.taskId, item.s, statusPickerTarget.date);
-                  }}
-                  className={`flex items-center justify-between px-4 py-4 rounded-2xl text-sm font-black transition-all border ${getStatusColorClass(item.s)} hover:scale-[1.03] active:scale-95`}
-                >
-                  <span className="text-2xl font-black">{getStatusIcon(item.s)}</span>
-                  <span>{item.l}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {moodPickerTarget && (
-          <div className="fixed inset-0 z-[9999]" onClick={() => setMoodPickerTarget(null)}>
-            <div 
-              className="absolute bg-white p-5 rounded-[32px] shadow-2xl border-2 border-gray-100 grid grid-cols-4 gap-3 w-64 animate-in zoom-in-95 duration-150"
-              style={{ left: Math.max(10, moodPickerTarget.x), top: Math.max(10, moodPickerTarget.y) }}
-              onClick={e => e.stopPropagation()}
-            >
-              {moods.map(m => (
-                <button 
-                  key={m} 
-                  onClick={() => {
-                    setAttendanceData(p => ({
-                      ...p, 
-                      [dateKey]: {
-                        ...p[dateKey], 
-                        [moodPickerTarget.studentId]: {
-                          ...(p[dateKey]?.[moodPickerTarget.studentId] || { memo: '' }), 
-                          present: true, 
-                          mood: m
-                        }
-                      }
-                    }));
-                    setMoodPickerTarget(null);
-                  }} 
-                  className="w-12 h-12 text-3xl hover:bg-slate-100 rounded-2xl transition-transform hover:scale-110 active:scale-95 flex items-center justify-center"
-                >
-                  {m}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* --- 개별 모달 --- */}
+
+        {/* [복구 및 개선] 과제 관리 학생 상세 모달창 - 팝업 없이 버튼 바로 노출 */}
+        {assignmentDetailStudent && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-4 md:p-6 pb-20 md:pb-6">
+            <div className="bg-white rounded-[40px] w-full max-w-4xl h-[85vh] md:max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
+              <div className="p-6 md:p-10 border-b-2 border-gray-100 flex justify-between items-start shrink-0 bg-indigo-50/50">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-lg font-black tracking-wide">학생 상세 현황</span>
+                    <h4 className="text-3xl md:text-4xl font-black text-gray-800">{assignmentDetailStudent.num}. {assignmentDetailStudent.name}</h4>
+                  </div>
+                  <p className="text-gray-500 font-bold text-sm md:text-base ml-1">과제별 성취도 확인 및 평가 (버튼을 눌러 바로 평가하세요)</p>
+                </div>
+                <button onClick={() => {setAssignmentDetailStudent(null); setAssignmentFilter('all');}} className="p-3 md:p-4 bg-white hover:bg-red-50 hover:text-red-500 rounded-2xl shadow-sm border border-gray-200 transition-colors"><X size={24} strokeWidth={3} /></button>
+              </div>
+
+              <div className="px-6 md:px-10 py-4 md:py-5 bg-white border-b border-gray-100 flex gap-3 shrink-0 overflow-x-auto hide-scrollbar">
+                <button onClick={() => setAssignmentFilter('all')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'all' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>전체보기</button>
+                <button onClick={() => setAssignmentFilter('incomplete')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'incomplete' ? 'bg-red-500 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>미완료 (△, -)</button>
+                <button onClick={() => setAssignmentFilter('complete')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'complete' ? 'bg-green-500 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>완료 (◎, ○)</button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-4 md:space-y-6 bg-slate-50/50">
+                {assignments
+                  .filter(a => {
+                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
+                    if (assignmentFilter === 'complete') return status === 'done' || status === 'ing';
+                    if (assignmentFilter === 'incomplete') return status !== 'done' && status !== 'ing';
+                    return true;
+                  })
+                  .map(a => {
+                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
+                    const memo = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[`memo_${a.id}`] || '';
+                    const subject = assignmentSubjects.find(s => s.id === a.subjectId);
+                    
+                    return (
+                      <div key={a.id} className="bg-white p-5 md:p-8 rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col gap-4 hover:border-indigo-200 transition-colors">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="flex-1 overflow-hidden pr-4">
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="text-xs font-black px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded-md uppercase">{subject?.title || '기타'}</span>
+                              <span className="text-sm font-bold text-gray-400">{a.dueDate}</span>
+                            </div>
+                            <h5 className="font-black text-gray-800 text-2xl truncate">{a.title}</h5>
+                          </div>
+                          
+                          {/* [복구 완료] 매우잘함, 잘함, 미흡, 미완료를 팝업 없이 바로 클릭하여 선택 */}
+                          <div className="flex gap-2 w-full md:w-auto shrink-0">
+                            {[
+                              { s: 'done', l: '◎' },
+                              { s: 'ing', l: '○' },
+                              { s: 'bad', l: '△' },
+                              { s: null, l: '-' }
+                            ].map(item => (
+                              <button 
+                                key={item.l}
+                                onClick={() => {
+                                  if(item.s !== null) playSound('magic'); 
+                                  // [복구 완료] 선택한 날짜를 기준으로 점수 업데이트 (매직 점수 연동 완벽 적용)
+                                  setTaskStatus(assignmentDetailStudent.id, a.id, item.s, a.dueDate);
+                                }}
+                                className={`flex-1 md:w-16 py-3 rounded-2xl text-2xl font-black transition-all border-2 ${status === item.s ? getStatusColorClass(item.s) + ' border-transparent scale-105 shadow-md' : 'bg-slate-50 text-gray-400 border-gray-100 hover:bg-indigo-50 hover:text-indigo-400'}`}
+                              >
+                                {item.l}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div className="w-full">
+                          <input 
+                            value={memo} 
+                            onChange={(e) => updateTaskMemo(assignmentDetailStudent.id, a.id, e.target.value, a.dueDate)}
+                            placeholder="개별 메모 입력 (선택)" 
+                            className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-400 focus:bg-white px-5 py-3.5 rounded-2xl outline-none text-base font-bold text-gray-700 transition-colors"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })
+                }
+                {assignments.length === 0 && <div className="text-center py-20 text-gray-400 font-bold text-lg">할당된 과제가 없습니다.</div>}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* 대형 뷰어 모달 */}
         {viewerTarget && (
@@ -1798,6 +1824,15 @@ const App = () => {
               else setSubmissions(prev => [{ id: 'sm' + Date.now(), title, date }, ...prev]);
               setShowSubmissionModal(null);
             }}
+          />
+        )}
+
+        {showStudentModal && (
+          <StudentEditModal 
+            key={showStudentModal.id || `new_student_${showStudentModal.num}`}
+            data={showStudentModal} 
+            onClose={() => setShowStudentModal(null)} 
+            onSave={saveStudent} 
           />
         )}
 
