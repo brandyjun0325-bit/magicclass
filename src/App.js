@@ -397,6 +397,8 @@ const App = () => {
   const [customStartDate, setCustomStartDate] = useState(formatDate(new Date()));
   const [customEndDate, setCustomEndDate] = useState(formatDate(new Date()));
   const [reportSortOrder, setReportSortOrder] = useState('desc');
+  // [복구 1] 사유 입력칸 부활
+  const [magicReasonInput, setMagicReasonInput] = useState('');
 
   const [selectedExternalLink, setSelectedExternalLink] = useState(null);
   const [viewerTarget, setViewerTarget] = useState(null); 
@@ -657,18 +659,41 @@ const App = () => {
     }
   };
 
+  // [복구 2] 매직 점수 내역 삭제 함수 완벽 복구
+  const deleteMagicPoint = (studentId, pointId) => {
+    setMagicPoints(prev => ({
+      ...prev,
+      [studentId]: (prev[studentId] || []).filter(p => p.id !== pointId)
+    }));
+  };
+
+  // [복구 3] 매직 점수 부여 시 사유 반영되도록 수정
   const handleMagicPointAction = (studentIdsArray, type) => {
     if (studentIdsArray.length === 0) return alert('학생을 먼저 선택해주세요.');
     playSound(type === 'plus' ? 'magic' : 'thunder');
+    
+    const reasonText = magicReasonInput.trim() || (type === 'plus' ? '칭찬' : '노력');
+
     setMagicPoints(prev => {
       const newPoints = { ...prev };
       const amount = type === 'plus' ? magicPointValue : -magicPointValue;
+      
       studentIdsArray.forEach(studentId => {
-        const newRecord = { id: 'p' + Date.now() + Math.random(), date: dateKey, timestamp: new Date().getTime(), type, amount };
+        const newRecord = { 
+          id: 'p' + Date.now() + Math.random(), 
+          date: dateKey, 
+          timestamp: new Date().getTime(), 
+          type, 
+          amount,
+          reason: reasonText 
+        };
         newPoints[studentId] = [newRecord, ...(newPoints[studentId] || [])];
       });
       return newPoints;
     });
+
+    // 부여 후 선택 해제 (연속 클릭 방지)
+    setSelectedStudentsForMagic([]);
   };
 
   const handleResetMagicPoints = () => {
@@ -811,8 +836,9 @@ const App = () => {
           csvContent += `${student.num},${escape(student.name)},${date},상담기록,${escape('작성:'+c.recorder)},${c.resolved?'해결완료':'미해결'},${escape('내용:'+c.content + ' / 조치:' + c.result)}\n`;
         });
 
+        // [복구 4] CSV 다운로드 시 사유도 함께 출력되도록 수정
         (magicPoints[student.id] || []).filter(p => p.date === date).forEach(p => {
-          csvContent += `${student.num},${escape(student.name)},${date},매직점수,${p.type === 'plus' ? '칭찬' : '노력'},${p.amount > 0 ? '+'+p.amount : p.amount},\n`;
+          csvContent += `${student.num},${escape(student.name)},${date},매직점수,${p.type === 'plus' ? '칭찬' : '노력'},${p.amount > 0 ? '+'+p.amount : p.amount},${escape(p.reason)}\n`;
         });
       });
     });
@@ -968,7 +994,7 @@ const App = () => {
                       <button onClick={() => toggleAttendance(student.id)} className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center transition-all shrink-0 ${state.present ? 'bg-green-500 text-white shadow-md scale-105' : 'bg-gray-200 text-white'}`}><CheckCircle size={28} strokeWidth={3} /></button>
                       <div className="w-24 lg:w-32 font-black text-2xl lg:text-3xl text-gray-800 shrink-0 truncate whitespace-nowrap">{student.name}</div>
                       <div className="relative shrink-0">
-                        {/* [수정] 기분 버튼 disabled 해제, 클릭 시 출석되도록 수정 */}
+                        {/* [수정] 기분 버튼 비활성화 해제. 클릭하면 출석 처리되며 기분 창 띄움 */}
                         <button 
                           onClick={(e) => setMoodPickerTarget({ studentId: student.id, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 260, 160) })} 
                           className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-3xl lg:text-4xl transition-all shadow-sm hover:border-indigo-300 hover:shadow-md ${state.present ? 'opacity-100' : 'opacity-40'}`}
@@ -1403,25 +1429,32 @@ const App = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto p-5 bg-slate-50 rounded-3xl border border-gray-200 shadow-inner">
-                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-2xl border border-gray-200 shadow-sm">
-                  <span className="text-base font-black text-gray-600 whitespace-nowrap">부여 점수</span>
+                <div className="flex items-center gap-2">
                   <select 
                     value={magicPointValue} 
                     onChange={(e) => setMagicPointValue(Number(e.target.value))}
-                    className="w-20 bg-transparent text-xl font-black text-indigo-700 text-center appearance-none outline-none cursor-pointer"
+                    className="w-16 bg-white border border-gray-200 px-2 py-3 rounded-2xl font-black text-indigo-700 text-center appearance-none outline-none cursor-pointer shadow-sm text-lg"
                   >
                     {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}점</option>)}
                   </select>
+                  <input 
+                    value={magicReasonInput} 
+                    onChange={(e) => setMagicReasonInput(e.target.value)} 
+                    onKeyDown={(e) => {if(e.key === 'Enter') handleMagicPointAction(selectedStudentsForMagic, 'plus')}}
+                    placeholder="사유 (예: 발표)" 
+                    className="flex-1 w-32 sm:w-40 bg-white border border-gray-200 px-4 py-3 rounded-2xl font-bold text-gray-700 outline-none focus:border-indigo-400 shadow-sm"
+                  />
                 </div>
                 <div className="flex gap-3 w-full sm:w-auto">
-                  <button onClick={() => handleMagicPointAction(selectedStudentsForMagic, 'plus')} className="flex-1 sm:flex-none bg-blue-600 text-white px-6 py-4 rounded-2xl font-black hover:bg-blue-700 shadow-lg transition-transform active:scale-95 text-lg whitespace-nowrap flex items-center justify-center gap-2">✨ 칭찬 (+)</button>
-                  <button onClick={() => handleMagicPointAction(selectedStudentsForMagic, 'minus')} className="flex-1 sm:flex-none bg-red-500 text-white px-6 py-4 rounded-2xl font-black hover:bg-red-600 shadow-lg transition-transform active:scale-95 text-lg whitespace-nowrap flex items-center justify-center gap-2">⚡ 노력 (-)</button>
+                  <button onClick={() => handleMagicPointAction(selectedStudentsForMagic, 'plus')} className="flex-1 sm:flex-none bg-blue-600 text-white px-5 py-3 rounded-2xl font-black hover:bg-blue-700 shadow-lg transition-transform active:scale-95 text-lg whitespace-nowrap flex items-center justify-center gap-1.5">✨ 칭찬</button>
+                  <button onClick={() => handleMagicPointAction(selectedStudentsForMagic, 'minus')} className="flex-1 sm:flex-none bg-red-500 text-white px-5 py-3 rounded-2xl font-black hover:bg-red-600 shadow-lg transition-transform active:scale-95 text-lg whitespace-nowrap flex items-center justify-center gap-1.5">⚡ 노력</button>
                 </div>
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
               {sortedStudentsForMagic.map(student => {
+                const points = magicPoints[student.id] || [];
                 const total = getStudentTotalPoints(student.id);
                 const isSelected = selectedStudentsForMagic.includes(student.id);
                 
@@ -1429,25 +1462,40 @@ const App = () => {
                   <div 
                     key={student.id} 
                     onClick={() => setSelectedStudentsForMagic(p => p.includes(student.id) ? p.filter(id => id !== student.id) : [...p, student.id])}
-                    className={`bg-white rounded-[32px] p-6 shadow-sm border-4 cursor-pointer transition-all hover:shadow-lg flex flex-col items-center justify-between min-h-[240px] ${isSelected ? 'border-indigo-500 bg-indigo-50/30 transform scale-[1.02]' : 'border-transparent hover:border-indigo-200'}`}
+                    className={`bg-white rounded-[32px] p-5 shadow-sm border-4 cursor-pointer transition-all hover:shadow-lg flex flex-col items-center justify-between min-h-[260px] ${isSelected ? 'border-indigo-500 bg-indigo-50/30 transform scale-[1.02]' : 'border-transparent hover:border-indigo-200'}`}
                   >
-                    <div className="w-full flex justify-between items-start mb-3">
+                    <div className="w-full flex justify-between items-start mb-2">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 transition-colors ${isSelected ? 'bg-indigo-500 border-indigo-500 text-white' : 'border-gray-200 bg-gray-50'}`}>
                         {isSelected && <Check size={18} strokeWidth={4} />}
                       </div>
                     </div>
                     
-                    <div className="text-3xl font-black text-gray-800 text-center w-full truncate px-2 whitespace-nowrap tracking-tight">
+                    <div className="text-2xl md:text-3xl font-black text-gray-800 text-center w-full truncate px-2 whitespace-nowrap tracking-tight">
                       {student.num}. {student.name}
                     </div>
                     
-                    <div className={`text-7xl font-black my-5 transition-all ${total > 0 ? 'text-blue-600 drop-shadow-sm' : total < 0 ? 'text-red-500 drop-shadow-sm' : 'text-gray-300'}`}>
+                    <div className={`text-6xl font-black my-3 transition-all ${total > 0 ? 'text-blue-600 drop-shadow-sm' : total < 0 ? 'text-red-500 drop-shadow-sm' : 'text-gray-300'}`}>
                       {total > 0 ? `+${total}` : total}
                     </div>
 
-                    <div className="flex gap-3 w-full mt-2">
-                      <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'plus'); }} className="flex-1 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white font-black py-3.5 rounded-2xl transition-colors text-lg border border-blue-100 shadow-sm">칭찬</button>
-                      <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'minus'); }} className="flex-1 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white font-black py-3.5 rounded-2xl transition-colors text-lg border border-red-100 shadow-sm">노력</button>
+                    <div className="flex gap-2 w-full mt-1">
+                      <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'plus'); }} className="flex-1 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white font-black py-2.5 rounded-xl transition-colors text-base border border-blue-100 shadow-sm">칭찬</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'minus'); }} className="flex-1 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white font-black py-2.5 rounded-xl transition-colors text-base border border-red-100 shadow-sm">노력</button>
+                    </div>
+
+                    {/* [복구] 지워졌던 최근 내역 리스트 완벽 부활 */}
+                    <div className="mt-3 w-full bg-slate-50 rounded-2xl p-3 border border-gray-100 min-h-[70px] flex flex-col justify-start" onClick={(e) => e.stopPropagation()}>
+                      <h5 className="text-[11px] font-black text-gray-400 mb-1 text-left px-1">최근 기록</h5>
+                      {points.slice(0, 2).map(p => (
+                        <div key={p.id} className="flex justify-between items-center text-xs group py-0.5 px-1 rounded hover:bg-white transition-colors">
+                          <div className="flex items-center gap-2 truncate pr-2">
+                            <span className={`font-black shrink-0 ${p.type==='plus'?'text-blue-600':'text-red-500'}`}>{p.amount > 0 ? `+${p.amount}` : p.amount}</span>
+                            <span className="text-gray-600 font-bold truncate">{p.reason}</span>
+                          </div>
+                          <button onClick={() => deleteMagicPoint(student.id, p.id)} className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 shrink-0 transition-opacity"><X size={14} strokeWidth={3}/></button>
+                        </div>
+                      ))}
+                      {points.length === 0 && <p className="text-center py-1 text-gray-400 text-xs font-bold opacity-50">기록 없음</p>}
                     </div>
                   </div>
                 );
@@ -1590,69 +1638,6 @@ const App = () => {
         )}
 
         {/* --- 공통 팝업 영역 --- */}
-        {statusPickerTarget && (
-          <div className="fixed inset-0 z-[9999]" onClick={() => setStatusPickerTarget(null)}>
-            <div 
-              className="absolute bg-white rounded-3xl shadow-2xl border-2 border-indigo-100 p-3 flex flex-col gap-2 w-52 animate-in zoom-in-95 duration-150"
-              style={{ left: Math.max(10, statusPickerTarget.x), top: Math.max(10, statusPickerTarget.y) }}
-              onClick={e => e.stopPropagation()}
-            >
-              {[
-                { s: 'done', l: '매우잘함 (+3점)' },
-                { s: 'ing', l: '잘함 (+2점)' },
-                { s: 'bad', l: '미흡 (+1점)' },
-                { s: null, l: '미완료 (0점)' }
-              ].map(item => (
-                <button 
-                  key={item.l}
-                  onClick={() => {
-                    playSound('magic'); 
-                    setTaskStatus(statusPickerTarget.studentId, statusPickerTarget.taskId, item.s, statusPickerTarget.date);
-                  }}
-                  className={`flex items-center justify-between px-4 py-4 rounded-2xl text-sm font-black transition-all border ${getStatusColorClass(item.s)} hover:scale-[1.03] active:scale-95`}
-                >
-                  <span className="text-2xl font-black">{getStatusIcon(item.s)}</span>
-                  <span>{item.l}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {moodPickerTarget && (
-          <div className="fixed inset-0 z-[9999]" onClick={() => setMoodPickerTarget(null)}>
-            <div 
-              className="absolute bg-white p-5 rounded-[32px] shadow-2xl border-2 border-gray-100 grid grid-cols-4 gap-3 w-64 animate-in zoom-in-95 duration-150"
-              style={{ left: Math.max(10, moodPickerTarget.x), top: Math.max(10, moodPickerTarget.y) }}
-              onClick={e => e.stopPropagation()}
-            >
-              {moods.map(m => (
-                <button 
-                  key={m} 
-                  onClick={() => {
-                    setAttendanceData(p => ({
-                      ...p, 
-                      [dateKey]: {
-                        ...p[dateKey], 
-                        [moodPickerTarget.studentId]: {
-                          ...(p[dateKey]?.[moodPickerTarget.studentId] || { memo: '' }), 
-                          present: true, // 기분 선택 시 자동으로 출석 처리
-                          mood: m
-                        }
-                      }
-                    }));
-                    setMoodPickerTarget(null);
-                  }} 
-                  className="w-12 h-12 text-3xl hover:bg-slate-100 rounded-2xl transition-transform hover:scale-110 active:scale-95 flex items-center justify-center"
-                >
-                  {m}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* --- 개별 모달 --- */}
 
         {/* 대형 뷰어 모달 */}
         {viewerTarget && (
@@ -1664,7 +1649,7 @@ const App = () => {
           />
         )}
 
-        {/* [핵심] 스마트 슬라이드 모달 (초대형 폰트 및 자동 맞춤) */}
+        {/* 스마트 슬라이드 모달 */}
         {slideSubjectId && (
           <ConceptSlideModal
             subjectId={slideSubjectId}
@@ -1719,89 +1704,6 @@ const App = () => {
               setShowSubmissionModal(null);
             }}
           />
-        )}
-
-        {assignmentDetailStudent && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-4 md:p-6 pb-20 md:pb-6">
-            <div className="bg-white rounded-[40px] w-full max-w-4xl h-[85vh] md:max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
-              <div className="p-6 md:p-10 border-b-2 border-gray-100 flex justify-between items-start shrink-0 bg-indigo-50/50">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-lg font-black tracking-wide">학생 상세 현황</span>
-                    <h4 className="text-3xl md:text-4xl font-black text-gray-800">{assignmentDetailStudent.num}. {assignmentDetailStudent.name}</h4>
-                  </div>
-                  <p className="text-gray-500 font-bold text-sm md:text-base ml-1">과제별 성취도 확인 (상태 아이콘 클릭 시 변경 가능)</p>
-                </div>
-                <button onClick={() => {setAssignmentDetailStudent(null); setAssignmentFilter('all');}} className="p-3 md:p-4 bg-white hover:bg-red-50 hover:text-red-500 rounded-2xl shadow-sm border border-gray-200 transition-colors"><X size={24} strokeWidth={3} /></button>
-              </div>
-
-              <div className="px-6 md:px-10 py-4 md:py-5 bg-white border-b border-gray-100 flex gap-3 shrink-0 overflow-x-auto hide-scrollbar">
-                <button onClick={() => setAssignmentFilter('all')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'all' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>전체보기</button>
-                <button onClick={() => setAssignmentFilter('incomplete')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'incomplete' ? 'bg-red-500 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>미완료 (△, -)</button>
-                <button onClick={() => setAssignmentFilter('complete')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'complete' ? 'bg-green-500 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>완료 (◎, ○)</button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-4 md:space-y-6 bg-slate-50/50">
-                {assignments
-                  .filter(a => {
-                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
-                    if (assignmentFilter === 'complete') return status === 'done' || status === 'ing';
-                    if (assignmentFilter === 'incomplete') return status !== 'done' && status !== 'ing';
-                    return true;
-                  })
-                  .map(a => {
-                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
-                    const memo = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[`memo_${a.id}`] || '';
-                    const subject = assignmentSubjects.find(s => s.id === a.subjectId);
-                    
-                    return (
-                      <div key={a.id} className="bg-white p-5 md:p-8 rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col md:flex-row gap-5 md:gap-8 items-start md:items-center hover:border-indigo-200 transition-colors">
-                        <div className="flex items-center gap-5 w-full md:w-auto">
-                          <button 
-                            onClick={(e) => {
-                              const coords = calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 240, 200);
-                              setStatusPickerTarget({ studentId: assignmentDetailStudent.id, taskId: a.id, date: a.dueDate, x: coords.x, y: coords.y });
-                            }}
-                            className={`shrink-0 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-2xl border-2 font-black text-3xl md:text-4xl transition-transform hover:scale-105 active:scale-95 shadow-sm ${getStatusColorClass(status)}`}
-                          >
-                            {getStatusIcon(status)}
-                          </button>
-                          <div className="flex-1 md:hidden">
-                            <div className="flex items-center gap-2 mb-1.5">
-                              <span className="text-xs font-black px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md">{subject?.title || '기타'}</span>
-                              <span className="text-xs font-bold text-gray-400">{a.dueDate}</span>
-                            </div>
-                            <h5 className="font-black text-gray-800 text-lg truncate">{a.title}</h5>
-                          </div>
-                        </div>
-                        
-                        <div className="hidden md:block flex-1 overflow-hidden pr-4">
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="text-xs font-black px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded-md uppercase">{subject?.title || '기타'}</span>
-                            <span className="text-sm font-bold text-gray-400">{a.dueDate}</span>
-                          </div>
-                          <h5 className="font-black text-gray-800 text-2xl truncate">{a.title}</h5>
-                          <p className={`text-sm font-black mt-2 ${status === 'done' || status === 'ing' ? 'text-blue-600' : 'text-gray-400'}`}>
-                            상태: {getStatusLabel(status)}
-                          </p>
-                        </div>
-                        
-                        <div className="w-full md:w-80 shrink-0">
-                          <input 
-                            value={memo} 
-                            onChange={(e) => updateTaskMemo(assignmentDetailStudent.id, a.id, e.target.value, a.dueDate)}
-                            placeholder="개별 메모 입력 (선택)" 
-                            className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-400 focus:bg-white px-5 py-4 rounded-2xl outline-none text-base font-bold text-gray-700 transition-colors"
-                          />
-                        </div>
-                      </div>
-                    );
-                  })
-                }
-                {assignments.length === 0 && <div className="text-center py-20 text-gray-400 font-bold text-lg">할당된 과제가 없습니다.</div>}
-              </div>
-            </div>
-          </div>
         )}
 
         {showStudentModal && (
@@ -1957,7 +1859,6 @@ const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [step, currentIndex, subjectConcepts, maxSteps]);
 
-  // 글자 수에 따른 폰트 사이즈 대폭 상향 및 자동 조절 로직
   let textSizeClass = 'text-[100px] md:text-[200px] lg:text-[240px]'; 
   if (content.length > 80) textSizeClass = 'text-4xl md:text-5xl lg:text-6xl';
   else if (content.length > 40) textSizeClass = 'text-5xl md:text-6xl lg:text-7xl';
