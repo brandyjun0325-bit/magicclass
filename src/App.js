@@ -62,7 +62,7 @@ const HANJA_DICT = {
   "실험":{hanja:"實驗",meaning:"實(열매 실), 驗(시험 험) : 해 보고 확인함"},
   "측정":{hanja:"測定",meaning:"測(잴 측), 定(정할 정) : 길이나 양 등을 재어 정함"},
   "비교":{hanja:"比較",meaning:"比(견줄 비), 較(견줄 교) : 서로 견주어 봄"},
-  "분류":{hanja:"分類",meaning:"分(나눌 분), 류(무리 류) : 나누어 묶음"},
+  "분류":{hanja:"分類",meaning:"分(나눌 분), 類(무리 류) : 나누어 묶음"},
   "분석":{hanja:"分析",meaning:"分(나눌 분), 析(쪼갤 석) : 나누어 살펴봄"},
   "해석":{hanja:"解釋",meaning:"解(풀 해), 釋(풀 석) : 뜻을 풀이함"},
   "추론":{hanja:"推論",meaning:"推(밀 추), 論(논할 론) : 근거로 미루어 생각함"},
@@ -132,7 +132,7 @@ const HANJA_DICT = {
   "비례":{hanja:"比例",meaning:"比(견줄 비), 例(법식 례) : 비가 일정한 관계로 변하는 것"},
   "평균":{hanja:"平均",meaning:"平(평평할 평), 均(고를 균) : 합을 개수로 나눈 값"},
   "확률":{hanja:"確率",meaning:"確(굳을 확), 率(비율 률) : 일어날 가능성을 수로 나타낸 것"},
-  "자연수":{hanja:"自然數",meaning:"自(스스로 자), 然(그럴 연), 數(셈 수) : 1부터 1씩 커지는 수"},
+  "자연수":{hanja:"自然數",meaning:"自(스스로 자), 然(그럴 연), 數(셈 수) : 1부터 시작하여 1씩 커지는 수"},
   "정수":{hanja:"整數",meaning:"整(가지런할 정), 數(셈 수) : 양의 정수, 0, 음의 정수"},
   "방정식":{hanja:"方程式",meaning:"方(모 방), 程(한도 정), 式(법 식) : 미지수에 따라 참/거짓이 되는 등식"},
   "비례식":{hanja:"比例式",meaning:"比(견줄 비), 例(법식 례), 式(법 식) : 비율이 같은 두 비를 나타낸 식"},
@@ -578,7 +578,6 @@ const App = () => {
     setMagicReasonInput('');
   };
 
-  // [기능 복구 2] 초기화 시 번개 소리 추가 및 총점 0 보정 로직
   const handleResetMagicPoints = () => {
     if(window.confirm('매직 점수를 0점으로 초기화하시겠습니까?\n(기존 과제 연동 점수는 유지되며, 현재 총합을 0으로 맞추는 보정 기록이 추가됩니다.)')) {
       playSound('thunder'); 
@@ -900,7 +899,7 @@ const App = () => {
                       <button onClick={() => toggleAttendance(student.id)} className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center transition-all shrink-0 ${state.present ? 'bg-green-500 text-white shadow-md scale-105' : 'bg-gray-200 text-white'}`}><CheckCircle size={28} strokeWidth={3} /></button>
                       <div className="w-24 lg:w-32 font-black text-2xl lg:text-3xl text-gray-800 shrink-0 truncate whitespace-nowrap">{student.name}</div>
                       <div className="relative shrink-0">
-                        {/* [기능 복구 1] disabled 제거, 아무때나 이모지 버튼을 클릭하면 팝업 오픈 */}
+                        {/* [완벽 복구] disabled 제거하여 언제든 기분 선택 가능하도록 수정 */}
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
@@ -1309,7 +1308,7 @@ const App = () => {
           </div>
         )}
 
-        {/* 6. 매직 점수 */}
+        {/* 6. 매직 점수 (복구 및 개선 사항 반영) */}
         {activeTab === 'magicpoints' && (
           <div className="space-y-8 max-w-[1600px] mx-auto pb-10">
             <div className="bg-white p-6 lg:p-8 rounded-[40px] border border-indigo-100 shadow-sm flex flex-col lg:flex-row items-start lg:items-end justify-between gap-6">
@@ -1330,6 +1329,7 @@ const App = () => {
                       <option value="asc">점수 낮은 순</option>
                     </select>
                     <div className="w-px h-6 bg-gray-300 mx-1"></div>
+                    {/* [복구 1] 초기화 시점 보정 방식 적용 버튼 */}
                     <button onClick={handleResetMagicPoints} className="px-4 py-2 bg-white text-red-500 hover:bg-red-50 border border-red-100 rounded-lg text-sm font-black transition-colors flex items-center gap-1.5 shadow-sm">
                       <RotateCcw size={16} strokeWidth={3} /> 초기화
                     </button>
@@ -1347,6 +1347,7 @@ const App = () => {
                   >
                     {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}점</option>)}
                   </select>
+                  {/* 사유 입력칸 */}
                   <input 
                     value={magicReasonInput} 
                     onChange={(e) => setMagicReasonInput(e.target.value)} 
@@ -1393,11 +1394,13 @@ const App = () => {
                       <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'minus'); }} className="flex-1 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white font-black py-3 rounded-2xl transition-colors text-lg border border-red-100 shadow-sm">노력</button>
                     </div>
 
+                    {/* [복구] 최근 기록 리스트 및 개별 삭제 기능 완벽 부활 */}
                     <div className="mt-4 w-full bg-slate-50 rounded-2xl p-3 border border-gray-100 min-h-[80px] flex flex-col justify-start" onClick={(e) => e.stopPropagation()}>
                       <h5 className="text-[12px] font-black text-gray-400 mb-1.5 text-left px-1">최근 기록</h5>
                       {points.slice(0, 2).map(p => (
                         <div key={p.id} className="flex justify-between items-center text-sm group py-1 px-1.5 rounded-lg hover:bg-white transition-colors">
                           <div className="flex items-center gap-2 truncate pr-2">
+                            {/* [초기화 기록 표시 색상 추가] */}
                             <span className={`font-black shrink-0 ${p.type==='plus'?'text-blue-600':p.type==='minus'?'text-red-500':'text-gray-500'}`}>{p.amount > 0 ? `+${p.amount}` : p.amount}</span>
                             <span className="text-gray-600 font-bold truncate">{p.reason}</span>
                           </div>
@@ -1414,7 +1417,7 @@ const App = () => {
             <div className="mt-16 bg-white rounded-[40px] p-8 md:p-10 border border-gray-100 shadow-sm">
               <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center border-b-2 pb-8 mb-8 gap-6">
                 <div>
-                  <h3 className="text-2xl lg:text-3xl font-black flex items-center gap-3 text-gray-800"><BarChart2 className="text-indigo-600" size={32}/> 매직 점수 종합 리포트</h3>
+                  <h3 className="text-2xl lg:text-3xl font-black flex items-center gap-3 text-gray-800"><BarChart2 className="text-indigo-600" size={32}/> 매 점수 종합 리포트</h3>
                   <p className="text-base text-gray-500 font-bold mt-2">과제 점수(+3, +2, +1)와 수동 매직 점수가 지정된 기간에 맞춰 필터링됩니다.</p>
                 </div>
                 
@@ -1556,70 +1559,8 @@ const App = () => {
         )}
 
         {/* --- 공통 팝업 영역 --- */}
-        {statusPickerTarget && (
-          <div className="fixed inset-0 z-[9999]" onClick={() => setStatusPickerTarget(null)}>
-            <div 
-              className="absolute bg-white rounded-3xl shadow-2xl border-2 border-indigo-100 p-3 flex flex-col gap-2 w-52 animate-in zoom-in-95 duration-150"
-              style={{ left: Math.max(10, statusPickerTarget.x), top: Math.max(10, statusPickerTarget.y) }}
-              onClick={e => e.stopPropagation()}
-            >
-              {[
-                { s: 'done', l: '매우잘함 (+3점)' },
-                { s: 'ing', l: '잘함 (+2점)' },
-                { s: 'bad', l: '미흡 (+1점)' },
-                { s: null, l: '미완료 (0점)' }
-              ].map(item => (
-                <button 
-                  key={item.l}
-                  onClick={() => {
-                    playSound('magic'); 
-                    setTaskStatus(statusPickerTarget.studentId, statusPickerTarget.taskId, item.s, statusPickerTarget.date);
-                  }}
-                  className={`flex items-center justify-between px-4 py-4 rounded-2xl text-sm font-black transition-all border ${getStatusColorClass(item.s)} hover:scale-[1.03] active:scale-95`}
-                >
-                  <span className="text-2xl font-black">{getStatusIcon(item.s)}</span>
-                  <span>{item.l}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
 
-        {moodPickerTarget && (
-          <div className="fixed inset-0 z-[9999]" onClick={() => setMoodPickerTarget(null)}>
-            <div 
-              className="absolute bg-white p-5 rounded-[32px] shadow-2xl border-2 border-gray-100 grid grid-cols-4 gap-3 w-64 animate-in zoom-in-95 duration-150"
-              style={{ left: Math.max(10, moodPickerTarget.x), top: Math.max(10, moodPickerTarget.y) }}
-              onClick={e => e.stopPropagation()}
-            >
-              {moods.map(m => (
-                <button 
-                  key={m} 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setAttendanceData(p => ({
-                      ...p, 
-                      [dateKey]: {
-                        ...p[dateKey], 
-                        [moodPickerTarget.studentId]: {
-                          ...(p[dateKey]?.[moodPickerTarget.studentId] || { memo: '' }), 
-                          present: true, 
-                          mood: m
-                        }
-                      }
-                    }));
-                    setMoodPickerTarget(null);
-                  }} 
-                  className="w-12 h-12 text-3xl hover:bg-slate-100 rounded-2xl transition-transform hover:scale-110 active:scale-95 flex items-center justify-center"
-                >
-                  {m}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* --- 안내장 인쇄 모달 --- */}
+        {/* --- [안내장 인쇄 모달] --- */}
         {reportStudent && (() => {
           const sCounseling = [];
           Object.entries(counselingData).forEach(([d, records]) => {
@@ -1628,6 +1569,7 @@ const App = () => {
             });
           });
           
+          // 인쇄 화면에도 기간 필터링 적용 (해당 기간 상담만 노출)
           const filteredCounseling = sCounseling.filter(r => {
             const dateTs = new Date(r.date).getTime();
             const now = new Date();
@@ -1658,9 +1600,9 @@ const App = () => {
           };
 
           return (
-            <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 print-backdrop" onClick={() => setReportStudent(null)}>
+            <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 print:block print:relative print:inset-auto print:bg-white print:p-0 print:z-auto" onClick={() => setReportStudent(null)}>
               <div 
-                className="bg-white rounded-[40px] w-full max-w-3xl max-h-[90vh] shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-200 print-modal overflow-hidden" 
+                className="bg-white rounded-[40px] w-full max-w-3xl max-h-[90vh] shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-200 print:shadow-none print:w-full print:h-auto print:max-h-none print:rounded-none overflow-hidden" 
                 onClick={e => e.stopPropagation()}
               >
                 <div className="flex justify-between items-center p-8 border-b-2 border-gray-100 bg-indigo-50/50 no-print shrink-0">
@@ -1676,8 +1618,8 @@ const App = () => {
                   </div>
                 </div>
 
-                <div id="print-section" className="w-full bg-white p-10 lg:p-12 overflow-y-auto text-gray-800 flex-1 hide-scrollbar">
-                  <div className="text-center mb-10 border-b-4 border-indigo-600 pb-8">
+                <div id="print-section" className="w-full bg-white p-10 lg:p-12 overflow-y-auto text-gray-800 flex-1 hide-scrollbar print:overflow-visible print:p-6">
+                  <div className="text-center mb-8 border-b-4 border-indigo-600 pb-6">
                     <h2 className="text-4xl lg:text-5xl font-black text-gray-900 mb-4 tracking-tight">{reportStudent.student.name} 학생 학교 생활 안내장</h2>
                     <p className="text-lg font-bold text-gray-500 tracking-tight">학부모님 안녕하십니까? {reportStudent.student.name} 학생의 학교 생활 종합 안내입니다.</p>
                     <div className="mt-4 inline-block bg-indigo-50 text-indigo-700 px-5 py-2 rounded-full font-black text-sm tracking-widest border border-indigo-100">
@@ -1685,35 +1627,34 @@ const App = () => {
                     </div>
                   </div>
                   
-                  <div className="space-y-8 page-break-inside-avoid">
-                    <div className="bg-slate-50 p-8 rounded-3xl border-2 border-indigo-50 print:border-gray-200">
+                  <div className="space-y-6 page-break-inside-avoid">
+                    <div className="bg-slate-50 p-6 rounded-3xl border-2 border-indigo-50 print:border-gray-200 print:p-4">
                       <h3 className="text-2xl font-black text-indigo-700 mb-6 flex items-center gap-2 tracking-tight"><BarChart2 size={28}/> 1. 학습 및 생활 태도 요약</h3>
-                      <div className="grid grid-cols-2 gap-4 text-lg font-black text-gray-700 print-grid">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xl font-black text-gray-700 print-grid">
                         <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                          <span className="whitespace-nowrap">✅ 과제 점수</span> <span className="text-emerald-600 text-xl">+{reportStudent.reportData.taskPts}점</span>
+                          <span className="whitespace-nowrap mr-2">✅ 과제 점수</span> <span className="text-emerald-600 text-xl print:text-lg whitespace-nowrap">+{reportStudent.reportData.taskPts}점</span>
                         </div>
                         <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                          <span className="whitespace-nowrap">✨ 칭찬 횟수</span> <span className="text-blue-600 text-xl">{reportStudent.reportData.plusCount}회</span>
+                          <span className="whitespace-nowrap mr-2">✨ 칭찬 횟수</span> <span className="text-blue-600 text-xl print:text-lg whitespace-nowrap">{reportStudent.reportData.plusCount}회</span>
                         </div>
                         <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                          <span className="whitespace-nowrap">⚡ 노력 횟수</span> <span className="text-red-500 text-xl">{reportStudent.reportData.minusCount}회</span>
+                          <span className="whitespace-nowrap mr-2">⚡ 노력 횟수</span> <span className="text-red-500 text-xl print:text-lg whitespace-nowrap">{reportStudent.reportData.minusCount}회</span>
                         </div>
                         <div className="flex justify-between items-center bg-indigo-600 text-white p-4 rounded-2xl shadow-md">
-                          <span className="whitespace-nowrap">🏆 종합 점수</span> <span className="text-2xl">{reportStudent.reportData.total > 0 ? `+${reportStudent.reportData.total}` : reportStudent.reportData.total}점</span>
+                          <span className="whitespace-nowrap mr-2">🏆 종합 점수</span> <span className="text-2xl whitespace-nowrap">{reportStudent.reportData.total > 0 ? `+${reportStudent.reportData.total}` : reportStudent.reportData.total}점</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="bg-slate-50 p-8 rounded-3xl border-2 border-gray-200 print:border-gray-200 page-break-inside-avoid">
-                      {/* [수정 3] 상담 기록 섹션 제목 및 문구 변경 */}
+                    <div className="bg-slate-50 p-6 rounded-3xl border-2 border-gray-200 print:border-gray-200 print:p-4 page-break-inside-avoid">
                       <h3 className="text-2xl font-black text-gray-800 mb-6 flex items-center gap-2 tracking-tight"><Users size={28}/> 2. 학생 상담 내역</h3>
                       {filteredCounseling.length > 0 ? (
-                        <div className="space-y-5">
+                        <div className="space-y-4">
                           {filteredCounseling.map(r => (
-                            <div key={r.id} className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col gap-3 page-break-inside-avoid">
+                            <div key={r.id} className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col gap-2 page-break-inside-avoid">
                               <div className="flex items-center justify-between border-b border-gray-50 pb-3">
-                                <span className="font-black text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg text-sm">{r.date}</span>
-                                <span className={`font-black text-sm px-3 py-1.5 rounded-lg ${r.resolved ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'}`}>{r.resolved ? '해결 완료' : '미해결/관찰중'}</span>
+                                <span className="font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg text-sm">{r.date}</span>
+                                <span className={`font-black text-sm px-3 py-1 rounded-lg ${r.resolved ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'}`}>{r.resolved ? '해결 완료' : '미해결/관찰중'}</span>
                               </div>
                               <p className="font-bold text-gray-800 text-lg leading-relaxed whitespace-pre-wrap"><span className="text-gray-400 mr-2">상담 내용 |</span> {r.content}</p>
                               {r.result && <p className="font-bold text-gray-600 text-base leading-relaxed whitespace-pre-wrap mt-1"><span className="text-gray-400 mr-2">조치 결과 |</span> {r.result}</p>}
@@ -1727,7 +1668,7 @@ const App = () => {
                       )}
                     </div>
                     
-                    <div className="text-center pt-10 mt-10 border-t-2 border-dashed border-gray-300 print:block hidden page-break-inside-avoid">
+                    <div className="text-center pt-8 mt-8 border-t-2 border-dashed border-gray-300 print:block hidden page-break-inside-avoid">
                       <p className="text-xl font-black text-gray-800 mb-3">위와 같이 긍정적으로 학교생활에 참여하고 있음을 안내해 드립니다.</p>
                       <p className="text-2xl font-black text-gray-900 mt-10 tracking-widest">담임 교사 ________________ (인)</p>
                     </div>
@@ -1832,7 +1773,7 @@ const App = () => {
         )}
       </main>
       
-      {/* CSS: [수정 4] 인쇄 전용 CSS (모달 내용만 완벽하게 출력) */}
+      {/* [수정 4] 인쇄 전용 CSS 완벽 최적화 (A4 1장에 맞게 배율 및 배경 제거 설정) */}
       <style dangerouslySetContent={{__html: `
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -1840,7 +1781,7 @@ const App = () => {
         @media print {
           @page {
             size: A4 portrait;
-            margin: 15mm;
+            margin: 10mm;
           }
 
           /* 기본 요소 리셋 */
@@ -1852,8 +1793,8 @@ const App = () => {
             height: auto !important;
           }
 
-          /* 불필요한 UI 숨김 */
-          body > div > div:not(main), /* 사이드바, 헤더 등 */
+          /* 불필요한 UI 숨김 (사이드바, 헤더 등) */
+          body > div > div:not(main),
           .no-print { 
             display: none !important; 
           }
@@ -1870,7 +1811,7 @@ const App = () => {
             display: none !important;
           }
 
-          /* 모달창을 전체 페이지로 확장 */
+          /* 모달창을 전체 페이지로 확장 및 투명한 배경 제거 */
           .print-backdrop {
             position: absolute !important;
             top: 0 !important;
@@ -1894,21 +1835,33 @@ const App = () => {
             border: none !important;
             transform: none !important;
             overflow: visible !important;
+            background: white !important;
           }
 
+          /* 프린트 영역 크기 및 배율 조정 (A4 용지에 맞게 축소) */
           #print-section {
             position: relative !important;
             width: 100% !important;
             height: auto !important;
             overflow: visible !important;
             padding: 0 !important;
+            zoom: 0.8; /* A4 1장에 들어가도록 비율 축소 */
           }
 
-          /* 그리드 강제 2열 유지 (안내장 상단 요약 부분) */
+          /* 그리드 강제 2열 유지 및 글자 줄바꿈 방지 */
           .print-grid {
             display: grid !important;
             grid-template-columns: 1fr 1fr !important;
-            gap: 1rem !important;
+            gap: 12px !important;
+          }
+          
+          .print-grid > div {
+            padding: 12px !important;
+          }
+
+          /* 텍스트 짤림 방지 */
+          .whitespace-nowrap {
+            white-space: nowrap !important;
           }
 
           /* 페이지 넘김 시 레이아웃 짤림 방지 */
@@ -1916,6 +1869,7 @@ const App = () => {
             page-break-inside: avoid !important;
           }
 
+          /* 컬러 및 배경색 출력 설정 */
           * {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
