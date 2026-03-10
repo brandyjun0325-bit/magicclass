@@ -62,7 +62,7 @@ const HANJA_DICT = {
   "실험":{hanja:"實驗",meaning:"實(열매 실), 驗(시험 험) : 해 보고 확인함"},
   "측정":{hanja:"測定",meaning:"測(잴 측), 定(정할 정) : 길이나 양 등을 재어 정함"},
   "비교":{hanja:"比較",meaning:"比(견줄 비), 較(견줄 교) : 서로 견주어 봄"},
-  "분류":{hanja:"分類",meaning:"分(나눌 분), 類(무리 류) : 나누어 묶음"},
+  "분류":{hanja:"分類",meaning:"分(나눌 분), 류(무리 류) : 나누어 묶음"},
   "분석":{hanja:"分析",meaning:"分(나눌 분), 析(쪼갤 석) : 나누어 살펴봄"},
   "해석":{hanja:"解釋",meaning:"解(풀 해), 釋(풀 석) : 뜻을 풀이함"},
   "추론":{hanja:"推論",meaning:"推(밀 추), 論(논할 론) : 근거로 미루어 생각함"},
@@ -81,7 +81,7 @@ const HANJA_DICT = {
   "안전":{hanja:"安全",meaning:"安(편안 안), 全(온전 전) : 위험이 없음"},
   "건강":{hanja:"健康",meaning:"健(굳건 건), 康(편안 강) : 몸과 마음이 튼튼함"},
   "환경":{hanja:"環境",meaning:"環(둘러쌀 환), 境(지경 경) : 둘러싼 주위의 상태"},
-  "문화":{hanja:"文化",meaning:"文(글월 문), 化(될 화) : 사회의 생활 양식과 전통"},
+  "문화":{hanja:"문화",meaning:"文(글월 문), 化(될 화) : 사회의 생활 양식과 전통"},
   "예술":{hanja:"藝術",meaning:"藝(재주 예), 術(재주 술) : 아름다움을 표현하는 활동"},
   "체험":{hanja:"體驗",meaning:"體(몸 체), 驗(시험 험) : 몸으로 직접 해 봄"},
   "경험":{hanja:"經驗",meaning:"經(지날 경), 驗(시험 험) : 직접 겪어 봄"},
@@ -100,7 +100,7 @@ const HANJA_DICT = {
   "상징":{hanja:"象徵",meaning:"象(코끼리 상), 徵(징조 징) : 추상적인 것을 구체적인 사물로 나타냄"},
   "문단":{hanja:"文段",meaning:"文(글월 문), 段(구분 단) : 여러 문장이 모인 덩어리"},
   "서술":{hanja:"敍述",meaning:"敍(펼 서), 述(지을 술) : 사건이나 생각을 차례대로 적음"},
-  "요약":{hanja:"要約",meaning:"要(요긴할 요), 約(맺을 약) : 글의 요점을 간추림"},
+  "요약":{hanja:"要約",meaning:"要(요긴할 요), 약(맺을 약) : 글의 요점을 간추림"},
   "의견":{hanja:"意見",meaning:"意(뜻 의), 見(볼 견) : 어떤 일에 대한 자신의 생각"},
   "근거":{hanja:"根據",meaning:"根(뿌리 근), 據(의지할 거) : 주장의 바탕이 되는 이유"},
   "서론":{hanja:"序論",meaning:"序(차례 서), 論(논할 론) : 글을 시작하는 부분"},
@@ -283,7 +283,6 @@ const App = () => {
     } else {
       document.body.classList.remove('print-mode');
     }
-    // 컴포넌트 언마운트 시 클래스 제거
     return () => document.body.classList.remove('print-mode');
   }, [reportStudent]);
 
@@ -579,14 +578,13 @@ const App = () => {
     setMagicReasonInput('');
   };
 
-  // [복구 2] 초기화 시 번개 소리 추가 및 과제 점수는 유지하며 총합이 0이 되도록 보정 레코드 기록
+  // [기능 복구 2] 초기화 시 번개 소리 추가 및 총점 0 보정 로직
   const handleResetMagicPoints = () => {
     if(window.confirm('매직 점수를 0점으로 초기화하시겠습니까?\n(기존 과제 연동 점수는 유지되며, 현재 총합을 0으로 맞추는 보정 기록이 추가됩니다.)')) {
       playSound('thunder'); 
       setMagicPoints(prev => {
         const newPoints = { ...prev };
         students.forEach(s => {
-          // prev 상태를 기준으로 즉시 최신 누적 점수 계산 (클로저 문제 방지)
           const manualPts = (prev[s.id] || []).reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
           const taskPts = getStudentTaskPoints(s.id);
           const currentTotal = manualPts + taskPts;
@@ -902,7 +900,7 @@ const App = () => {
                       <button onClick={() => toggleAttendance(student.id)} className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center transition-all shrink-0 ${state.present ? 'bg-green-500 text-white shadow-md scale-105' : 'bg-gray-200 text-white'}`}><CheckCircle size={28} strokeWidth={3} /></button>
                       <div className="w-24 lg:w-32 font-black text-2xl lg:text-3xl text-gray-800 shrink-0 truncate whitespace-nowrap">{student.name}</div>
                       <div className="relative shrink-0">
-                        {/* [복구 1] disabled를 제거하여 언제든지 이모지 클릭 가능하도록 복구 */}
+                        {/* [기능 복구 1] disabled 제거, 아무때나 이모지 버튼을 클릭하면 팝업 오픈 */}
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
@@ -1311,7 +1309,7 @@ const App = () => {
           </div>
         )}
 
-        {/* 6. 매직 점수 (복구 1: 사유 입력창 및 카드 하단 내역 삭제 X버튼 완벽 복구) */}
+        {/* 6. 매직 점수 */}
         {activeTab === 'magicpoints' && (
           <div className="space-y-8 max-w-[1600px] mx-auto pb-10">
             <div className="bg-white p-6 lg:p-8 rounded-[40px] border border-indigo-100 shadow-sm flex flex-col lg:flex-row items-start lg:items-end justify-between gap-6">
@@ -1349,7 +1347,6 @@ const App = () => {
                   >
                     {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}점</option>)}
                   </select>
-                  {/* 사유 입력칸 */}
                   <input 
                     value={magicReasonInput} 
                     onChange={(e) => setMagicReasonInput(e.target.value)} 
@@ -1387,7 +1384,7 @@ const App = () => {
                       {student.num}. {student.name}
                     </div>
                     
-                    <div className={`text-7xl font-black my-4 transition-all ${total > 0 ? 'text-blue-600 drop-shadow-sm' : total < 0 ? 'text-red-500 drop-shadow-sm' : 'text-gray-300'}`}>
+                    <div className={`text-7xl font-black my-5 transition-all ${total > 0 ? 'text-blue-600 drop-shadow-sm' : total < 0 ? 'text-red-500 drop-shadow-sm' : 'text-gray-300'}`}>
                       {total > 0 ? `+${total}` : total}
                     </div>
 
@@ -1396,7 +1393,6 @@ const App = () => {
                       <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'minus'); }} className="flex-1 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white font-black py-3 rounded-2xl transition-colors text-lg border border-red-100 shadow-sm">노력</button>
                     </div>
 
-                    {/* 최근 기록 리스트 및 개별 삭제 기능 부활 */}
                     <div className="mt-4 w-full bg-slate-50 rounded-2xl p-3 border border-gray-100 min-h-[80px] flex flex-col justify-start" onClick={(e) => e.stopPropagation()}>
                       <h5 className="text-[12px] font-black text-gray-400 mb-1.5 text-left px-1">최근 기록</h5>
                       {points.slice(0, 2).map(p => (
@@ -1589,7 +1585,6 @@ const App = () => {
           </div>
         )}
 
-        {/* [복구] 출석 이모지 선택 팝업창 (Z-index 및 위치 최상단 적용) */}
         {moodPickerTarget && (
           <div className="fixed inset-0 z-[9999]" onClick={() => setMoodPickerTarget(null)}>
             <div 
@@ -1600,7 +1595,8 @@ const App = () => {
               {moods.map(m => (
                 <button 
                   key={m} 
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setAttendanceData(p => ({
                       ...p, 
                       [dateKey]: {
@@ -1623,9 +1619,7 @@ const App = () => {
           </div>
         )}
 
-        {/* --- 개별 모달 --- */}
-
-        {/* [수정] 안내장 인쇄 모달 */}
+        {/* --- 안내장 인쇄 모달 --- */}
         {reportStudent && (() => {
           const sCounseling = [];
           Object.entries(counselingData).forEach(([d, records]) => {
@@ -1691,31 +1685,32 @@ const App = () => {
                     </div>
                   </div>
                   
-                  <div className="space-y-8">
+                  <div className="space-y-8 page-break-inside-avoid">
                     <div className="bg-slate-50 p-8 rounded-3xl border-2 border-indigo-50 print:border-gray-200">
                       <h3 className="text-2xl font-black text-indigo-700 mb-6 flex items-center gap-2 tracking-tight"><BarChart2 size={28}/> 1. 학습 및 생활 태도 요약</h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-xl font-black text-gray-700">
-                        <div className="flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                          <span>✅ 과제 수행 점수</span> <span className="text-emerald-600 text-2xl">+{reportStudent.reportData.taskPts}점</span>
+                      <div className="grid grid-cols-2 gap-4 text-lg font-black text-gray-700 print-grid">
+                        <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                          <span className="whitespace-nowrap">✅ 과제 점수</span> <span className="text-emerald-600 text-xl">+{reportStudent.reportData.taskPts}점</span>
                         </div>
-                        <div className="flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                          <span>✨ 칭찬 매직 횟수</span> <span className="text-blue-600 text-2xl">{reportStudent.reportData.plusCount}회</span>
+                        <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                          <span className="whitespace-nowrap">✨ 칭찬 횟수</span> <span className="text-blue-600 text-xl">{reportStudent.reportData.plusCount}회</span>
                         </div>
-                        <div className="flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                          <span>⚡ 노력 매직 횟수</span> <span className="text-red-500 text-2xl">{reportStudent.reportData.minusCount}회</span>
+                        <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                          <span className="whitespace-nowrap">⚡ 노력 횟수</span> <span className="text-red-500 text-xl">{reportStudent.reportData.minusCount}회</span>
                         </div>
-                        <div className="flex justify-between items-center bg-indigo-600 text-white p-5 rounded-2xl shadow-md">
-                          <span>🏆 종합 매직 점수</span> <span className="text-3xl">{reportStudent.reportData.total > 0 ? `+${reportStudent.reportData.total}` : reportStudent.reportData.total}점</span>
+                        <div className="flex justify-between items-center bg-indigo-600 text-white p-4 rounded-2xl shadow-md">
+                          <span className="whitespace-nowrap">🏆 종합 점수</span> <span className="text-2xl">{reportStudent.reportData.total > 0 ? `+${reportStudent.reportData.total}` : reportStudent.reportData.total}점</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="bg-slate-50 p-8 rounded-3xl border-2 border-gray-200 print:border-gray-200">
+                    <div className="bg-slate-50 p-8 rounded-3xl border-2 border-gray-200 print:border-gray-200 page-break-inside-avoid">
+                      {/* [수정 3] 상담 기록 섹션 제목 및 문구 변경 */}
                       <h3 className="text-2xl font-black text-gray-800 mb-6 flex items-center gap-2 tracking-tight"><Users size={28}/> 2. 학생 상담 내역</h3>
                       {filteredCounseling.length > 0 ? (
                         <div className="space-y-5">
                           {filteredCounseling.map(r => (
-                            <div key={r.id} className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col gap-3">
+                            <div key={r.id} className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col gap-3 page-break-inside-avoid">
                               <div className="flex items-center justify-between border-b border-gray-50 pb-3">
                                 <span className="font-black text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg text-sm">{r.date}</span>
                                 <span className={`font-black text-sm px-3 py-1.5 rounded-lg ${r.resolved ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'}`}>{r.resolved ? '해결 완료' : '미해결/관찰중'}</span>
@@ -1726,14 +1721,13 @@ const App = () => {
                           ))}
                         </div>
                       ) : (
-                        <div className="bg-white p-8 rounded-2xl border border-gray-200 text-center text-gray-400 font-bold text-xl leading-relaxed whitespace-pre-wrap">
-                          해당 기간 내 기록된 학생 상담 기록이 없습니다. <br/>
-                          현재 문제 없이 학교 생활 잘하고 있습니다.
+                        <div className="bg-white p-8 rounded-2xl border border-gray-200 text-center text-gray-500 font-bold text-lg leading-relaxed whitespace-pre-wrap">
+                          해당 기간 내 기록된 학생 상담 기록이 없습니다.<br/>현재 문제 없이 학교 생활 잘하고 있습니다.
                         </div>
                       )}
                     </div>
                     
-                    <div className="text-center pt-10 mt-10 border-t-2 border-dashed border-gray-300 print:block hidden">
+                    <div className="text-center pt-10 mt-10 border-t-2 border-dashed border-gray-300 print:block hidden page-break-inside-avoid">
                       <p className="text-xl font-black text-gray-800 mb-3">위와 같이 긍정적으로 학교생활에 참여하고 있음을 안내해 드립니다.</p>
                       <p className="text-2xl font-black text-gray-900 mt-10 tracking-widest">담임 교사 ________________ (인)</p>
                     </div>
@@ -1743,6 +1737,8 @@ const App = () => {
             </div>
           );
         })()}
+
+        {/* --- 개별 모달 --- */}
 
         {/* 대형 뷰어 모달 */}
         {viewerTarget && (
@@ -1825,73 +1821,105 @@ const App = () => {
             }}
           />
         )}
+
+        {showStudentModal && (
+          <StudentEditModal 
+            key={showStudentModal.id || `new_student_${showStudentModal.num}`}
+            data={showStudentModal} 
+            onClose={() => setShowStudentModal(null)} 
+            onSave={saveStudent} 
+          />
+        )}
       </main>
       
-      {/* CSS */}
+      {/* CSS: [수정 4] 인쇄 전용 CSS (모달 내용만 완벽하게 출력) */}
       <style dangerouslySetContent={{__html: `
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         @media print {
-          /* 인쇄 시 사이드바, 헤더, 배경 등 불필요한 모든 요소 숨김 */
-          body * { 
-            visibility: hidden; 
-            overflow: visible !important; 
-          }
-          
-          /* 인쇄 모드 활성화 시 body 스크롤 방지 */
-          body.print-mode {
-            overflow: hidden !important;
+          @page {
+            size: A4 portrait;
+            margin: 15mm;
           }
 
-          /* 안내장 내용물만 보이게 설정 */
-          #print-section, #print-section * { 
-            visibility: visible; 
-          }
-          
-          /* 안내장 인쇄 섹션의 위치 및 크기 조정 */
-          #print-section { 
-            position: fixed; 
-            left: 0; 
-            top: 0; 
-            width: 210mm; /* A4 너비 */
-            height: 297mm; /* A4 높이 */
-            margin: 0; 
-            padding: 20mm; /* 인쇄 여백 */
-            background: white; 
-            overflow: visible !important; 
-            z-index: -1; 
-          }
-
-          /* 안내장 내부의 스크롤바 숨김 */
-          #print-section::-webkit-scrollbar {
-            display: none;
-          }
-
-          /* .no-print 클래스가 있는 요소는 인쇄 시 display: none */
-          .no-print { display: none !important; }
-
-          /* 배경 색상 및 이미지 출력 설정 */
-          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-          
-          /* 모달창 외부의 딤드 배경 및 모달창의 shadow, rounded 제거 */
-          .print-backdrop {
-            display: none !important;
-          }
-          .print-modal {
-            box-shadow: none !important;
-            border: none !important;
-            max-width: none !important;
+          /* 기본 요소 리셋 */
+          body, html {
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: white !important;
             width: 100% !important;
-            max-height: none !important;
-            height: 100% !important;
-            border-radius: 0 !important;
+            height: auto !important;
+          }
+
+          /* 불필요한 UI 숨김 */
+          body > div > div:not(main), /* 사이드바, 헤더 등 */
+          .no-print { 
+            display: none !important; 
+          }
+
+          /* 메인 컨테이너 리셋 */
+          main {
+            padding: 0 !important;
+            margin: 0 !important;
             overflow: visible !important;
           }
 
-          /* 인쇄 콘텐츠 비율 조정 (A4 꽉 차게 비율 축소) */
+          /* 모달 이외의 메인 콘텐츠 숨김 */
+          main > div:not(.print-backdrop) {
+            display: none !important;
+          }
+
+          /* 모달창을 전체 페이지로 확장 */
+          .print-backdrop {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: auto !important;
+            background: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            z-index: 1 !important;
+            display: block !important;
+          }
+
+          .print-modal {
+            position: relative !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            transform: none !important;
+            overflow: visible !important;
+          }
+
           #print-section {
-            zoom: 0.75; 
+            position: relative !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            padding: 0 !important;
+          }
+
+          /* 그리드 강제 2열 유지 (안내장 상단 요약 부분) */
+          .print-grid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 1rem !important;
+          }
+
+          /* 페이지 넘김 시 레이아웃 짤림 방지 */
+          .page-break-inside-avoid {
+            page-break-inside: avoid !important;
+          }
+
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
           }
         }
       `}} />
