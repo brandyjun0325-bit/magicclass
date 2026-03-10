@@ -100,7 +100,7 @@ const HANJA_DICT = {
   "상징":{hanja:"象徵",meaning:"象(코끼리 상), 徵(징조 징) : 추상적인 것을 구체적인 사물로 나타냄"},
   "문단":{hanja:"文段",meaning:"文(글월 문), 段(구분 단) : 여러 문장이 모인 덩어리"},
   "서술":{hanja:"敍述",meaning:"敍(펼 서), 述(지을 술) : 사건이나 생각을 차례대로 적음"},
-  "요약":{hanja:"要約",meaning:"要(요긴할 요), 約(맺을 약) : 글의 요점을 간추림"},
+  "요약":{hanja:"要約",meaning:"要(요긴할 요), 약(맺을 약) : 글의 요점을 간추림"},
   "의견":{hanja:"意見",meaning:"意(뜻 의), 見(볼 견) : 어떤 일에 대한 자신의 생각"},
   "근거":{hanja:"根據",meaning:"根(뿌리 근), 據(의지할 거) : 주장의 바탕이 되는 이유"},
   "서론":{hanja:"序論",meaning:"序(차례 서), 論(논할 론) : 글을 시작하는 부분"},
@@ -265,7 +265,6 @@ const App = () => {
   const [customStartDate, setCustomStartDate] = useState(formatDate(new Date()));
   const [customEndDate, setCustomEndDate] = useState(formatDate(new Date()));
   const [reportSortOrder, setReportSortOrder] = useState('desc');
-  
   const [magicReasonInput, setMagicReasonInput] = useState('');
 
   const [selectedExternalLink, setSelectedExternalLink] = useState(null);
@@ -412,7 +411,6 @@ const App = () => {
       const studentData = dayData[studentId] || {};
       return { ...prev, [dueDate]: { ...dayData, [studentId]: { ...studentData, [taskId]: status } } };
     });
-    setStatusPickerTarget(null);
   };
 
   const updateTaskMemo = (studentId, taskId, memo, dueDate) => {
@@ -886,13 +884,14 @@ const App = () => {
                       <button onClick={() => toggleAttendance(student.id)} className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center transition-all shrink-0 ${state.present ? 'bg-green-500 text-white shadow-md scale-105' : 'bg-gray-200 text-white'}`}><CheckCircle size={28} strokeWidth={3} /></button>
                       <div className="w-24 lg:w-32 font-black text-2xl lg:text-3xl text-gray-800 shrink-0 truncate whitespace-nowrap">{student.name}</div>
                       <div className="relative shrink-0">
-                        {/* [복구 완료] 이모지 버튼이 언제든 클릭 가능하고, 팝업이 정상적으로 열리도록 수정 */}
+                        {/* [복구 완료] 클릭 이벤트 충돌 방지(stopPropagation) 및 출석 시에만 팝업 활성화 */}
                         <button 
+                          disabled={!state.present}
                           onClick={(e) => {
                             e.stopPropagation();
                             setMoodPickerTarget({ studentId: student.id, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 260, 160) });
                           }} 
-                          className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-3xl lg:text-4xl transition-all shadow-sm hover:border-indigo-300 hover:shadow-md cursor-pointer ${state.present ? 'opacity-100' : 'opacity-40'}`}
+                          className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-3xl lg:text-4xl transition-all shadow-sm ${state.present ? 'hover:border-indigo-300 hover:shadow-md cursor-pointer' : 'opacity-30 cursor-not-allowed'}`}
                         >
                           {state.mood}
                         </button>
@@ -1295,7 +1294,7 @@ const App = () => {
           </div>
         )}
 
-        {/* 6. 매직 점수 (복구 및 개선 사항 반영) */}
+        {/* 6. 매직 점수 */}
         {activeTab === 'magicpoints' && (
           <div className="space-y-8 max-w-[1600px] mx-auto pb-10">
             <div className="bg-white p-6 lg:p-8 rounded-[40px] border border-indigo-100 shadow-sm flex flex-col lg:flex-row items-start lg:items-end justify-between gap-6">
@@ -1316,7 +1315,6 @@ const App = () => {
                       <option value="asc">점수 낮은 순</option>
                     </select>
                     <div className="w-px h-6 bg-gray-300 mx-1"></div>
-                    {/* [복구 1] 초기화 시점 보정 방식 적용 버튼 */}
                     <button onClick={handleResetMagicPoints} className="px-4 py-2 bg-white text-red-500 hover:bg-red-50 border border-red-100 rounded-lg text-sm font-black transition-colors flex items-center gap-1.5 shadow-sm">
                       <RotateCcw size={16} strokeWidth={3} /> 초기화
                     </button>
@@ -1380,13 +1378,11 @@ const App = () => {
                       <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'minus'); }} className="flex-1 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white font-black py-3 rounded-2xl transition-colors text-lg border border-red-100 shadow-sm">노력</button>
                     </div>
 
-                    {/* [복구 완료] 최근 기록 리스트 및 개별 삭제 기능 완벽 부활 */}
                     <div className="mt-4 w-full bg-slate-50 rounded-2xl p-3 border border-gray-100 min-h-[80px] flex flex-col justify-start" onClick={(e) => e.stopPropagation()}>
                       <h5 className="text-[12px] font-black text-gray-400 mb-1.5 text-left px-1">최근 기록</h5>
                       {points.slice(0, 2).map(p => (
                         <div key={p.id} className="flex justify-between items-center text-sm group py-1 px-1.5 rounded-lg hover:bg-white transition-colors">
                           <div className="flex items-center gap-2 truncate pr-2">
-                            {/* [초기화 기록 표시 색상 추가] */}
                             <span className={`font-black shrink-0 ${p.type==='plus'?'text-blue-600':p.type==='minus'?'text-red-500':'text-gray-500'}`}>{p.amount > 0 ? `+${p.amount}` : p.amount}</span>
                             <span className="text-gray-600 font-bold truncate">{p.reason}</span>
                           </div>
