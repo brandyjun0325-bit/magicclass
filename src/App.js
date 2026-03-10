@@ -62,7 +62,7 @@ const HANJA_DICT = {
   "실험":{hanja:"實驗",meaning:"實(열매 실), 驗(시험 험) : 해 보고 확인함"},
   "측정":{hanja:"測定",meaning:"測(잴 측), 定(정할 정) : 길이나 양 등을 재어 정함"},
   "비교":{hanja:"比較",meaning:"比(견줄 비), 較(견줄 교) : 서로 견주어 봄"},
-  "분류":{hanja:"分類",meaning:"分(나눌 분), 류(무리 류) : 나누어 묶음"},
+  "분류":{hanja:"分類",meaning:"分(나눌 분), 類(무리 류) : 나누어 묶음"},
   "분석":{hanja:"分析",meaning:"分(나눌 분), 析(쪼갤 석) : 나누어 살펴봄"},
   "해석":{hanja:"解釋",meaning:"解(풀 해), 釋(풀 석) : 뜻을 풀이함"},
   "추론":{hanja:"推論",meaning:"推(밀 추), 論(논할 론) : 근거로 미루어 생각함"},
@@ -100,67 +100,233 @@ const HANJA_DICT = {
   "상징":{hanja:"象徵",meaning:"象(코끼리 상), 徵(징조 징) : 추상적인 것을 구체적인 사물로 나타냄"},
   "문단":{hanja:"文段",meaning:"文(글월 문), 段(구분 단) : 여러 문장이 모인 덩어리"},
   "서술":{hanja:"敍述",meaning:"敍(펼 서), 述(지을 술) : 사건이나 생각을 차례대로 적음"},
-  "요약":{hanja:"要約",meaning:"要(요긴할 요), 약(맺을 약) : 글의 요점을 간추림"},
+  "요약":{hanja:"要約",meaning:"要(요긴할 요), 約(맺을 약) : 글의 요점을 간추림"},
   "의견":{hanja:"意見",meaning:"意(뜻 의), 見(볼 견) : 어떤 일에 대한 자신의 생각"},
   "근거":{hanja:"根據",meaning:"根(뿌리 근), 據(의지할 거) : 주장의 바탕이 되는 이유"},
   "서론":{hanja:"序論",meaning:"序(차례 서), 論(논할 론) : 글을 시작하는 부분"},
   "본론":{hanja:"本論",meaning:"本(근본 본), 論(논할 론) : 글의 중심 주장이 담긴 부분"},
   "결론":{hanja:"結論",meaning:"結(맺을 결), 論(논할 론) : 글을 마무리하는 부분"},
   "관점":{hanja:"觀點",meaning:"觀(볼 관), 點(점 찍을 점) : 사물이나 현상을 바라보는 태도나 방향"},
-  "갈등":{hanja:"葛藤",meaning:"葛(칡 갈), 藤(등나무 등) : 서로 부딪히는 상태"},
+  "갈등":{hanja:"葛藤",meaning:"葛(칡 갈), 藤(등나무 등) : 목표나 이해관계가 달라 서로 부딪히는 상태"},
   "배경":{hanja:"背景",meaning:"背(등 배), 景(볕 경) : 사건이 일어나는 시간과 장소"},
   "독서":{hanja:"讀書",meaning:"讀(읽을 독), 書(책 서) : 책을 읽는 것"},
   "작문":{hanja:"作文",meaning:"作(지을 작), 文(글월 문) : 글을 짓는 것"},
   "독해":{hanja:"讀解",meaning:"讀(읽을 독), 解(풀 해) : 글을 읽고 뜻을 이해함"},
   "문학":{hanja:"文學",meaning:"文(글월 문), 學(배울 학) : 문학 작품을 읽고 즐기는 분야"},
   "문법":{hanja:"文法",meaning:"文(글월 문), 法(법 법) : 말과 글의 규칙"},
-  "주장":{hanja:"主張",meaning:"主(주인 주), 張(베풀 장) : 자신의 생각을 내세움"},
+  "주장":{hanja:"主張",meaning:"主(주인 주), 張(베풀 장) : 자신의 생각을 분명히 내세움"},
   "사실":{hanja:"事實",meaning:"事(일 사), 實(열매 실) : 실제로 있었던 일"},
   "논리":{hanja:"論理",meaning:"論(논할 론), 理(다스릴 리) : 생각이 맞게 이어지는 이치"},
   "비판":{hanja:"批判",meaning:"批(칠 비), 判(판단할 판) : 잘잘못을 따져 판단함"},
+  "설명문":{hanja:"說明文",meaning:"說(말씀 설), 明(밝을 명), 文(글월 문) : 어떤 것을 설명하는 글"},
+  "논설문":{hanja:"論說文",meaning:"論(논할 론), 說(말씀 설), 文(글월 문) : 주장하고 설명하는 글"},
+  "인물":{hanja:"人物",meaning:"人(사람 인), 物(만물 물) : 이야기나 글에 나오는 사람"},
 
   // [수학]
   "분수":{hanja:"分數",meaning:"分(나눌 분), 數(셈 수) : 전체를 나눈 것 중 일부분을 나타내는 수"},
   "소수":{hanja:"小數",meaning:"小(작을 소), 數(셈 수) : 1보다 작은 크기를 나타내는 수"},
   "도형":{hanja:"圖形",meaning:"圖(그림 도), 形(모양 형) : 점, 선, 면 등으로 이루어진 모양"},
   "직사각형":{hanja:"直四角形",meaning:"直(곧을 직), 四(넉 사), 角(뿔 각), 形(모양 형) : 네 각이 모두 직각인 사각형"},
-  "삼각형":{hanja:"三角形",meaning:"三(석 삼), 角(뿔 각), 形(모양 형) : 세 선분으로 둘러싸인 다각형"},
+  "삼각형":{hanja:"三角形",meaning:"三(석 삼), 角(뿔 각), 形(모양 형) : 세 개의 선분으로 둘러싸인 다각형"},
   "부피":{hanja:"體積",meaning:"體(몸 체), 積(쌓을 적) : 물체가 공간에서 차지하는 크기"},
   "넓이":{hanja:"面積",meaning:"面(표면 면), 積(쌓을 적) : 평면이나 겉면이 차지하는 크기"},
-  "합동":{hanja:"合同",meaning:"合(합할 합), 同(같을 동) : 포개어지는 관계"},
-  "대칭":{hanja:"對稱",meaning:"對(대할 대), 稱(일컬을 칭) : 양쪽이 똑같은 모양"},
-  "비례":{hanja:"比例",meaning:"比(견줄 비), 例(법식 례) : 비가 일정한 관계로 변하는 것"},
-  "평균":{hanja:"平均",meaning:"平(평평할 평), 均(고를 균) : 합을 개수로 나눈 값"},
-  "확률":{hanja:"確率",meaning:"確(굳을 확), 率(비율 률) : 일어날 가능성을 수로 나타낸 것"},
+  "합동":{hanja:"合同",meaning:"合(합할 합), 同(같을 동) : 모양과 크기가 같아 완전히 포개어지는 관계"},
+  "대칭":{hanja:"對稱",meaning:"對(대할 대), 稱(일컬을 칭) : 점이나 선을 중심으로 양쪽이 똑같은 모양"},
+  "비례":{hanja:"比例",meaning:"比(견줄 비), 例(법식 례) : 두 수량의 비가 일정한 관계로 변하는 것"},
+  "평균":{hanja:"平均",meaning:"平(평평할 평), 均(고를 균) : 여러 수의 합을 그 개수로 나눈 값"},
+  "확률":{hanja:"確率",meaning:"確(굳을 확), 率(비율 률) : 어떤 일이 일어날 가능성을 수로 나타낸 것"},
   "자연수":{hanja:"自然數",meaning:"自(스스로 자), 然(그럴 연), 數(셈 수) : 1부터 시작하여 1씩 커지는 수"},
-  "정수":{hanja:"整數",meaning:"整(가지런할 정), 數(셈 수) : 양의 정수, 0, 음의 정수"},
-  "방정식":{hanja:"方程式",meaning:"方(모 방), 程(한도 정), 式(법 식) : 미지수에 따라 참/거짓이 되는 등식"},
-  "비례식":{hanja:"比例式",meaning:"比(견줄 비), 例(법식 례), 式(법 식) : 비율이 같은 두 비를 나타낸 식"},
+  "정수":{hanja:"整數",meaning:"整(가지런할 정), 數(셈 수) : 양의 정수, 0, 음의 정수를 통틀어 이르는 말"},
+  "방정식":{hanja:"方程式",meaning:"方(모 방), 程(한도 정), 式(법 식) : 미지수의 값에 따라 참/거짓이 되는 등식"},
+  "비례식":{hanja:"比例式",meaning:"比(견줄 비), 例(법식 례), 式(법 식) : 비율이 같은 두 비를 등호로 나타낸 식"},
   "계산":{hanja:"計算",meaning:"計(셀 계), 算(셈 산) : 수를 셈함"},
-  "단위":{hanja:"單位",meaning:"單(홑 단), 位(자리 위) : 측정의 기준"},
-  "분자":{hanja:"分子",meaning:"分(나눌 분), 子(아들 자) : 분수의 위"},
-  "분모":{hanja:"分母",meaning:"分(나눌 분), 母(어머니 모) : 분수의 아래"},
+  "단위":{hanja:"單位",meaning:"單(홑 단), 位(자리 위) : 측정의 기준이 되는 값"},
+  "분자":{hanja:"分子",meaning:"分(나눌 분), 子(아들 자) : 분수의 위에 있는 수"},
+  "분모":{hanja:"分母",meaning:"分(나눌 분), 母(어머니 모) : 분수의 아래에 있는 수"},
   "약분":{hanja:"約分",meaning:"約(맺을 약), 分(나눌 분) : 분자와 분모를 같은 수로 나눔"},
   "통분":{hanja:"通分",meaning:"通(통할 통), 分(나눌 분) : 분모를 같게 만듦"},
-  "기약분수":{hanja:"既約分數",meaning:"既(이미 기), 約(맺을 약), 分(나눌 분), 數(셈 수) : 더 이상 약분 안 되는 분수"},
-  "약수":{hanja:"約數",meaning:"約(맺을 약), 數(셈 수) : 나누어떨어지게 하는 수"},
-  "배수":{hanja:"倍數",meaning:"倍(곱 배), 數(셈 수) : 몇 배가 되는 수"},
-  "공약수":{hanja:"公約數",meaning:"公(공평할 공), 約(맺을 약), 數(셈 수) : 공통 약수"},
-  "공배수":{hanja:"公배수",meaning:"公(공평할 공), 倍(곱 배), 數(셈 수) : 공통 배수"},
+  "기약분수":{hanja:"既約分數",meaning:"既(이미 기), 約(맺을 약), 分(나눌 분), 數(셈 수) : 더 이상 약분되지 않는 분수"},
+  "약수":{hanja:"約數",meaning:"約(맺을 약), 數(셈 수) : 어떤 수를 나누어떨어지게 하는 수"},
+  "배수":{hanja:"倍數",meaning:"倍(곱 배), 數(셈 수) : 어떤 수의 몇 배가 되는 수"},
+  "공약수":{hanja:"公約數",meaning:"公(공평할 공), 約(맺을 약), 數(셈 수) : 둘 이상의 수에 공통으로 되는 약수"},
+  "공배수":{hanja:"公倍數",meaning:"公(공평할 공), 倍(곱 배), 數(셈 수) : 둘 이상의 수에 공통으로 되는 배수"},
+  "최대공약수":{hanja:"最大公約數",meaning:"最(가장 최), 大(큰 대), 公(공평할 공), 約(맺을 약), 數(셈 수) : 공약수 중 가장 큰 수"},
+  "최소공배수":{hanja:"最小公倍數",meaning:"最(가장 최), 小(작을 소), 公(공평할 공), 倍(곱 배), 數(셈 수) : 공배수 중 가장 작은 수"},
+  "소인수":{hanja:"素因數",meaning:"素(본디 소), 因(인할 인), 數(셈 수) : 어떤 수를 나누는 소수인 약수"},
+  "소인수분해":{hanja:"素因數分解",meaning:"素(본디 소), 因(인할 인), 數(셈 수), 分(나눌 분), 解(풀 해) : 수를 소인수의 곱으로 나타냄"},
+  "사칙연산":{hanja:"四則演算",meaning:"四(넉 사), 則(법칙 칙), 演(펼 연), 算(셈 산) : 더하기, 빼기, 곱하기, 나누기"},
+  "연산":{hanja:"演算",meaning:"演(펼 연), 算(셈 산) : 계산을 하는 것"},
   "각도":{hanja:"角度",meaning:"角(뿔 각), 度(법도 도) : 각의 크기"},
-  "직각":{hanja:"直角",meaning:"直(곧을 직), 角(뿔 각) : 90도 각"},
-  "평행":{hanja:"平行",meaning:"平(평평할 평), 行(다닐 행) : 만나지 않는 관계"},
-  "수직":{hanja:"垂直",meaning:"垂(드리울 수), 直(곧을 직) : 직각으로 만남"},
+  "직각":{hanja:"直角",meaning:"直(곧을 직), 角(뿔 각) : 90도로 이루어진 각"},
+  "평행":{hanja:"平行",meaning:"平(평평할 평), 行(다닐 행) : 나란하여 만나지 않는 관계"},
+  "수직":{hanja:"垂直",meaning:"垂(드리울 수), 直(곧을 직) : 서로 직각으로 만나는 관계"},
+  "원주율":{hanja:"圓周率",meaning:"圓(둥글 원), 周(두루 주), 率(비율 률) : 원주를 지름으로 나눈 값"},
+  "직경":{hanja:"直徑",meaning:"直(곧을 직), 徑(지름 경) : 원의 가운데를 지나는 지름"},
+  "통계":{hanja:"統計",meaning:"統(거느릴 통), 計(셀 계) : 자료를 모아 분석하는 것"},
   "비율":{hanja:"比率",meaning:"比(견줄 비), 率(비율 률) : 비교한 비의 값"},
-  
-  // [사회/과학]
+
+  // [사회/역사]
   "민주주의":{hanja:"民主主義",meaning:"民(백성 민), 主(주인 주), 主(주인 주), 義(옳을 의) : 국민이 국가의 주인인 제도"},
-  "경제":{hanja:"經濟",meaning:"經(다스릴 경), 濟(구제할 제) : 재화를 생산, 분배, 소비하는 활동"},
-  "도시":{hanja:"都市",meaning:"都(도읍 도), 市(저자 시) : 인구가 밀집된 정치, 경제 중심지"},
-  "역사":{hanja:"歷史",meaning:"歷(지낼 력), 史(역사 사) : 인류 사회의 변천 과정"},
-  "생태계":{hanja:"生態系",meaning:"生(날 생), 態(모양 태), 系(이을 계) : 생물과 환경이 영향을 주고받는 체계"},
-  "광합성":{hanja:"光合成",meaning:"光(빛 광), 合(합할 합), 成(이룰 성) : 빛 에너지로 양분을 만드는 과정"},
-  "지구":{hanja:"地球",meaning:"地(땅 지), 球(공 구) : 우리가 사는 천체"}
+  "헌법":{hanja:"憲法",meaning:"憲(법 헌), 法(법 법) : 국가의 통치 조직과 기본 원리를 정한 최고의 법"},
+  "국회":{hanja:"國會",meaning:"國(나라 국), 會(모일 회) : 국민의 대표들이 모여 법을 만드는 기관"},
+  "정부":{hanja:"政府",meaning:"政(정사 정), 府(관청 부) : 국가의 행정을 맡아보는 기관"},
+  "법원":{hanja:"法院",meaning:"法(법 법), 院(집 원) : 법에 따라 재판을 하는 기관"},
+  "인권":{hanja:"人權",meaning:"人(사람 인), 權(권리 권) : 인간이 마땅히 누려야 할 권리"},
+  "경제":{hanja:"經濟",meaning:"經(다스릴 경), 濟(구제할 제) : 생활에 필요한 재화를 생산, 분배, 소비하는 활동"},
+  "생산":{hanja:"生産",meaning:"生(날 생), 産(낳을 산) : 사람이 생활하는 데 필요한 물건을 만드는 일"},
+  "소비":{hanja:"消費",meaning:"消(사라질 소), 費(쓸 비) : 욕구를 채우기 위해 돈이나 물건을 쓰는 일"},
+  "지형":{hanja:"地形",meaning:"地(땅 지), 形(모양 형) : 산, 강, 평야 등 땅의 겉면의 모양"},
+  "기후":{hanja:"氣候",meaning:"氣(기운 기), 候(기후 후) : 일정한 지역에서 오랜 기간 걸쳐 나타나는 날씨의 평균 상태"},
+  "인구":{hanja:"人口",meaning:"人(사람 인), 口(입 구) : 일정한 지역 안에 사는 사람의 총수"},
+  "도시":{hanja:"都市",meaning:"都(도읍 도), 市(저자 시) : 인구가 밀집되어 있고 정치/경제/문화의 중심이 되는 곳"},
+  "촌락":{hanja:"村落",meaning:"村(마을 촌), 落(마을 락) : 농업, 어업 등에 종사하는 사람들이 모여 사는 곳"},
+  "역사":{hanja:"歷史",meaning:"歷(지낼 력), 史(역사 사) : 인류 사회의 변천과 흥망의 과정, 또는 그 기록"},
+  "독립":{hanja:"獨立",meaning:"獨(홀로 독), 立(설 립) : 다른 것에 예속되거나 의존하지 않는 상태"},
+  "통일":{hanja:"統一",meaning:"統(거느릴 통), 一(한 일) : 나누어진 것들을 합쳐서 하나가 되게 함"},
+  "평등":{hanja:"平等",meaning:"平(평평할 평), 等(무리 등) : 권리, 의무, 자격 등이 차별 없이 고르고 한결같음"},
+  "자유":{hanja:"自由",meaning:"自(스스로 자), 由(말미암을 유) : 외부적인 구속이나 무엇에 얽매이지 않고 자기 마음대로 할 수 있는 상태"},
+  "권리":{hanja:"權利",meaning:"權(권리 권), 利(이로울 리) : 어떤 일을 하거나 타인에게 요구할 수 있는 정당한 힘"},
+  "의무":{hanja:"義務",meaning:"義(옳을 의), 務(힘쓸 무) : 마땅히 해야 할 일"},
+  "무역":{hanja:"貿易",meaning:"貿(바꿀 무), 易(바꿀 역) : 나라와 나라 사이에 서로 물건을 사고파는 일"},
+  "수출":{hanja:"輸出",meaning:"輸(보낼 수), 出(날 출) : 국내의 상품이나 기술을 외국으로 팔아 내보냄"},
+  "수입":{hanja:"輸入",meaning:"輸(보낼 수), 入(들 입) : 외국의 상품이나 기술을 국내로 사들임"},
+  "국가":{hanja:"國家",meaning:"國(나라 국), 家(집 가) : 사람들이 함께 살아가는 나라"},
+  "국민":{hanja:"國民",meaning:"國(나라 국), 民(백성 민) : 한 나라에 사는 사람들"},
+  "주권":{hanja:"主權",meaning:"主(주인 주), 權(권리 권) : 나라의 주인으로서 가지는 권리"},
+  "정치":{hanja:"政治",meaning:"政(정사 정), 治(다스릴 치) : 나라를 다스리는 일"},
+  "선거":{hanja:"選擧",meaning:"選(가릴 선), 擧(들 거) : 대표를 뽑는 일"},
+  "투표":{hanja:"投票",meaning:"投(던질 투), 票(표 표) : 후보에게 표를 던져 선택함"},
+  "삼권분립":{hanja:"三權分立",meaning:"三(셋 삼), 權(권리 권), 分(나눌 분), 立(설 립) : 나라 권력을 나누는 원리"},
+  "입법":{hanja:"立法",meaning:"立(설 립), 法(법 법) : 법을 만드는 일"},
+  "행정":{hanja:"行政",meaning:"行(다닐 행), 政(정사 정) : 나라 일을 실행하는 일"},
+  "사법":{hanja:"司法",meaning:"司(맡을 사), 法(법 법) : 재판으로 법을 적용하는 일"},
+  "지방자치":{hanja:"地方自治",meaning:"地(땅 지), 方(모 방), 自(스스로 자), 治(다스릴 치) : 지역이 스스로 다스림"},
+  "법률":{hanja:"法律",meaning:"法(법 법), 律(법칙 률) : 나라에서 정한 법"},
+  "재판":{hanja:"裁判",meaning:"裁(마를 재), 判(판단할 판) : 법에 따라 옳고 그름을 판단함"},
+  "국토":{hanja:"國土",meaning:"國(나라 국), 土(흙 토) : 나라의 땅"},
+  "지도":{hanja:"地圖",meaning:"地(땅 지), 圖(그림 도) : 땅의 모습을 그린 그림"},
+  "문화재":{hanja:"文化財",meaning:"文(글월 문), 化(될 화), 財(재물 재) : 지키고 남겨야 할 문화유산"},
+  "전통":{hanja:"傳統",meaning:"傳(전할 전), 統(거느릴 통) : 오래 전해 오는 것"},
+  "화폐":{hanja:"貨幣",meaning:"貨(재화 화), 幣(비단 폐) : 돈"},
+  "세금":{hanja:"稅金",meaning:"稅(세금 세), 金(쇠 금) : 나라나 공공기관에 내는 돈"},
+
+  // [과학]
+  "생태계":{hanja:"生態系",meaning:"生(날 생), 態(모양 태), 系(이을 계) : 생물과 이를 둘러싼 환경이 서로 영향을 주고받는 하나의 체계"},
+  "광합성":{hanja:"光合成",meaning:"光(빛 광), 合(합할 합), 成(이룰 성) : 녹색 식물이 빛 에너지를 이용하여 양분을 만드는 과정"},
+  "지구":{hanja:"地球",meaning:"地(땅 지), 球(공 구) : 우리가 살고 있는 천체"},
+  "우주":{hanja:"宇宙",meaning:"宇(집 우), 宙(집 주) : 무한한 시간과 만물을 포함하고 있는 끝없는 공간"},
+  "자전":{hanja:"自轉",meaning:"自(스스로 자), 轉(구를 전) : 천체가 스스로 고정된 축을 중심으로 회전하는 현상"},
+  "공전":{hanja:"公轉",meaning:"公(공평할 공), 轉(구를 전) : 한 천체가 다른 천체의 둘레를 주기적으로 도는 현상"},
+  "기온":{hanja:"氣溫",meaning:"氣(기운 기), 溫(따뜻할 온) : 대기의 온도"},
+  "습도":{hanja:"濕度",meaning:"濕(축축할 습), 度(법도 도) : 공기 중에 수증기가 포함되어 있는 정도"},
+  "지진":{hanja:"地震",meaning:"地(땅 지), 震(우레 진) : 지구 내부의 에너지가 밖으로 나와 땅이 갈라지며 흔들리는 현상"},
+  "화산":{hanja:"火山",meaning:"火(불 화), 山(뫼 산) : 지하 깊은 곳의 마그마가 지표 밖으로 분출하여 만들어진 산"},
+  "퇴적암":{hanja:"堆積岩",meaning:"堆(쌓을 퇴), 積(쌓을 적), 岩(바위 암) : 퇴적물이 굳어져서 만들어진 암석"},
+  "화성암":{hanja:"火成岩",meaning:"火(불 화), 成(이룰 성), 岩(바위 암) : 마그마가 식어서 굳어진 암석"},
+  "세포":{hanja:"細胞",meaning:"細(가늘 세), 胞(세포 포) : 생물체를 이루는 기본 단위"},
+  "유전":{hanja:"遺傳",meaning:"遺(남길 유), 傳(전할 전) : 부모의 성질이 자손에게 전해지는 현상"},
+  "물질":{hanja:"物質",meaning:"物(만물 물), 質(바탕 질) : 물체를 이루는 것"},
+  "상태":{hanja:"狀態",meaning:"狀(형상 상), 態(모양 태) : 물질의 모습이나 형편"},
+  "고체":{hanja:"固體",meaning:"固(굳을 고), 體(몸 체) : 모양이 일정한 상태의 물질"},
+  "액체":{hanja:"液體",meaning:"液(진 액), 體(몸 체) : 흐르는 상태의 물질"},
+  "기체":{hanja:"氣體",meaning:"氣(기운 기), 體(몸 체) : 공기처럼 퍼지는 상태의 물질"},
+  "온도":{hanja:"溫度",meaning:"溫(따뜻할 온), 度(법도 도) : 뜨겁고 차가운 정도"},
+  "압력":{hanja:"壓力",meaning:"壓(누를 압), 力(힘 력) : 누르는 힘"},
+  "용액":{hanja:"溶液",meaning:"溶(녹을 용), 液(진 액) : 어떤 물질이 녹아 있는 액체"},
+  "혼합":{hanja:"混合",meaning:"混(섞일 혼), 合(합할 합) : 여러 물질을 섞음"},
+  "분리":{hanja:"分離",meaning:"分(나눌 분), 離(떼어낼 이) : 섞인 것을 따로 나눔"},
+  "증발":{hanja:"蒸發",meaning:"蒸(찔 증), 發(필 발) : 액체가 기체로 변함"},
+  "응결":{hanja:"凝結",meaning:"凝(엉길 응), 結(맺을 결) : 기체가 액체로 변함"},
+  "순환":{hanja:"循環",meaning:"循(돌 순), 環(둘러쌀 환) : 돌아가며 반복됨"},
+  "전기":{hanja:"電氣",meaning:"電(번개 전), 氣(기운 기) : 전기의 힘"},
+  "전류":{hanja:"電流",meaning:"電(번개 전), 流(흐를 류) : 전기가 흐름"},
+  "자석":{hanja:"磁石",meaning:"磁(자석 자), 石(돌 석) : 쇠를 끌어당기는 성질을 가진 돌"},
+  "마찰":{hanja:"摩擦",meaning:"摩(갈 마), 擦(문지를 찰) : 서로 비빌 때 생기는 힘"},
+  "속도":{hanja:"速度",meaning:"速(빠를 속), 度(법도 도) : 움직이는 빠르기"},
+  "태양":{hanja:"太陽",meaning:"太(클 태), 陽(볕 양) : 지구에 빛을 주는 별"},
+  "대기":{hanja:"大氣",meaning:"大(큰 대), 氣(기운 기) : 지구를 둘러싼 공기"},
+  "암석":{hanja:"岩石",meaning:"岩(바위 암), 石(돌 석) : 지구를 이루는 돌"},
+  "침식":{hanja:"侵蝕",meaning:"侵(침노할 침), 蝕(갉아먹을 식) : 물과 바람이 땅을 깎아냄"},
+  "풍화":{hanja:"風化",meaning:"風(바람 풍), 化(될 화) : 바람, 비 등으로 바위가 부서짐"},
+
+  // [도덕]
+  "도덕":{hanja:"道德",meaning:"道(길 도), 德(덕 덕) : 사람으로서 지켜야 할 바른 마음과 행동"},
+  "윤리":{hanja:"倫理",meaning:"倫(인륜 륜), 理(다스릴 리) : 옳고 그름의 기준"},
+  "예절":{hanja:"禮節",meaning:"禮(예도 예), 節(마디 절) : 바른 몸가짐과 태도"},
+  "정직":{hanja:"正直",meaning:"正(바를 정), 直(곧을 직) : 거짓이 없이 바름"},
+  "성실":{hanja:"誠實",meaning:"誠(참 성), 實(열매 실) : 참되고 정성스럽게 행동함"},
+  "책임":{hanja:"責任",meaning:"責(꾸짖을 책), 任(맡길 임) : 맡은 일을 해야 할 의무"},
+  "자율":{hanja:"自律",meaning:"自(스스로 자), 律(법칙 률) : 스스로 규칙을 지킴"},
+  "절제":{hanja:"節制",meaning:"節(마디 절), 制(억제할 제) : 지나치지 않게 조절함"},
+  "반성":{hanja:"反省",meaning:"反(돌이킬 반), 省(살필 성) : 자신의 행동을 돌아봄"},
+  "협동":{hanja:"協同",meaning:"協(도울 협), 同(같을 동) : 힘을 합쳐 함께함"},
+  "양보":{hanja:"讓步",meaning:"讓(양보할 양), 步(걸음 보) : 남에게 먼저 내어 줌"},
+  "용서":{hanja:"容恕",meaning:"容(용납할 용), 恕(용서할 서) : 잘못을 이해하고 넘어감"},
+  "감사":{hanja:"感謝",meaning:"感(느낄 감), 謝(사례할 사) : 고마움을 느낌"},
+  "봉사":{hanja:"奉仕",meaning:"奉(받들 봉), 仕(벼슬 사) : 남을 위해 힘써 일함"},
+  "효도":{hanja:"孝道",meaning:"孝(효도 효), 道(길 도) : 부모님을 공경하는 마음과 행동"},
+
+  // [미술]
+  "미술":{hanja:"美術",meaning:"美(아름다울 미), 術(재주 술) : 아름다움을 표현하는 활동"},
+  "조형":{hanja:"造形",meaning:"造(지을 조), 形(모양 형) : 모양을 만들어 표현함"},
+  "색채":{hanja:"色彩",meaning:"色(색 색), 彩(채색 채) : 색의 느낌과 쓰임"},
+  "구도":{hanja:"構圖",meaning:"構(얽을 구), 圖(그림 도) : 그림의 화면 구성"},
+  "명암":{hanja:"明暗",meaning:"明(밝을 명), 暗(어두울 암) : 밝고 어두움의 대비"},
+  "질감":{hanja:"質感",meaning:"質(바탕 질), 感(느낄 감) : 만졌을 때 느껴지는 느낌"},
+  "형태":{hanja:"形態",meaning:"形(모양 형), 態(모양 태) : 물체의 모양"},
+  "대비":{hanja:"對比",meaning:"對(대할 대), 比(견줄 비) : 차이를 두어 돋보이게 함"},
+  "조화":{hanja:"調和",meaning:"調(고를 조), 和(화할 화) : 잘 어울림"},
+  "재료":{hanja:"材料",meaning:"材(재목 재), 料(헤아릴 료) : 만드는 데 쓰는 것"},
+  "기법":{hanja:"技法",meaning:"技(재주 기), 法(법 법) : 표현하는 방법"},
+  "서예":{hanja:"書藝",meaning:"書(글 서), 藝(재주 예) : 붓글씨 예술"},
+
+  // [음악]
+  "음악":{hanja:"音樂",meaning:"音(소리 음), 樂(즐길 악) : 소리로 즐기는 예술"},
+  "연주":{hanja:"演奏",meaning:"演(펼 연), 奏(아뢸 주) : 악기를 연주함"},
+  "감상":{hanja:"鑑賞",meaning:"鑑(거울 감), 賞(상 줄 상) : 보고 듣고 느낌을 나눔"},
+  "창작":{hanja:"創作",meaning:"創(비롯할 창), 作(지을 작) : 새로 만듦"},
+  "악기":{hanja:"樂器",meaning:"樂(즐길 악), 器(그릇 기) : 음악 소리를 내는 도구"},
+  "악보":{hanja:"樂譜",meaning:"樂(즐길 악), 譜(보 보) : 음악을 적어 놓은 것"},
+  "선율":{hanja:"旋律",meaning:"旋(돌 선), 律(법칙 률) : 가락의 흐름"},
+  "박자":{hanja:"拍子",meaning:"拍(칠 박), 子(아들 자) : 음악의 규칙적인 리듬"},
+  "화음":{hanja:"和音",meaning:"和(화할 화), 音(소리 음) : 여러 소리가 어울림"},
+  "합창":{hanja:"合唱",meaning:"合(합할 합), 唱(노래 부를 창) : 함께 노래 부름"},
+  "합주":{hanja:"合奏",meaning:"合(합할 합), 奏(아뢸 주) : 함께 연주함"},
+  "작곡":{hanja:"作曲",meaning:"作(지을 작), 曲(굽을 곡) : 음악을 만듦"},
+
+  // [체육]
+  "체육":{hanja:"體育",meaning:"體(몸 체), 育(기를 육) : 몸을 건강하게 기르는 활동"},
+  "운동":{hanja:"運動",meaning:"運(옮길 운), 動(움직일 동) : 몸을 움직여 활동함"},
+  "체력":{hanja:"體力",meaning:"體(몸 체), 力(힘 력) : 몸의 힘과 지구력"},
+  "근력":{hanja:"筋力",meaning:"筋(힘줄 근), 力(힘 력) : 근육의 힘"},
+  "지구력":{hanja:"持久力",meaning:"持(가질 지), 久(오래 구), 力(힘 력) : 오래 버티는 힘"},
+  "유연성":{hanja:"柔軟性",meaning:"柔(부드러울 유), 軟(부드러울 연), 性(성품 성) : 몸이 잘 구부러지는 성질"},
+  "순발력":{hanja:"瞬發力",meaning:"瞬(눈 깜짝할 순), 發(필 발), 力(힘 력) : 순간적으로 힘을 내는 능력"},
+  "준비운동":{hanja:"準備運動",meaning:"準(준비할 준), 備(갖출 비), 運(옮길 운), 動(움직일 동) : 운동 전 몸 풀기"},
+  "정리운동":{hanja:"整理運動",meaning:"整(가지런할 정), 理(다스릴 리), 運(옮길 운), 動(움직일 동) : 운동 후 몸을 풀어 마무리"},
+  "응급처치":{hanja:"應急處置",meaning:"應(응할 응), 急(급할 급), 處(처할 처), 置(둘 치) : 응급 상황에서 하는 도움"},
+
+  // [실과(기술·가정)/정보]
+  "실과":{hanja:"實科",meaning:"實(열매 실), 科(과목 과) : 생활에 필요한 것을 배우는 교과"},
+  "가정":{hanja:"家庭",meaning:"家(집 가), 庭(뜰 정) : 가족이 함께 생활하는 집"},
+  "의식주":{hanja:"衣食住",meaning:"衣(옷 의), 食(먹을 식), 住(살 주) : 옷, 먹을 것, 집"},
+  "식생활":{hanja:"食生活",meaning:"食(먹을 식), 生(날 생), 活(살 활) : 먹는 생활"},
+  "의생활":{hanja:"衣生活",meaning:"衣(옷 의), 生(날 생), 活(살 활) : 옷을 입는 생활"},
+  "주생활":{hanja:"住生活",meaning:"住(살 주), 生(날 생), 活(살 활) : 집에서 생활하는 모습"},
+  "위생":{hanja:"衛生",meaning:"衛(지킬 위), 生(날 생) : 건강을 지키는 깨끗한 습관"},
+  "절약":{hanja:"節約",meaning:"節(마디 절), 約(맺을 약) : 아껴 씀"},
+  "재활용":{hanja:"再活用",meaning:"再(다시 재), 活(살 활), 用(쓸 용) : 다시 사용함"},
+  "기술":{hanja:"技術",meaning:"技(재주 기), 術(재주 술) : 일을 할 수 있는 방법과 능력"},
+  "진로":{hanja:"進路",meaning:"進(나아갈 진), 路(길 로) : 앞으로 나아갈 길"},
+  "직업":{hanja:"職業",meaning:"職(직업 직), 業(일 업) : 일을 하며 생활하는 일"},
+
+  // [영어]
+  "영어":{hanja:"英語",meaning:"英(꽃부리 영), 語(말씀 어) : 영어(English)"},
+  "발음":{hanja:"發音",meaning:"發(필 발), 音(소리 음) : 소리를 내는 방법"},
+  "강세":{hanja:"强勢",meaning:"强(강할 강), 勢(기세 세) : 소리를 강하게 주는 부분"},
+  "철자":{hanja:"綴字",meaning:"綴(꿰맬 철), 字(글자 자) : 단어를 이루는 글자"},
+  "회화":{hanja:"會話",meaning:"會(모일 회), 話(말씀 화) : 말로 대화함"},
+  "의사소통":{hanja:"意思疏通",meaning:"意(뜻 의), 思(생각 사), 疏(트일 소), 通(통할 통) : 뜻과 생각을 서로 나눔"}
 };
 
 // --- Local Storage Custom Hook ---
@@ -265,27 +431,14 @@ const App = () => {
   const [customStartDate, setCustomStartDate] = useState(formatDate(new Date()));
   const [customEndDate, setCustomEndDate] = useState(formatDate(new Date()));
   const [reportSortOrder, setReportSortOrder] = useState('desc');
+  
   const [magicReasonInput, setMagicReasonInput] = useState('');
 
   const [selectedExternalLink, setSelectedExternalLink] = useState(null);
   const [viewerTarget, setViewerTarget] = useState(null); 
   const [slideSubjectId, setSlideSubjectId] = useState(null);
-  
-  // 안내장 모달용 상태
-  const [reportStudent, setReportStudent] = useState(null);
 
   const dateKey = formatDate(selectedDate);
-
-  // 인쇄 모드 전환을 위한 useEffect
-  useEffect(() => {
-    if (reportStudent) {
-      document.body.classList.add('print-mode');
-    } else {
-      document.body.classList.remove('print-mode');
-    }
-    // 컴포넌트 언마운트 시 클래스 제거
-    return () => document.body.classList.remove('print-mode');
-  }, [reportStudent]);
 
   useEffect(() => {
     setSelectedDate(new Date());
@@ -579,27 +732,8 @@ const App = () => {
   };
 
   const handleResetMagicPoints = () => {
-    if(window.confirm('매직 점수를 0점으로 초기화하시겠습니까?\n(기존 과제 점수는 유지되며, 현재 총합이 0이 되도록 보정됩니다.)')) {
-      playSound('thunder'); // [수정] 번개 소리 추가
-      setMagicPoints(prev => {
-        const newPoints = { ...prev };
-        students.forEach(s => {
-          const currentTotal = getStudentTotalPoints(s.id);
-          if (currentTotal !== 0) {
-            const newRecord = { 
-              id: 'p' + Date.now() + Math.random().toString(36).substr(2, 9), 
-              date: dateKey, 
-              timestamp: new Date().getTime(), 
-              type: 'reset', 
-              amount: -currentTotal,
-              reason: '🔄 점수 초기화' 
-            };
-            const existingRecords = Array.isArray(newPoints[s.id]) ? newPoints[s.id] : [];
-            newPoints[s.id] = [newRecord, ...existingRecords];
-          }
-        });
-        return newPoints;
-      });
+    if(window.confirm('모든 학생의 [수동 부여 매직 점수]를 완전히 초기화하시겠습니까? (과제 연동 점수는 유지됩니다)\n이 작업은 되돌릴 수 없습니다.')) {
+      setMagicPoints({});
     }
   };
 
@@ -738,9 +872,7 @@ const App = () => {
         });
 
         (magicPoints[student.id] || []).filter(p => p.date === date).forEach(p => {
-          const typeStr = p.type === 'plus' ? '칭찬' : p.type === 'minus' ? '노력' : '초기화';
-          const amtStr = p.amount > 0 ? `+${p.amount}` : p.amount;
-          csvContent += `${student.num},${escape(student.name)},${date},매직점수,${typeStr},${amtStr},${escape(p.reason)}\n`;
+          csvContent += `${student.num},${escape(student.name)},${date},매직점수,${p.type === 'plus' ? '칭찬' : '노력'},${p.amount > 0 ? '+'+p.amount : p.amount},${escape(p.reason)}\n`;
         });
       });
     });
@@ -793,15 +925,15 @@ const App = () => {
   );
 
   return (
-    <div className={`flex flex-col md:flex-row min-h-screen bg-slate-50 text-gray-900 font-sans pb-24 md:pb-0`}>
-      <div className="md:hidden flex items-center justify-between p-5 bg-white border-b sticky top-0 z-40 shadow-sm no-print">
+    <div className="flex flex-col md:flex-row min-h-screen bg-slate-50 text-gray-900 font-sans pb-24 md:pb-0">
+      <div className="md:hidden flex items-center justify-between p-5 bg-white border-b sticky top-0 z-40 shadow-sm">
         <div className="flex items-center gap-2 text-indigo-600 font-black text-2xl"><Sparkles size={28} /> 매직클래스</div>
         <button onClick={downloadCSV} className="text-emerald-600 px-4 py-2 bg-emerald-50 rounded-xl hover:bg-emerald-100 flex items-center gap-2 text-sm font-black border border-emerald-200"><Download size={18} /> <span className="hidden sm:inline">AI 엑셀</span></button>
       </div>
 
       <Sidebar />
       
-      <main className="flex-1 p-4 md:p-10 overflow-auto relative hide-on-print">
+      <main className="flex-1 p-4 md:p-10 overflow-auto print-container relative">
         <div className="hidden md:flex justify-between items-center mb-8 no-print">
           <h2 className="text-3xl font-black text-gray-800 flex items-center gap-3">
             {activeTab === 'students' && (selectedStudent ? '개인 리포트' : '학생 명단 관리')}
@@ -896,10 +1028,9 @@ const App = () => {
                       <button onClick={() => toggleAttendance(student.id)} className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center transition-all shrink-0 ${state.present ? 'bg-green-500 text-white shadow-md scale-105' : 'bg-gray-200 text-white'}`}><CheckCircle size={28} strokeWidth={3} /></button>
                       <div className="w-24 lg:w-32 font-black text-2xl lg:text-3xl text-gray-800 shrink-0 truncate whitespace-nowrap">{student.name}</div>
                       <div className="relative shrink-0">
-                        {/* [수정] disabled 속성을 완전히 제거하여 결석한 학생의 이모지도 클릭 가능하게 복구 */}
                         <button 
                           onClick={(e) => setMoodPickerTarget({ studentId: student.id, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 260, 160) })} 
-                          className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-3xl lg:text-4xl transition-all shadow-sm ${state.present ? 'hover:border-indigo-300 hover:shadow-md cursor-pointer' : 'opacity-30 cursor-pointer'}`}
+                          className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-3xl lg:text-4xl transition-all shadow-sm hover:border-indigo-300 hover:shadow-md ${state.present ? 'opacity-100' : 'opacity-40'}`}
                         >
                           {state.mood}
                         </button>
@@ -914,214 +1045,1235 @@ const App = () => {
         )}
 
         {/* 2.5 제출 관리 */}
-        {/* 3. 과제 관리 */}
-        {/* 4. 과제 현황 (종합) */}
-        {/* 4.5 완전 학습 (중요 개념 관리) */}
-        {/* 5. 학생 상담 */}
-        {/* 6. 매직 점수 */}
-        {/* 7. 외부 자료 메뉴 */}
-        {/* ... (제출 관리, 과제 관리, 과제 현황, 완전 학습, 학생 상담, 매직 점수, 외부 자료 메뉴 내용은 동일) */}
-
-        {/* --- 공통 팝업 영역 --- */}
-
-        {/* --- 안내장 인쇄 모달 --- */}
-        {reportStudent && (() => {
-          const sCounseling = [];
-          Object.entries(counselingData).forEach(([d, records]) => {
-            records.forEach(r => {
-              if (r.studentId === reportStudent.student.id) sCounseling.push({ date: d, ...r });
-            });
-          });
-          
-          const filteredCounseling = sCounseling.filter(r => {
-            const dateTs = new Date(r.date).getTime();
-            const now = new Date();
-            const startOfToday = getStartOfDay(now).getTime();
-            const startOfWeek = getStartOfWeek(now).getTime();
-            const startOfMonth = getStartOfMonth(now).getTime();
-            const cStart = new Date(customStartDate).getTime();
-            const cEnd = new Date(customEndDate).setHours(23, 59, 59, 999);
-
-            if (reportPeriod === 'all') return true;
-            if (reportPeriod === 'day') return dateTs >= startOfToday;
-            if (reportPeriod === 'week') return dateTs >= startOfWeek;
-            if (reportPeriod === 'month') return dateTs >= startOfMonth;
-            if (reportPeriod === 'custom') return dateTs >= cStart && dateTs <= cEnd;
-            return true;
-          });
-          filteredCounseling.sort((a,b) => new Date(b.date) - new Date(a.date));
-
-          const getReportPeriodLabel = () => {
-            switch(reportPeriod) {
-              case 'day': return `일간 (${formatDate(new Date())})`;
-              case 'week': return '주간 단위';
-              case 'month': return '월간 단위';
-              case 'all': return '전체 누적 기간';
-              case 'custom': return `${customStartDate} ~ ${customEndDate}`;
-              default: return '';
-            }
-          };
-
-          return (
-            <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 print-backdrop" onClick={() => setReportStudent(null)}>
-              <div 
-                className="bg-white rounded-[40px] w-full max-w-3xl max-h-[90vh] shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-200 print-modal overflow-hidden" 
-                onClick={e => e.stopPropagation()}
-              >
-                <div className="flex justify-between items-center p-8 border-b-2 border-gray-100 bg-indigo-50/50 no-print shrink-0">
-                  <div className="flex items-center gap-3">
-                    <span className="bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-black text-sm">안내장 미리보기</span>
-                    <h4 className="text-2xl lg:text-3xl font-black text-gray-800">가정통신문 인쇄</h4>
-                  </div>
-                  <div className="flex gap-3">
-                    {/* 바로 인쇄 버튼을 인쇄 시 숨기기 위해 .no-print 클래스 추가 */}
-                    <button onClick={() => window.print()} className="px-6 py-3 bg-indigo-600 text-white rounded-2xl font-black shadow-lg hover:bg-indigo-700 transition-transform active:scale-95 flex items-center gap-2 no-print">
-                      🖨️ 바로 인쇄
-                    </button>
-                    {/* 닫기 버튼을 인쇄 시 숨기기 위해 .no-print 클래스 추가 */}
-                    <button onClick={() => setReportStudent(null)} className="p-3 bg-white hover:bg-red-50 hover:text-red-500 rounded-2xl shadow-sm border border-gray-200 transition-colors no-print"><X size={24} strokeWidth={3}/></button>
-                  </div>
-                </div>
-
-                <div id="print-section" className="w-full bg-white p-10 lg:p-12 overflow-y-auto text-gray-800 flex-1 hide-scrollbar">
-                  <div className="text-center mb-10 border-b-4 border-indigo-600 pb-8">
-                    <h2 className="text-4xl lg:text-5xl font-black text-gray-900 mb-4 tracking-tight">{reportStudent.student.name} 학생 학교 생활 안내장</h2>
-                    <p className="text-lg font-bold text-gray-500 tracking-tight">학부모님 안녕하십니까? {reportStudent.student.name} 학생의 학교 생활 종합 안내입니다.</p>
-                    <div className="mt-4 inline-block bg-indigo-50 text-indigo-700 px-5 py-2 rounded-full font-black text-sm tracking-widest border border-indigo-100">
-                      평가 대상 기간 : {getReportPeriodLabel()}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-8">
-                    <div className="bg-slate-50 p-8 rounded-3xl border-2 border-indigo-50 print:border-gray-200">
-                      <h3 className="text-2xl font-black text-indigo-700 mb-6 flex items-center gap-2 tracking-tight"><BarChart2 size={28}/> 1. 학습 및 생활 태도 요약</h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-xl font-black text-gray-700">
-                        <div className="flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                          <span>✅ 과제 수행 점수</span> <span className="text-emerald-600 text-2xl">+{reportStudent.reportData.taskPts}점</span>
+        {activeTab === 'submissions' && (
+          <div className="space-y-6 lg:space-y-8 no-print">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-2 border-b pb-6">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-2xl lg:text-3xl font-black flex items-center gap-3 text-gray-800"><CheckSquare className="text-indigo-600" size={32}/> 제출물 관리</h3>
+                <span className="text-sm font-bold text-gray-500 ml-1">가정통신문, 동의서 등 단순 O/X 확인용</span>
+              </div>
+              <button onClick={() => setShowSubmissionModal({id: null, title: '', date: dateKey})} className="bg-indigo-600 text-white px-6 py-3.5 rounded-2xl font-black shadow-lg hover:bg-indigo-700 text-base lg:text-lg flex items-center justify-center gap-2 transition-transform active:scale-95">
+                <Plus size={22}/> 새 제출물
+              </button>
+            </div>
+            
+            <div className="space-y-5">
+              {submissions.length === 0 && <div className="text-center py-16 text-gray-400 font-bold text-lg bg-white rounded-[40px] border border-gray-100">등록된 제출물이 없습니다.</div>}
+              {submissions.map(subm => {
+                const isExpanded = expandedSubmission === subm.id;
+                const submittedCount = students.filter(s => submissionStatus[subm.id]?.[s.id]).length;
+                const percent = students.length > 0 ? Math.round((submittedCount / students.length) * 100) : 0;
+                
+                return (
+                  <div key={subm.id} className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
+                    <div className="flex items-center group relative">
+                      <button onClick={() => setExpandedSubmission(p => p === subm.id ? null : subm.id)} className="flex-1 px-6 lg:px-10 py-6 lg:py-8 flex justify-between items-center hover:bg-slate-50 transition-colors text-left">
+                        <div className="flex items-center gap-4 lg:gap-6 pr-16 w-full">
+                          <CheckSquare className={`shrink-0 ${percent === 100 ? 'text-green-500' : 'text-indigo-400'}`} size={28} strokeWidth={2.5} />
+                          <span className="font-black text-xl lg:text-2xl text-gray-800 truncate">{subm.title}</span>
+                          <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100 shrink-0">{subm.date}</span>
+                          
+                          <div className="hidden md:flex flex-1 items-center gap-4 ml-6 max-w-md">
+                            <div className="h-3.5 flex-1 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                              <div className={`h-full transition-all duration-700 ${percent === 100 ? 'bg-green-500' : 'bg-indigo-500'}`} style={{width: `${percent}%`}}></div>
+                            </div>
+                            <span className="text-base font-black text-gray-500 w-16 text-right">{submittedCount}/{students.length}</span>
+                          </div>
                         </div>
-                        <div className="flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                          <span>✨ 칭찬 매직 횟수</span> <span className="text-blue-600 text-2xl">{reportStudent.reportData.plusCount}회</span>
-                        </div>
-                        <div className="flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                          <span>⚡ 노력 매직 횟수</span> <span className="text-red-500 text-2xl">{reportStudent.reportData.minusCount}회</span>
-                        </div>
-                        <div className="flex justify-between items-center bg-indigo-600 text-white p-5 rounded-2xl shadow-md">
-                          <span>🏆 종합 매직 점수</span> <span className="text-3xl">{reportStudent.reportData.total > 0 ? `+${reportStudent.reportData.total}` : reportStudent.reportData.total}점</span>
-                        </div>
+                        {isExpanded ? <ChevronUp className="text-gray-400" size={24} /> : <ChevronDown className="text-gray-400" size={24} />}
+                      </button>
+                      <div className="absolute right-16 lg:right-24 flex gap-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-gradient-to-l from-white pl-6 transition-opacity">
+                        <button onClick={() => setShowSubmissionModal(subm)} className="p-3 text-gray-400 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-100 rounded-xl transition-colors"><Edit2 size={20}/></button>
+                        <button onClick={() => deleteSubmissionItem(subm.id)} className="p-3 text-gray-400 hover:text-red-500 bg-slate-100 hover:bg-red-100 rounded-xl transition-colors"><Trash2 size={20}/></button>
                       </div>
                     </div>
-
-                    <div className="bg-slate-50 p-8 rounded-3xl border-2 border-gray-200 print:border-gray-200">
-                      {/* [수정] 제목 변경: "2. 주요 상담 및 관찰 기록" -> "2. 학생 상담 내역" */}
-                      <h3 className="text-2xl font-black text-gray-800 mb-6 flex items-center gap-2 tracking-tight"><Users size={28}/> 2. 학생 상담 내역</h3>
-                      {filteredCounseling.length > 0 ? (
-                        <div className="space-y-5">
-                          {filteredCounseling.map(r => (
-                            <div key={r.id} className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col gap-3">
-                              <div className="flex items-center justify-between border-b border-gray-50 pb-3">
-                                <span className="font-black text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg text-sm">{r.date}</span>
-                                <span className={`font-black text-sm px-3 py-1.5 rounded-lg ${r.resolved ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'}`}>{r.resolved ? '해결 완료' : '미해결/관찰중'}</span>
-                              </div>
-                              <p className="font-bold text-gray-800 text-lg leading-relaxed whitespace-pre-wrap"><span className="text-gray-400 mr-2">상담 내용 |</span> {r.content}</p>
-                              {r.result && <p className="font-bold text-gray-600 text-base leading-relaxed whitespace-pre-wrap mt-1"><span className="text-gray-400 mr-2">조치 결과 |</span> {r.result}</p>}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        // [수정] 상담 기록이 없을 때 표시되는 문구 변경
-                        <div className="bg-white p-8 rounded-2xl border border-gray-200 text-center text-gray-400 font-bold text-xl leading-relaxed whitespace-pre-wrap">
-                          해당 기간 내 기록된 학생 상담 기록이 없습니다. <br/>
-                          현재 문제 없이 학교 생활 잘하고 있습니다.
-                        </div>
-                      )}
-                    </div>
                     
-                    <div className="text-center pt-10 mt-10 border-t-2 border-dashed border-gray-300 print:block hidden">
-                      <p className="text-xl font-black text-gray-800 mb-3">위와 같이 긍정적으로 학교생활에 참여하고 있음을 안내해 드립니다.</p>
-                      <p className="text-2xl font-black text-gray-900 mt-10 tracking-widest">담임 교사 ________________ (인)</p>
-                    </div>
+                    {isExpanded && (
+                      <div className="px-6 lg:px-10 pb-6 lg:pb-8">
+                        <div className="p-6 lg:p-8 bg-slate-50 border border-indigo-100 rounded-[32px]">
+                          <div className="flex justify-between items-center mb-6">
+                            <h5 className="font-black text-indigo-600 text-base lg:text-lg">제출 현황 체크 (클릭하여 상태 변경)</h5>
+                            <button onClick={() => bulkCompleteSubmission(subm.id)} className="text-sm bg-green-500 text-white px-5 py-2.5 rounded-xl font-black hover:bg-green-600 shadow-md transition-transform active:scale-95">전원 제출 완료</button>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 lg:gap-4">
+                            {students.map(s => {
+                              const isSubm = submissionStatus[subm.id]?.[s.id] || false;
+                              return (
+                                <button 
+                                  key={s.id} 
+                                  onClick={() => toggleSubmissionStatus(subm.id, s.id)}
+                                  className={`p-4 rounded-2xl border-2 font-black text-lg lg:text-xl transition-all flex justify-between items-center shadow-sm ${isSubm ? 'border-green-500 bg-green-50 text-green-700 scale-[1.02]' : 'border-gray-200 bg-white text-gray-400 hover:border-indigo-300 hover:text-indigo-600'}`}
+                                >
+                                  <span className="truncate">{s.num}. {s.name}</span>
+                                  {isSubm ? <CheckCircle size={24} strokeWidth={3} /> : <X size={24} className="opacity-30" strokeWidth={3} />}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 3. 과제 관리 */}
+        {activeTab === 'assignments' && (
+          <div className="space-y-6 lg:space-y-8 no-print">
+            <div className="flex flex-col xl:flex-row justify-between xl:items-end gap-6 mb-4 border-b pb-6">
+              <div className="flex flex-col gap-2">
+                <h3 className="text-2xl lg:text-3xl font-black text-gray-800 flex items-center gap-3"><BookOpen className="text-indigo-600" size={32}/> 과목 및 과제 관리</h3>
+                <div className="flex flex-wrap gap-3 lg:gap-5 text-sm font-black mt-2 bg-slate-100 p-3 rounded-xl w-fit">
+                  <span className="flex items-center gap-1.5 text-blue-700"><span className="text-2xl">◎</span> 매우잘함(+3)</span>
+                  <span className="flex items-center gap-1.5 text-yellow-600"><span className="text-2xl">○</span> 잘함(+2)</span>
+                  <span className="flex items-center gap-1.5 text-red-500"><span className="text-2xl">△</span> 미흡(+1)</span>
+                  <span className="flex items-center gap-1.5 text-gray-500"><span className="text-2xl">-</span> 미완료(0)</span>
+                </div>
+              </div>
+              <div className="flex gap-3 w-full xl:w-auto">
+                <button onClick={() => setShowSubjectModal({id: null, title: '', type: 'assignment'})} className="flex-1 xl:flex-none bg-white text-gray-700 border-2 border-gray-200 px-6 py-3.5 rounded-2xl font-black shadow-sm hover:bg-gray-50 text-base lg:text-lg transition-colors">과목 추가</button>
+                <button onClick={() => {if(assignmentSubjects.length===0)return alert('먼저 과목을 추가해주세요.'); setShowAssignmentModal({id: null, title: '', subjectId: assignmentSubjects[0].id, dueDate: dateKey});}} className="flex-1 xl:flex-none bg-indigo-600 text-white px-6 py-3.5 rounded-2xl font-black shadow-lg hover:bg-indigo-700 text-base lg:text-lg transition-transform active:scale-95">새 과제 등록</button>
+              </div>
+            </div>
+            
+            <div className="space-y-6">
+              {assignmentSubjects.length === 0 && <div className="text-center py-16 text-gray-400 font-bold text-lg bg-white rounded-[40px] border border-gray-100">등록된 과목이 없습니다.</div>}
+              {assignmentSubjects.map((sub, idx) => {
+                const subAssignments = assignments.filter(a => a.subjectId === sub.id);
+                const isExpanded = expandedSubjects[sub.id];
+                return (
+                  <div key={sub.id} className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
+                    <div className="flex items-center group relative">
+                      <button onClick={() => setExpandedSubjects(p => ({ ...p, [sub.id]: !p[sub.id] }))} className="flex-1 px-6 lg:px-10 py-6 lg:py-8 flex justify-between items-center hover:bg-slate-50 transition-colors text-left">
+                        <div className="flex items-center gap-4 lg:gap-6 pr-24 w-full">
+                          <BookOpen className="text-indigo-500 shrink-0" size={28} />
+                          <span className="font-black text-xl lg:text-3xl text-gray-800 truncate">{sub.title}</span>
+                        </div>
+                        {isExpanded ? <ChevronUp className="text-gray-400" size={28} /> : <ChevronDown className="text-gray-400" size={28} />}
+                      </button>
+                      <div className="absolute right-16 lg:right-24 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-gradient-to-l from-white pl-6 transition-opacity">
+                        <div className="flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm mr-2 overflow-hidden">
+                          <button onClick={(e) => moveSubject(idx, 'up', 'assignment', e)} disabled={idx===0} className="p-1 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30 border-b border-gray-100"><ArrowUp size={14} strokeWidth={3}/></button>
+                          <button onClick={(e) => moveSubject(idx, 'down', 'assignment', e)} disabled={idx===assignmentSubjects.length-1} className="p-1 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30"><ArrowDown size={14} strokeWidth={3}/></button>
+                        </div>
+                        <button onClick={() => setShowSubjectModal({id: sub.id, title: sub.title, type: 'assignment'})} className="p-3 text-gray-400 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-100 rounded-xl transition-colors"><Edit2 size={20} /></button>
+                        <button onClick={(e) => deleteSubject(sub.id, 'assignment', e)} className="p-3 text-gray-400 hover:text-red-500 bg-slate-100 hover:bg-red-100 rounded-xl transition-colors"><Trash2 size={20} /></button>
+                      </div>
+                    </div>
+                    {isExpanded && (
+                      <div className="px-6 lg:px-10 pb-6 lg:pb-8 space-y-4">
+                        {subAssignments.length === 0 ? <p className="text-gray-400 text-base py-4 font-bold text-center bg-slate-50 rounded-2xl">등록된 과제가 없습니다.</p> : 
+                          subAssignments.map(a => (
+                            <div key={a.id} className="border-2 border-indigo-50 rounded-3xl p-2 bg-white">
+                              <div onClick={() => setExpandedTask(expandedTask === a.id ? null : a.id)} className={`p-4 lg:p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer transition-all ${expandedTask === a.id ? 'bg-indigo-50' : 'bg-white hover:bg-slate-50'}`}>
+                                <div className="flex items-center gap-3 lg:gap-4 flex-wrap"><div className="w-2.5 h-2.5 rounded-full bg-indigo-500" /><span className="font-black text-lg lg:text-2xl text-gray-800">{a.title}</span><span className="text-xs font-bold text-indigo-600 bg-indigo-100 px-3 py-1.5 rounded-lg border border-indigo-200">{a.dueDate}</span></div>
+                                <div className="flex items-center justify-end gap-2 shrink-0">
+                                  <button onClick={(e) => { e.stopPropagation(); setShowAssignmentModal(a); }} className="p-3 bg-white hover:bg-indigo-100 text-gray-400 hover:text-indigo-600 border border-gray-100 rounded-xl shadow-sm transition-colors"><Edit2 size={18} /></button>
+                                  <button onClick={(e) => { e.stopPropagation(); deleteAssignment(a.id); }} className="p-3 bg-white hover:bg-red-100 text-gray-400 hover:text-red-500 border border-gray-100 rounded-xl shadow-sm transition-colors"><Trash2 size={18} /></button>
+                                  <div className="ml-2 bg-indigo-600 text-white font-black px-5 py-3 rounded-xl shadow-md text-sm lg:text-base transition-transform active:scale-95">{expandedTask === a.id ? '평가 접기' : '평가 하기'}</div>
+                                </div>
+                              </div>
+                              {expandedTask === a.id && (
+                                <div className="mt-2 p-5 lg:p-8 bg-slate-50 border-t-2 border-indigo-100 rounded-b-2xl">
+                                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-3">
+                                    <h5 className="font-black text-indigo-700 text-base lg:text-lg flex items-center gap-2"><Sparkles size={18}/> 성취도 기록 (매직 점수 자동 연계)</h5>
+                                    <button onClick={() => bulkTaskDone(a.id, a.dueDate)} className="text-sm bg-blue-600 text-white px-5 py-2.5 rounded-xl font-black shadow-md hover:bg-blue-700 transition-transform active:scale-95">전원 ◎ 완료</button>
+                                  </div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-5">
+                                    {students.map(s => {
+                                      const status = assignmentStatus[a.dueDate]?.[s.id]?.[a.id] || null;
+                                      return (
+                                        <div key={s.id} className="flex flex-col gap-3 p-4 lg:p-5 rounded-[24px] bg-white border-2 border-gray-100 shadow-sm relative hover:border-indigo-200 transition-colors">
+                                          <div className="flex items-center justify-between mb-1">
+                                            <span className="font-black text-xl truncate pr-2 whitespace-nowrap">{s.num}. {s.name}</span>
+                                          </div>
+                                          <div className="flex gap-2 w-full">
+                                            {[
+                                              { s: 'done', l: '◎' },
+                                              { s: 'ing', l: '○' },
+                                              { s: 'bad', l: '△' },
+                                              { s: null, l: '-' }
+                                            ].map(item => (
+                                              <button 
+                                                key={item.l}
+                                                onClick={() => {
+                                                  if(item.s !== null) playSound('magic'); 
+                                                  setTaskStatus(s.id, a.id, item.s, a.dueDate);
+                                                }}
+                                                className={`flex-1 py-3 rounded-xl text-2xl font-black transition-all border-2 ${status === item.s ? getStatusColorClass(item.s) + ' border-transparent scale-105 shadow-md' : 'bg-slate-50 text-gray-400 border-gray-100 hover:bg-indigo-50 hover:text-indigo-400'}`}
+                                              >
+                                                {item.l}
+                                              </button>
+                                            ))}
+                                          </div>
+                                          <input value={assignmentStatus[a.dueDate]?.[s.id]?.[`memo_${a.id}`] || ''} onChange={(e) => updateTaskMemo(s.id, a.id, e.target.value, a.dueDate)} placeholder="개별 메모 입력 (선택)" className="w-full bg-slate-50 border border-gray-200 px-4 py-3 rounded-xl outline-none focus:border-indigo-400 focus:bg-white text-sm font-bold text-gray-700 transition-all mt-1" />
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ))
+                        }
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 4. 과제 현황 (종합) */}
+        {activeTab === 'status' && (
+          <div className="flex flex-col xl:flex-row gap-6 xl:gap-10 no-print">
+            <div className="shrink-0 w-full xl:w-96">
+              <div className="bg-white p-6 lg:p-8 rounded-[40px] shadow-sm border border-gray-100">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="font-black text-2xl text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                  <button onClick={() => setSelectedDate(new Date())} className="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black hover:bg-indigo-100 transition-colors">오늘</button>
+                </div>
+                <div className="grid grid-cols-7 gap-y-3 text-center mb-2 font-black text-sm text-gray-400">
+                  {['일','월','화','수','목','금','토'].map(d => <div key={d}>{d}</div>)}
+                  {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() }, (_, i) => {
+                    const d = i + 1;
+                    const curDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), d);
+                    const dotColor = getAssignmentDot(curDate);
+                    return (
+                      <div key={d} className="relative flex flex-col items-center">
+                        <button onClick={() => setSelectedDate(curDate)} className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold transition-all ${selectedDate.getDate() === d ? 'bg-indigo-600 text-white shadow-md scale-110' : 'hover:bg-indigo-50 text-gray-700'}`}>{d}</button>
+                        {dotColor && <div className={`absolute bottom-0 w-2 h-2 rounded-full ${dotColor}`} />}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
-          );
-        })()}
+            
+            <div className="flex-1 space-y-5">
+              <div className="flex flex-col md:flex-row md:justify-between items-start md:items-end gap-3 mb-6 lg:mb-8 border-b pb-6">
+                <h3 className="text-2xl lg:text-3xl font-black text-gray-800 flex items-center gap-3"><BarChart2 className="text-indigo-600" size={32}/> {dateKey} 과제 달성률</h3>
+                <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-4 py-2 rounded-xl">학생을 클릭하면 상세 내역을 봅니다.</span>
+              </div>
+              {students.length === 0 && <div className="text-center py-16 text-gray-400 font-bold text-lg bg-white rounded-[40px] border border-gray-100">등록된 학생이 없습니다.</div>}
+              {students.map(student => {
+                const tasks = assignments.filter(a => a.dueDate === dateKey);
+                const status = assignmentStatus[dateKey]?.[student.id] || {};
+                const done = Object.entries(status).filter(([k, v]) => !k.startsWith('memo_') && (v === 'done' || v === 'ing')).length;
+                const total = tasks.length;
+                const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+                return (
+                  <div key={student.id} onClick={() => setAssignmentDetailStudent(student)} className="bg-white p-6 lg:p-8 rounded-[32px] border-2 border-gray-100 shadow-sm flex items-center gap-6 lg:gap-10 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer group">
+                    <div className="w-20 lg:w-28 font-black text-2xl lg:text-3xl text-gray-800 group-hover:text-indigo-600 truncate whitespace-nowrap text-right">{student.name}</div>
+                    <div className="flex-1">
+                      <div className="relative h-3 lg:h-4 bg-slate-100 rounded-full overflow-hidden mb-2 lg:mb-3 shadow-inner">
+                        <div className={`absolute top-0 left-0 h-full transition-all duration-1000 ${percent === 100 ? 'bg-green-500' : 'bg-indigo-500'}`} style={{ width: `${percent}%` }} />
+                      </div>
+                      <div className="text-xs lg:text-sm font-black text-gray-400 pl-1">{done} / {total} 개 완료 (◎, ○ 포함)</div>
+                    </div>
+                    <div className={`w-16 lg:w-24 text-right text-2xl lg:text-4xl font-black shrink-0 ${percent === 100 ? 'text-green-500' : 'text-gray-300'}`}>{percent}%</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
-        {/* ... (나머지 모달 컴포넌트 내용은 동일) */}
+        {/* 4.5 완전 학습 (중요 개념 관리) */}
+        {activeTab === 'mastery' && (
+          <div className="space-y-6 lg:space-y-8 no-print">
+            <div className="flex flex-col xl:flex-row justify-between xl:items-end gap-6 mb-4 border-b pb-6">
+              <div className="flex flex-col gap-2">
+                <h3 className="text-3xl lg:text-4xl font-black text-indigo-700 flex items-center gap-3">
+                  수업 중 다룬 중요한 단어나 문장을 기록하세요.
+                </h3>
+                <p className="text-base font-bold text-gray-500 mt-2">등록된 개념은 뷰어와 슬라이드 모드를 통해 반복 학습할 수 있습니다.</p>
+              </div>
+              <div className="flex gap-3 w-full xl:w-auto shrink-0">
+                <button onClick={() => setShowSubjectModal({id: null, title: '', type: 'mastery'})} className="flex-1 xl:flex-none bg-white text-gray-700 border-2 border-gray-200 px-6 py-3.5 rounded-2xl font-black shadow-sm hover:bg-gray-50 text-base lg:text-lg transition-colors">과목 추가</button>
+                <button onClick={() => {if(masterySubjects.length===0)return alert('먼저 과목을 추가해주세요.'); setShowConceptModal({id: null, subjectId: masterySubjects[0].id, term: '', hanja: '', meaning: ''});}} className="flex-1 xl:flex-none bg-indigo-600 text-white px-6 py-3.5 rounded-2xl font-black shadow-lg hover:bg-indigo-700 text-base lg:text-lg transition-transform active:scale-95">중요 개념 등록</button>
+              </div>
+            </div>
+            
+            <div className="space-y-6">
+              {masterySubjects.length === 0 && <div className="text-center py-16 text-gray-400 font-bold text-lg bg-white rounded-[40px] border border-gray-100">등록된 과목이 없습니다.</div>}
+              {masterySubjects.map((sub, idx) => {
+                const subConcepts = masteryConcepts.filter(c => c.subjectId === sub.id);
+                const isExpanded = expandedMasterySubjects[sub.id];
+                return (
+                  <div key={sub.id} className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
+                    <div className="flex items-center group relative">
+                      <button onClick={() => setExpandedMasterySubjects(p => ({ ...p, [sub.id]: !p[sub.id] }))} className="flex-1 px-6 lg:px-10 py-6 lg:py-8 flex justify-between items-center hover:bg-slate-50 transition-colors text-left">
+                        <div className="flex items-center gap-4 lg:gap-6 pr-32 w-full">
+                          <Brain className="text-indigo-500 shrink-0" size={28} />
+                          <span className="font-black text-xl lg:text-3xl text-gray-800 truncate">{sub.title}</span>
+                          <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg ml-2 shrink-0">{subConcepts.length}개 개념</span>
+                        </div>
+                        {isExpanded ? <ChevronUp className="text-gray-400" size={28} /> : <ChevronDown className="text-gray-400" size={28} />}
+                      </button>
+                      <div className="absolute right-16 lg:right-24 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-gradient-to-l from-white pl-6 transition-opacity items-center">
+                        <button onClick={(e) => { e.stopPropagation(); setSlideSubjectId(sub.id); }} className="p-3 text-emerald-500 hover:text-white bg-emerald-50 hover:bg-emerald-500 rounded-xl transition-colors shadow-sm flex items-center gap-1.5 mr-2">
+                          <PlaySquare size={20} strokeWidth={3}/>
+                          <span className="font-black text-sm hidden lg:inline">슬라이드</span>
+                        </button>
+                        <div className="flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm mr-2 overflow-hidden">
+                          <button onClick={(e) => moveSubject(idx, 'up', 'mastery', e)} disabled={idx===0} className="p-1 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30 border-b border-gray-100"><ArrowUp size={14} strokeWidth={3}/></button>
+                          <button onClick={(e) => moveSubject(idx, 'down', 'mastery', e)} disabled={idx===masterySubjects.length-1} className="p-1 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30"><ArrowDown size={14} strokeWidth={3}/></button>
+                        </div>
+                        <button onClick={() => setShowSubjectModal({id: sub.id, title: sub.title, type: 'mastery'})} className="p-3 text-gray-400 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-100 rounded-xl transition-colors"><Edit2 size={20}/></button>
+                        <button onClick={(e) => deleteSubject(sub.id, 'mastery', e)} className="p-3 text-gray-400 hover:text-red-500 bg-slate-100 hover:bg-red-100 rounded-xl transition-colors"><Trash2 size={20}/></button>
+                      </div>
+                    </div>
+                    {isExpanded && (
+                      <div className="px-6 lg:px-10 pb-6 lg:pb-8 space-y-4">
+                        {subConcepts.length === 0 ? <p className="text-gray-400 text-base py-4 font-bold text-center bg-slate-50 rounded-2xl">등록된 개념이 없습니다.</p> : 
+                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                            {subConcepts.map((c, cIndex) => (
+                              <div key={c.id} onClick={() => setViewerTarget({subjectId: sub.id, conceptId: c.id})} className="cursor-pointer bg-slate-50 p-6 rounded-3xl border-2 border-indigo-50 flex flex-col justify-between items-start gap-4 hover:border-indigo-300 hover:shadow-md transition-all relative group">
+                                <div className="w-full">
+                                  <div className="flex items-end gap-3 mb-3 flex-wrap pr-16">
+                                    <h5 className="font-black text-2xl lg:text-3xl text-gray-800">{c.term}</h5>
+                                    {c.hanja && <span className="text-lg lg:text-xl font-black text-gray-400 bg-white border border-gray-200 px-3 py-0.5 rounded-xl shadow-sm tracking-widest">{c.hanja}</span>}
+                                  </div>
+                                  <p className="text-gray-600 font-bold text-base lg:text-lg leading-relaxed whitespace-pre-wrap line-clamp-3">{c.meaning}</p>
+                                </div>
+                                <div className="absolute top-4 right-4 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                  <button onClick={(e) => { e.stopPropagation(); setShowConceptModal(c); }} className="p-2.5 bg-white text-gray-400 hover:text-indigo-600 rounded-xl shadow-sm border border-gray-100"><Edit2 size={18}/></button>
+                                  <button onClick={(e) => { e.stopPropagation(); deleteConcept(c.id); }} className="p-2.5 bg-white text-gray-400 hover:text-red-500 rounded-xl shadow-sm border border-gray-100"><Trash2 size={18}/></button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        }
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 5. 학생 상담 */}
+        {activeTab === 'counseling' && (
+          <div className="flex flex-col lg:flex-row gap-6 xl:gap-10 no-print overflow-hidden h-full min-h-[80vh]">
+            <div className="shrink-0 w-full xl:w-96">
+              <div className="bg-white p-6 lg:p-8 rounded-[40px] shadow-sm border border-gray-100">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="font-black text-2xl text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                  <button onClick={() => setSelectedDate(new Date())} className="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black hover:bg-indigo-100 transition-colors">오늘</button>
+                </div>
+                <div className="grid grid-cols-7 gap-y-3 text-center mb-2 font-black text-sm text-gray-400">
+                  {['일','월','화','수','목','금','토'].map(d => <div key={d}>{d}</div>)}
+                  {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() }, (_, i) => {
+                    const d = i + 1;
+                    const curDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), d);
+                    const dotColor = getCounselingDot(curDate); 
+                    return (
+                      <div key={d} className="relative flex flex-col items-center">
+                        <button onClick={() => setSelectedDate(curDate)} className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold transition-all ${selectedDate.getDate() === d ? 'bg-indigo-600 text-white shadow-md' : 'hover:bg-indigo-50 text-gray-700'}`}>{d}</button>
+                        {dotColor && <div className={`absolute bottom-0 w-2 h-2 rounded-full ${dotColor}`} />}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-1 bg-white rounded-[40px] border border-gray-100 shadow-sm p-6 lg:p-10 min-w-0 flex flex-col">
+              <div className="flex items-center justify-between mb-6 lg:mb-8 border-b pb-6 shrink-0">
+                <h3 className="text-2xl lg:text-3xl font-black flex items-center gap-3 text-gray-800 shrink-0"><MessageCircle className="text-indigo-600" size={32} /><span>{dateKey} 상담 기록</span></h3>
+                <button onClick={() => addCounselingRecord(dateKey)} className="bg-indigo-600 text-white px-6 py-3.5 rounded-2xl font-black hover:bg-indigo-700 flex items-center gap-2 text-base lg:text-lg shadow-lg transition-transform active:scale-95"><Plus size={22} /> <span className="hidden sm:inline">상담 추가</span></button>
+              </div>
+              <div className="flex-1 overflow-y-auto space-y-6 pr-2 hide-scrollbar">
+                {(counselingData[dateKey] || []).map((record) => (
+                  <div key={record.id} className="bg-slate-50 p-6 lg:p-8 rounded-[32px] border-2 border-gray-100 shadow-sm flex flex-col gap-6 relative group transition-colors hover:border-indigo-100">
+                    <button onClick={() => deleteCounselingRecord(dateKey, record.id)} className="absolute top-6 right-6 text-gray-300 hover:text-red-500 bg-white hover:bg-red-50 p-3 rounded-xl transition-all shadow-sm"><Trash2 size={20} /></button>
+                    
+                    <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 pr-12 lg:pr-16">
+                      <div className="w-full sm:w-1/3">
+                        <label className="block text-sm font-black text-gray-500 mb-2 ml-1">작성자</label>
+                        <input value={record.recorder} onChange={(e) => updateCounselingRecord(dateKey, record.id, 'recorder', e.target.value)} className="w-full bg-white border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 px-5 py-3.5 rounded-2xl outline-none text-base lg:text-lg font-bold transition-all" placeholder="예: 담임교사" />
+                      </div>
+                      <div className="w-full sm:w-1/3">
+                        <label className="block text-sm font-black text-gray-500 mb-2 ml-1">학생 선택</label>
+                        <select value={record.studentId} onChange={(e) => updateCounselingRecord(dateKey, record.id, 'studentId', e.target.value)} className="w-full bg-white border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 px-5 py-3.5 rounded-2xl outline-none text-base lg:text-lg font-bold appearance-none transition-all cursor-pointer">
+                          <option value="" disabled>선택하세요</option>
+                          {students.map(s => <option key={s.id} value={s.id}>{s.num}. {s.name}</option>)}
+                          <option value="other">기타 (타반 등)</option>
+                        </select>
+                      </div>
+                      <div className="w-full sm:w-1/3 flex sm:flex-col justify-end pb-1">
+                        <label className="flex items-center gap-3 cursor-pointer p-3 rounded-2xl bg-white border border-gray-200 hover:bg-gray-50 transition-colors w-full h-[56px]">
+                          <input type="checkbox" checked={record.resolved} onChange={(e) => updateCounselingRecord(dateKey, record.id, 'resolved', e.target.checked)} className="w-6 h-6 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer" />
+                          <span className={`font-black text-base lg:text-lg ${record.resolved ? 'text-blue-600' : 'text-red-500'}`}>{record.resolved ? '해결 완료' : '미해결 상태'}</span>
+                        </label>
+                      </div>
+                    </div>
+                    <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+                      <div className="flex-1">
+                        <label className="block text-sm font-black text-gray-500 mb-2 ml-1">상담 내용 및 관찰 사항</label>
+                        <textarea value={record.content} onChange={(e) => updateCounselingRecord(dateKey, record.id, 'content', e.target.value)} rows={4} className="w-full bg-white border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 px-5 py-4 rounded-2xl outline-none text-base lg:text-lg font-medium resize-none transition-all leading-relaxed" placeholder="상세 내용을 기록하세요..." />
+                      </div>
+                      <div className="flex-1">
+                        <label className="block text-sm font-black text-gray-500 mb-2 ml-1">조치 결과</label>
+                        <textarea value={record.result} onChange={(e) => updateCounselingRecord(dateKey, record.id, 'result', e.target.value)} rows={4} className="w-full bg-white border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 px-5 py-4 rounded-2xl outline-none text-base lg:text-lg font-medium resize-none transition-all leading-relaxed" placeholder="이후 조치 사항을 기록하세요..." />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {(!counselingData[dateKey] || counselingData[dateKey].length === 0) && <div className="text-center py-20 text-gray-400 font-bold flex flex-col items-center gap-4 border-2 border-dashed border-gray-200 rounded-[32px] bg-white"><MessageCircle size={48} className="text-gray-300" /><p className="text-lg">기록된 상담 내용이 없습니다.<br/>상단 버튼을 눌러 기록을 시작하세요.</p></div>}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 6. 매직 점수 (복구: 개별 내역 리스트 추가/삭제 및 사유 입력) */}
+        {activeTab === 'magicpoints' && (
+          <div className="space-y-8 max-w-[1600px] mx-auto pb-10">
+            <div className="bg-white p-6 lg:p-8 rounded-[40px] border border-indigo-100 shadow-sm flex flex-col lg:flex-row items-start lg:items-end justify-between gap-6">
+              <div>
+                <h3 className="text-3xl font-black text-gray-800 flex items-center gap-3 mb-3"><Trophy className="text-indigo-600" size={32}/> 매직 점수 관리</h3>
+                <p className="text-base text-gray-500 font-bold mb-5">학생을 다중 선택하고 한 번에 점수를 부여하세요. (🔊 소리 지원)</p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <button onClick={() => setSelectedStudentsForMagic(students.length === selectedStudentsForMagic.length ? [] : students.map(s => s.id))} className="px-5 py-3 bg-slate-100 text-gray-700 rounded-xl text-base font-black hover:bg-slate-200 transition-colors shadow-sm">
+                    {students.length > 0 && students.length === selectedStudentsForMagic.length ? '전체 해제' : '전체 선택'}
+                  </button>
+                  <span className="text-base font-black text-indigo-700 bg-indigo-50 px-4 py-3 rounded-xl border border-indigo-100">{selectedStudentsForMagic.length}명 선택됨</span>
+                  
+                  <div className="flex items-center gap-3 ml-0 sm:ml-6 bg-slate-50 p-1.5 rounded-xl border border-gray-200">
+                    <Filter size={20} className="text-gray-400 ml-2"/>
+                    <select value={magicSortOrder} onChange={(e)=>setMagicSortOrder(e.target.value)} className="bg-transparent text-base font-black text-gray-700 outline-none cursor-pointer py-1.5 pr-2">
+                      <option value="num">번호순 정렬</option>
+                      <option value="desc">점수 높은 순</option>
+                      <option value="asc">점수 낮은 순</option>
+                    </select>
+                    <div className="w-px h-6 bg-gray-300 mx-1"></div>
+                    <button onClick={handleResetMagicPoints} className="px-4 py-2 bg-white text-red-500 hover:bg-red-50 border border-red-100 rounded-lg text-sm font-black transition-colors flex items-center gap-1.5 shadow-sm">
+                      <RotateCcw size={16} strokeWidth={3} /> 초기화
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto p-5 bg-slate-50 rounded-3xl border border-gray-200 shadow-inner">
+                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-2xl border border-gray-200 shadow-sm">
+                  <span className="text-base font-black text-gray-600 whitespace-nowrap">부여 점수</span>
+                  <select 
+                    value={magicPointValue} 
+                    onChange={(e) => setMagicPointValue(Number(e.target.value))}
+                    className="w-20 bg-transparent text-xl font-black text-indigo-700 text-center appearance-none outline-none cursor-pointer"
+                  >
+                    {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}점</option>)}
+                  </select>
+                  {/* [복구] 사유 입력칸 추가 */}
+                  <input 
+                    value={magicReasonInput} 
+                    onChange={(e) => setMagicReasonInput(e.target.value)} 
+                    onKeyDown={(e) => {if(e.key === 'Enter') handleMagicPointAction(selectedStudentsForMagic, 'plus')}}
+                    placeholder="사유 (예: 발표)" 
+                    className="flex-1 w-32 sm:w-48 bg-transparent border-l border-gray-200 pl-4 py-2 font-bold text-gray-700 outline-none placeholder-gray-300"
+                  />
+                </div>
+                <div className="flex gap-3 w-full sm:w-auto">
+                  <button onClick={() => handleMagicPointAction(selectedStudentsForMagic, 'plus')} className="flex-1 sm:flex-none bg-blue-600 text-white px-5 py-3 rounded-2xl font-black hover:bg-blue-700 shadow-lg transition-transform active:scale-95 text-lg whitespace-nowrap flex items-center justify-center gap-1.5">✨ 칭찬</button>
+                  <button onClick={() => handleMagicPointAction(selectedStudentsForMagic, 'minus')} className="flex-1 sm:flex-none bg-red-500 text-white px-5 py-3 rounded-2xl font-black hover:bg-red-600 shadow-lg transition-transform active:scale-95 text-lg whitespace-nowrap flex items-center justify-center gap-1.5">⚡ 노력</button>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+              {sortedStudentsForMagic.map(student => {
+                const points = magicPoints[student.id] || [];
+                const total = getStudentTotalPoints(student.id);
+                const isSelected = selectedStudentsForMagic.includes(student.id);
+                
+                return (
+                  <div 
+                    key={student.id} 
+                    onClick={() => setSelectedStudentsForMagic(p => p.includes(student.id) ? p.filter(id => id !== student.id) : [...p, student.id])}
+                    className={`bg-white rounded-[32px] p-6 shadow-sm border-4 cursor-pointer transition-all hover:shadow-lg flex flex-col items-center justify-between min-h-[300px] ${isSelected ? 'border-indigo-500 bg-indigo-50/30 transform scale-[1.02]' : 'border-transparent hover:border-indigo-200'}`}
+                  >
+                    <div className="w-full flex justify-between items-start mb-3">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 transition-colors ${isSelected ? 'bg-indigo-500 border-indigo-500 text-white' : 'border-gray-200 bg-gray-50'}`}>
+                        {isSelected && <Check size={18} strokeWidth={4} />}
+                      </div>
+                    </div>
+                    
+                    <div className="text-3xl font-black text-gray-800 text-center w-full truncate px-2 whitespace-nowrap tracking-tight">
+                      {student.num}. {student.name}
+                    </div>
+                    
+                    <div className={`text-7xl font-black my-4 transition-all ${total > 0 ? 'text-blue-600 drop-shadow-sm' : total < 0 ? 'text-red-500 drop-shadow-sm' : 'text-gray-300'}`}>
+                      {total > 0 ? `+${total}` : total}
+                    </div>
+
+                    <div className="flex gap-3 w-full mt-2">
+                      <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'plus'); }} className="flex-1 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white font-black py-3 rounded-2xl transition-colors text-lg border border-blue-100 shadow-sm">칭찬</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'minus'); }} className="flex-1 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white font-black py-3 rounded-2xl transition-colors text-lg border border-red-100 shadow-sm">노력</button>
+                    </div>
+
+                    {/* [복구 완료] 최근 기록 리스트 및 X(삭제) 버튼 부활 */}
+                    <div className="mt-4 w-full bg-slate-50 rounded-2xl p-3 border border-gray-100 min-h-[80px] flex flex-col justify-start" onClick={(e) => e.stopPropagation()}>
+                      <h5 className="text-[12px] font-black text-gray-400 mb-1.5 text-left px-1">최근 기록</h5>
+                      {points.slice(0, 2).map(p => (
+                        <div key={p.id} className="flex justify-between items-center text-sm group py-1 px-1.5 rounded-lg hover:bg-white transition-colors">
+                          <div className="flex items-center gap-2 truncate pr-2">
+                            <span className={`font-black shrink-0 ${p.type==='plus'?'text-blue-600':'text-red-500'}`}>{p.amount > 0 ? `+${p.amount}` : p.amount}</span>
+                            <span className="text-gray-600 font-bold truncate">{p.reason}</span>
+                          </div>
+                          <button onClick={() => deleteMagicPoint(student.id, p.id)} className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 shrink-0 transition-opacity"><X size={16} strokeWidth={3}/></button>
+                        </div>
+                      ))}
+                      {points.length === 0 && <p className="text-center py-2 text-gray-400 text-xs font-bold opacity-50">기록 없음</p>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-16 bg-white rounded-[40px] p-8 md:p-10 border border-gray-100 shadow-sm">
+              <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center border-b-2 pb-8 mb-8 gap-6">
+                <div>
+                  <h3 className="text-2xl lg:text-3xl font-black flex items-center gap-3 text-gray-800"><BarChart2 className="text-indigo-600" size={32}/> 매직 점수 종합 리포트</h3>
+                  <p className="text-base text-gray-500 font-bold mt-2">과제 점수(+3, +2, +1)와 수동 매직 점수가 지정된 기간에 맞춰 필터링됩니다.</p>
+                </div>
+                
+                <div className="flex flex-col lg:flex-row bg-slate-100 p-2 rounded-3xl w-full xl:w-auto gap-2 items-center shadow-inner border border-gray-200">
+                  <div className="flex w-full lg:w-auto gap-1">
+                    <button onClick={() => setReportPeriod('day')} className={`flex-1 lg:flex-none px-5 py-3 rounded-2xl text-base font-black transition-all ${reportPeriod === 'day' ? 'bg-white text-indigo-700 shadow-md' : 'text-gray-500 hover:text-gray-800 hover:bg-slate-200'}`}>일간</button>
+                    <button onClick={() => setReportPeriod('week')} className={`flex-1 lg:flex-none px-5 py-3 rounded-2xl text-base font-black transition-all ${reportPeriod === 'week' ? 'bg-white text-indigo-700 shadow-md' : 'text-gray-500 hover:text-gray-800 hover:bg-slate-200'}`}>주간</button>
+                    <button onClick={() => setReportPeriod('month')} className={`flex-1 lg:flex-none px-5 py-3 rounded-2xl text-base font-black transition-all ${reportPeriod === 'month' ? 'bg-white text-indigo-700 shadow-md' : 'text-gray-500 hover:text-gray-800 hover:bg-slate-200'}`}>월간</button>
+                    <button onClick={() => setReportPeriod('all')} className={`flex-1 lg:flex-none px-5 py-3 rounded-2xl text-base font-black transition-all ${reportPeriod === 'all' ? 'bg-white text-indigo-700 shadow-md' : 'text-gray-500 hover:text-gray-800 hover:bg-slate-200'}`}>전체</button>
+                    <button onClick={() => setReportPeriod('custom')} className={`flex-1 lg:flex-none px-5 py-3 rounded-2xl text-base font-black transition-all ${reportPeriod === 'custom' ? 'bg-white text-indigo-700 shadow-md' : 'text-gray-500 hover:text-gray-800 hover:bg-slate-200'}`}>직접지정</button>
+                  </div>
+                  {reportPeriod === 'custom' && (
+                    <div className="flex items-center gap-2 px-3 py-1 justify-center w-full lg:w-auto bg-white rounded-2xl shadow-sm border border-gray-200">
+                      <input type="date" value={customStartDate} onChange={e => setCustomStartDate(e.target.value)} className="bg-transparent border-none px-2 py-2 text-sm font-black text-gray-700 outline-none cursor-pointer" />
+                      <span className="text-gray-400 font-black text-sm">~</span>
+                      <input type="date" value={customEndDate} onChange={e => setCustomEndDate(e.target.value)} className="bg-transparent border-none px-2 py-2 text-sm font-black text-gray-700 outline-none cursor-pointer" />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end mb-6">
+                <div className="flex items-center gap-3 bg-slate-50 border border-gray-200 px-4 py-2.5 rounded-xl shadow-sm">
+                  <Filter size={20} className="text-gray-500"/>
+                  <select value={reportSortOrder} onChange={(e)=>setReportSortOrder(e.target.value)} className="bg-transparent text-base font-black text-gray-700 outline-none cursor-pointer pr-4">
+                    <option value="desc">종합 점수 높은 순 ▼</option>
+                    <option value="asc">종합 점수 낮은 순 ▲</option>
+                    <option value="num">학생 번호순 ▤</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto rounded-3xl border border-gray-100 shadow-sm">
+                <table className="w-full text-left min-w-[700px]">
+                  <thead className="bg-slate-100 text-gray-500 text-sm uppercase font-black border-b-2 border-gray-200">
+                    <tr>
+                      <th className="px-8 py-6 w-24 text-center">순위</th>
+                      <th className="px-8 py-6">학생 이름</th>
+                      <th className="px-8 py-6 text-blue-600 text-center">수동 칭찬 (+)</th>
+                      <th className="px-8 py-6 text-red-500 text-center">수동 노력 (-)</th>
+                      <th className="px-8 py-6 text-emerald-600 text-center">과제 연동</th>
+                      <th className="px-8 py-6 text-right w-48">최종 종합 점수</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 bg-white">
+                    {calculateReportData().map((student, index) => (
+                      <tr key={student.id} className="hover:bg-indigo-50/40 transition-colors">
+                        <td className="px-8 py-6 font-black text-xl text-gray-400 text-center">{index + 1}</td>
+                        <td className="px-8 py-6 font-black text-2xl text-gray-800">{student.num}. {student.name}</td>
+                        <td className="px-8 py-6 font-black text-xl text-blue-600 text-center bg-blue-50/30">{student.plusCount}건</td>
+                        <td className="px-8 py-6 font-black text-xl text-red-500 text-center bg-red-50/30">{student.minusCount}건</td>
+                        <td className="px-8 py-6 font-black text-xl text-emerald-600 text-center bg-emerald-50/30">+{student.taskPts}점</td>
+                        <td className="px-8 py-6 text-right">
+                          <span className={`inline-flex items-center justify-center min-w-[80px] px-5 py-2.5 rounded-2xl font-black text-3xl shadow-sm border ${student.total > 0 ? 'bg-blue-50 text-blue-600 border-blue-200' : student.total < 0 ? 'bg-red-50 text-red-600 border-red-200' : 'bg-gray-100 text-gray-600 border-gray-200'}`}>
+                            {student.total > 0 ? `+${student.total}` : student.total}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 7. 외부 자료 메뉴 */}
+        {activeTab === 'externals' && (
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 no-print h-full min-h-[80vh]">
+            <div className="w-full lg:w-[400px] shrink-0 flex flex-col gap-6">
+              <div className="flex justify-between items-center bg-white p-6 md:p-8 rounded-[40px] shadow-sm border border-gray-100">
+                <h3 className="text-2xl font-black flex items-center gap-3 text-gray-800"><LinkIcon className="text-indigo-600" size={28}/> 외부 자료</h3>
+                <button onClick={() => setShowLinkModal({id: null, title: '', url: ''})} className="bg-indigo-600 text-white p-3.5 rounded-2xl hover:bg-indigo-700 transition-colors shadow-lg active:scale-95"><Plus size={24} strokeWidth={3}/></button>
+              </div>
+              <div className="flex-1 bg-white rounded-[40px] p-6 md:p-8 shadow-sm border border-gray-100 overflow-y-auto space-y-4">
+                {externalLinks.length === 0 && <p className="text-center py-16 text-gray-400 text-lg font-bold">등록된 외부 자료가 없습니다.</p>}
+                {externalLinks.map((link, idx) => (
+                  <div key={link.id} className={`p-5 md:p-6 rounded-3xl border-2 transition-all flex items-center justify-between group cursor-pointer ${selectedExternalLink?.id === link.id ? 'border-indigo-500 bg-indigo-50 shadow-md' : 'border-gray-100 bg-white hover:border-indigo-300'}`}>
+                    <div className="flex-1 truncate mr-4" onClick={() => setSelectedExternalLink(link)}>
+                      <h4 className="font-black text-xl text-gray-800 truncate">{link.title}</h4>
+                      <p className="text-xs font-bold text-gray-400 truncate mt-1.5">{link.url}</p>
+                    </div>
+                    <div className="flex items-center gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
+                      <div className="flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm mr-1 overflow-hidden">
+                        <button onClick={() => moveExternalLink(idx, 'up')} disabled={idx===0} className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30 border-b border-gray-100 transition-colors"><ArrowUp size={16} strokeWidth={3}/></button>
+                        <button onClick={() => moveExternalLink(idx, 'down')} disabled={idx===externalLinks.length-1} className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30 transition-colors"><ArrowDown size={16} strokeWidth={3}/></button>
+                      </div>
+                      <button onClick={() => setShowLinkModal(link)} className="p-3 text-gray-400 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-100 rounded-xl transition-colors"><Edit2 size={18} strokeWidth={3}/></button>
+                      <button onClick={() => deleteExternalLink(link.id)} className="p-3 text-gray-400 hover:text-red-500 bg-slate-100 hover:bg-red-100 rounded-xl transition-colors"><Trash2 size={18} strokeWidth={3}/></button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex-1 bg-white rounded-[40px] border border-gray-100 shadow-sm overflow-hidden flex flex-col min-h-[600px] lg:min-h-0 relative">
+              {selectedExternalLink ? (
+                <>
+                  <div className="p-6 md:p-8 border-b-2 border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center bg-slate-50 shrink-0 z-10 gap-4">
+                    <div className="flex items-center gap-4 truncate pr-4">
+                      <div className="w-14 h-14 rounded-2xl bg-white border-2 border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 shadow-sm"><LinkIcon size={28} strokeWidth={2.5}/></div>
+                      <div>
+                        <h3 className="font-black text-gray-800 truncate text-2xl">{selectedExternalLink.title}</h3>
+                        <p className="text-sm font-bold text-gray-500 mt-1 truncate">{selectedExternalLink.url}</p>
+                      </div>
+                    </div>
+                    <button onClick={() => window.open(selectedExternalLink.url, '_blank')} className="flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 text-white rounded-2xl text-base font-black hover:bg-indigo-700 shadow-lg transition-transform active:scale-95 shrink-0 whitespace-nowrap">
+                      새 창 열기 <ExternalLink size={20} strokeWidth={3}/>
+                    </button>
+                  </div>
+                  
+                  <div className="flex-1 w-full bg-gray-100 relative flex flex-col">
+                    <div className="bg-yellow-50 text-yellow-800 text-sm font-black py-3 px-6 text-center border-b border-yellow-200 shrink-0">
+                      💡 네이버, 구글 등 일부 사이트는 보안상 화면에 보이지 않을 수 있습니다. 회색 화면이 나타나면 [새 창 열기]를 이용해 주세요.
+                    </div>
+                    <iframe key={selectedExternalLink.id} src={selectedExternalLink.url} title={selectedExternalLink.title} className="flex-1 w-full h-full border-none bg-white" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" />
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center text-gray-300 gap-6 p-10 text-center">
+                  <div className="p-8 bg-slate-50 rounded-full shadow-inner border-4 border-white"><LinkIcon size={64} className="text-indigo-200" strokeWidth={2} /></div>
+                  <div>
+                    <p className="font-black text-2xl text-gray-400 mb-3">왼쪽에서 자료를 선택해주세요.</p>
+                    <p className="text-base font-bold opacity-60">이곳에 웹페이지가 표시됩니다.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* --- 개별 모달 --- */}
+
+        {/* [복구 및 개선] 과제 관리 학생 상세 모달창 - 팝업 없이 버튼 바로 노출 */}
+        {assignmentDetailStudent && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-4 md:p-6 pb-20 md:pb-6">
+            <div className="bg-white rounded-[40px] w-full max-w-4xl h-[85vh] md:max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
+              <div className="p-6 md:p-10 border-b-2 border-gray-100 flex justify-between items-start shrink-0 bg-indigo-50/50">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-lg font-black tracking-wide">학생 상세 현황</span>
+                    <h4 className="text-3xl md:text-4xl font-black text-gray-800">{assignmentDetailStudent.num}. {assignmentDetailStudent.name}</h4>
+                  </div>
+                  <p className="text-gray-500 font-bold text-sm md:text-base ml-1">과제별 성취도 확인 및 평가 (버튼을 눌러 바로 평가하세요)</p>
+                </div>
+                <button onClick={() => {setAssignmentDetailStudent(null); setAssignmentFilter('all');}} className="p-3 md:p-4 bg-white hover:bg-red-50 hover:text-red-500 rounded-2xl shadow-sm border border-gray-200 transition-colors"><X size={24} strokeWidth={3} /></button>
+              </div>
+
+              <div className="px-6 md:px-10 py-4 md:py-5 bg-white border-b border-gray-100 flex gap-3 shrink-0 overflow-x-auto hide-scrollbar">
+                <button onClick={() => setAssignmentFilter('all')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'all' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>전체보기</button>
+                <button onClick={() => setAssignmentFilter('incomplete')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'incomplete' ? 'bg-red-500 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>미완료 (△, -)</button>
+                <button onClick={() => setAssignmentFilter('complete')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'complete' ? 'bg-green-500 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>완료 (◎, ○)</button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-4 md:space-y-6 bg-slate-50/50">
+                {assignments
+                  .filter(a => {
+                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
+                    if (assignmentFilter === 'complete') return status === 'done' || status === 'ing';
+                    if (assignmentFilter === 'incomplete') return status !== 'done' && status !== 'ing';
+                    return true;
+                  })
+                  .map(a => {
+                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
+                    const memo = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[`memo_${a.id}`] || '';
+                    const subject = assignmentSubjects.find(s => s.id === a.subjectId);
+                    
+                    return (
+                      <div key={a.id} className="bg-white p-5 md:p-8 rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col gap-4 hover:border-indigo-200 transition-colors">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="flex-1 overflow-hidden pr-4">
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="text-xs font-black px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded-md uppercase">{subject?.title || '기타'}</span>
+                              <span className="text-sm font-bold text-gray-400">{a.dueDate}</span>
+                            </div>
+                            <h5 className="font-black text-gray-800 text-2xl truncate">{a.title}</h5>
+                          </div>
+                          
+                          {/* [복구 완료] 매우잘함, 잘함, 미흡, 미완료를 팝업 없이 바로 클릭하여 선택 */}
+                          <div className="flex gap-2 w-full md:w-auto shrink-0">
+                            {[
+                              { s: 'done', l: '◎' },
+                              { s: 'ing', l: '○' },
+                              { s: 'bad', l: '△' },
+                              { s: null, l: '-' }
+                            ].map(item => (
+                              <button 
+                                key={item.l}
+                                onClick={() => {
+                                  if(item.s !== null) playSound('magic'); 
+                                  // [복구 완료] 선택한 날짜를 기준으로 점수 업데이트 (매직 점수 연동 완벽 적용)
+                                  setTaskStatus(assignmentDetailStudent.id, a.id, item.s, a.dueDate);
+                                }}
+                                className={`flex-1 md:w-16 py-3 rounded-2xl text-2xl font-black transition-all border-2 ${status === item.s ? getStatusColorClass(item.s) + ' border-transparent scale-105 shadow-md' : 'bg-slate-50 text-gray-400 border-gray-100 hover:bg-indigo-50 hover:text-indigo-400'}`}
+                              >
+                                {item.l}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div className="w-full">
+                          <input 
+                            value={memo} 
+                            onChange={(e) => updateTaskMemo(assignmentDetailStudent.id, a.id, e.target.value, a.dueDate)}
+                            placeholder="개별 메모 입력 (선택)" 
+                            className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-400 focus:bg-white px-5 py-3.5 rounded-2xl outline-none text-base font-bold text-gray-700 transition-colors"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })
+                }
+                {assignments.length === 0 && <div className="text-center py-20 text-gray-400 font-bold text-lg">할당된 과제가 없습니다.</div>}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 대형 뷰어 모달 */}
+        {viewerTarget && (
+          <ConceptViewerModal
+            subjectId={viewerTarget.subjectId}
+            initialConceptId={viewerTarget.conceptId}
+            concepts={masteryConcepts}
+            onClose={() => setViewerTarget(null)}
+          />
+        )}
+
+        {/* 스마트 슬라이드 모달 */}
+        {slideSubjectId && (
+          <ConceptSlideModal
+            subjectId={slideSubjectId}
+            concepts={masteryConcepts}
+            subjects={masterySubjects}
+            onClose={() => setSlideSubjectId(null)}
+          />
+        )}
+
+        {showLinkModal && (
+          <LinkEditModal 
+            key={showLinkModal.id || 'new_link'}
+            data={showLinkModal}
+            onClose={() => setShowLinkModal(null)}
+            onSave={saveExternalLink}
+          />
+        )}
+
+        {showConceptModal && (
+          <ConceptEditModal
+            data={showConceptModal}
+            subjects={masterySubjects}
+            onClose={() => setShowConceptModal(null)}
+            onSave={saveConcept}
+          />
+        )}
+
+        {showSubjectModal && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+            <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
+              <div className="flex justify-between items-center mb-8">
+                <h4 className="text-2xl md:text-3xl font-black text-gray-800">{showSubjectModal.id ? '과목 수정' : '새 과목 생성'}</h4>
+                <button onClick={() => setShowSubjectModal(null)} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
+              </div>
+              <div className="space-y-6">
+                <input id="sub_input" autoFocus defaultValue={showSubjectModal.title} onKeyDown={(e) => {if(e.key==='Enter') saveSubject(showSubjectModal.id, e.target.value, showSubjectModal.type)}} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" placeholder="과목명 (예: 국어)" />
+                <button onClick={() => saveSubject(showSubjectModal.id, document.getElementById('sub_input').value, showSubjectModal.type)} className="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">저장 완료</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showSubmissionModal && (
+          <SubmissionEditModal 
+            key={showSubmissionModal.id || 'new_submission'}
+            data={showSubmissionModal}
+            onClose={() => setShowSubmissionModal(null)}
+            onSave={(id, title, date) => {
+              if(!title) return;
+              if (id) setSubmissions(prev => prev.map(s => s.id === id ? { ...s, title, date } : s));
+              else setSubmissions(prev => [{ id: 'sm' + Date.now(), title, date }, ...prev]);
+              setShowSubmissionModal(null);
+            }}
+          />
+        )}
+
+        {showStudentModal && (
+          <StudentEditModal 
+            key={showStudentModal.id || `new_student_${showStudentModal.num}`}
+            data={showStudentModal} 
+            onClose={() => setShowStudentModal(null)} 
+            onSave={saveStudent} 
+          />
+        )}
+
+        {showAssignmentModal && (
+          <AssignmentEditModal 
+            key={showAssignmentModal.id || 'new_assignment'}
+            data={showAssignmentModal}
+            subjects={assignmentSubjects}
+            onClose={() => setShowAssignmentModal(null)}
+            onSave={(id, title, subId, date) => {
+              if(!title) return;
+              if (id) setAssignments(prev => prev.map(a => a.id === id ? { ...a, title, subjectId: subId, dueDate: date } : a));
+              else setAssignments(prev => [{ id: 'a' + Date.now(), subjectId: subId, title, dueDate: date }, ...prev]);
+              setShowAssignmentModal(null);
+            }}
+          />
+        )}
       </main>
       
       {/* CSS */}
       <style dangerouslySetContent={{__html: `
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        @media print {
-          /* 인쇄 시 사이드바, 헤더, 배경 등 불필요한 모든 요소 숨김 */
-          body * { 
-            visibility: hidden; 
-            overflow: visible !important; 
-          }
-          
-          /* 인쇄 모드 활성화 시 body 스크롤 방지 */
-          body.print-mode {
-            overflow: hidden !important;
-          }
-
-          /* 안내장 내용물만 보이게 설정 */
-          #print-section, #print-section * { 
-            visibility: visible; 
-          }
-          
-          /* 안내장 인쇄 섹션의 위치 및 크기 조정 */
-          #print-section { 
-            position: fixed; 
-            left: 0; 
-            top: 0; 
-            width: 210mm; /* A4 너비 */
-            height: 297mm; /* A4 높이 */
-            margin: 0; 
-            padding: 20mm; /* 인쇄 여백 */
-            background: white; 
-            overflow: visible !important; 
-            z-index: -1; 
-          }
-
-          /* 안내장 내부의 스크롤바 숨김 */
-          #print-section::-webkit-scrollbar {
-            display: none;
-          }
-
-          /* .no-print 클래스가 있는 요소는 인쇄 시 display: none */
-          .no-print { display: none !important; }
-
-          /* 배경 색상 및 이미지 출력 설정 */
-          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-          
-          /* 모달창 외부의 딤드 배경 및 모달창의 shadow, rounded 제거 */
-          .print-backdrop {
-            display: none !important;
-          }
-          .print-modal {
-            box-shadow: none !important;
-            border: none !important;
-            max-width: none !important;
-            width: 100% !important;
-            max-height: none !important;
-            height: 100% !important;
-            border-radius: 0 !important;
-            overflow: visible !important;
-          }
-
-          /* 인쇄 콘텐츠 비율 조정 (A4 꽉 차게) */
-          #print-section {
-            zoom: 0.7; /* 배율 축소 */
-          }
-        }
       `}} />
     </div>
   );
 };
 
-// ... (나머지 뷰어 및 모달 컴포넌트 정의는 동일)
+// --- 독립된 뷰어 및 모달 컴포넌트들 ---
+
+const ConceptViewerModal = ({ subjectId, initialConceptId, concepts, onClose }) => {
+  const subjectConcepts = concepts.filter(c => c.subjectId === subjectId);
+  const [currentIndex, setCurrentIndex] = useState(() => Math.max(0, subjectConcepts.findIndex(c => c.id === initialConceptId)));
+
+  if(subjectConcepts.length === 0) return null;
+  const c = subjectConcepts[currentIndex];
+
+  const goPrev = (e) => { e.stopPropagation(); if(currentIndex > 0) setCurrentIndex(currentIndex - 1); };
+  const goNext = (e) => { e.stopPropagation(); if(currentIndex < subjectConcepts.length - 1) setCurrentIndex(currentIndex + 1); };
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-10" onClick={onClose}>
+      <div className="bg-white rounded-[40px] w-full max-w-5xl h-full max-h-[80vh] shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+        <button onClick={onClose} className="absolute top-6 right-6 p-4 bg-gray-100 hover:bg-gray-200 rounded-2xl transition-colors z-10"><X size={32} strokeWidth={3}/></button>
+
+        <div className="flex-1 flex flex-col items-center justify-center p-10 text-center relative overflow-y-auto">
+          {currentIndex > 0 && <button onClick={goPrev} className="absolute left-4 lg:left-10 p-5 text-gray-400 hover:text-indigo-600 bg-gray-50 hover:bg-indigo-50 rounded-full transition-all hover:scale-110 active:scale-95"><ChevronLeft size={48} strokeWidth={3}/></button>}
+          {currentIndex < subjectConcepts.length - 1 && <button onClick={goNext} className="absolute right-4 lg:right-10 p-5 text-gray-400 hover:text-indigo-600 bg-gray-50 hover:bg-indigo-50 rounded-full transition-all hover:scale-110 active:scale-95"><ChevronRight size={48} strokeWidth={3}/></button>}
+
+          <h2 className="text-5xl md:text-8xl font-black text-gray-900 mb-6 tracking-tight break-keep-all">{c.term}</h2>
+          {c.hanja && <h3 className="text-4xl md:text-6xl font-black text-indigo-600 mb-10 tracking-widest bg-indigo-50 px-8 py-3 rounded-3xl">{c.hanja}</h3>}
+          <p className="text-2xl md:text-4xl font-bold text-gray-600 leading-relaxed max-w-3xl whitespace-pre-wrap break-keep-all px-16">{c.meaning}</p>
+        </div>
+        <div className="text-center pb-8 font-black text-gray-300 text-2xl tracking-widest">{currentIndex + 1} / {subjectConcepts.length}</div>
+      </div>
+    </div>
+  );
+};
+
+const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
+  const subjectConcepts = concepts.filter(c => c.subjectId === subjectId);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [step, setStep] = useState(1);
+  const subjectTitle = subjects.find(s=>s.id===subjectId)?.title || '';
+
+  const parseMeaning = (meaningStr) => {
+    if (!meaningStr) return { hanjaBreakdown: '', explanation: '' };
+    if (meaningStr.includes(' : ')) {
+      const parts = meaningStr.split(' : ');
+      return { hanjaBreakdown: parts[0], explanation: meaningStr };
+    } else if (meaningStr.includes(':')) {
+      const parts = meaningStr.split(':');
+      return { hanjaBreakdown: parts[0], explanation: meaningStr };
+    }
+    return { hanjaBreakdown: meaningStr, explanation: meaningStr };
+  };
+
+  if (subjectConcepts.length === 0) {
+    return (
+      <div className="fixed inset-0 z-[300] bg-gray-900 flex items-center justify-center p-10 cursor-pointer" onClick={onClose}>
+        <div className="text-white text-3xl font-black">등록된 개념이 없습니다. 클릭하여 닫기</div>
+      </div>
+    );
+  }
+
+  const c = subjectConcepts[currentIndex];
+  const hasHanja = !!c.hanja;
+  const maxSteps = hasHanja ? 4 : 2;
+
+  let content = '';
+  let subtitle = '';
+  const parsed = parseMeaning(c.meaning);
+
+  if (hasHanja) {
+    if (step === 1) { content = c.hanja; subtitle = "한자"; }
+    else if (step === 2) { content = parsed.hanjaBreakdown || c.meaning; subtitle = "뜻풀이"; }
+    else if (step === 3) { content = parsed.explanation || c.meaning; subtitle = "핵심 의미"; }
+    else if (step === 4) { content = c.term; subtitle = "정답 확인"; }
+  } else {
+    if (step === 1) { content = c.term; subtitle = "핵심 개념"; }
+    else if (step === 2) { content = c.meaning; subtitle = "핵심 의미"; }
+  }
+
+  const goNext = (e) => {
+    if (e) e.stopPropagation();
+    if (step < maxSteps) {
+      setStep(step + 1);
+    } else {
+      if (currentIndex < subjectConcepts.length - 1) {
+        setCurrentIndex(currentIndex + 1);
+        setStep(1);
+      } else {
+        onClose();
+      }
+    }
+  };
+
+  const goPrev = (e) => {
+    if (e) e.stopPropagation();
+    if (step > 1) {
+      setStep(step - 1);
+    } else {
+      if (currentIndex > 0) {
+        const prevConcept = subjectConcepts[currentIndex - 1];
+        const prevMaxSteps = prevConcept.hanja ? 4 : 2;
+        setCurrentIndex(currentIndex - 1);
+        setStep(prevMaxSteps);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if(e.key === ' ' || e.key === 'ArrowRight' || e.key === 'Enter') {
+        e.preventDefault();
+        goNext();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goPrev();
+      } else if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [step, currentIndex, subjectConcepts, maxSteps]);
+
+  let textSizeClass = 'text-[100px] md:text-[200px] lg:text-[240px]'; 
+  if (content.length > 80) textSizeClass = 'text-4xl md:text-5xl lg:text-6xl';
+  else if (content.length > 40) textSizeClass = 'text-5xl md:text-6xl lg:text-7xl';
+  else if (content.length > 15) textSizeClass = 'text-6xl md:text-8xl lg:text-[100px]';
+  else if (content.length > 6) textSizeClass = 'text-7xl md:text-9xl lg:text-[150px]';
+
+  return (
+    <div className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-indigo-950 text-white p-4 cursor-pointer select-none animate-in fade-in duration-300" onClick={goNext}>
+      <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="absolute top-8 right-8 p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-colors z-20"><X size={32} strokeWidth={3}/></button>
+      <div className="absolute top-10 left-10 text-xl md:text-2xl font-black text-white/40 z-20">{subjectTitle} - 복습 슬라이드 ({currentIndex + 1}/{subjectConcepts.length})</div>
+
+      <button onClick={goPrev} className="absolute left-4 lg:left-12 top-1/2 -translate-y-1/2 p-4 text-white/30 hover:text-white hover:bg-white/10 rounded-full transition-all z-20">
+        <ChevronLeft size={64} strokeWidth={2}/>
+      </button>
+      <button onClick={goNext} className="absolute right-4 lg:right-12 top-1/2 -translate-y-1/2 p-4 text-white/30 hover:text-white hover:bg-white/10 rounded-full transition-all z-20">
+        <ChevronRight size={64} strokeWidth={2}/>
+      </button>
+
+      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-7xl text-center px-16 md:px-32 relative overflow-y-auto max-h-[85vh] hide-scrollbar">
+        <span className="text-4xl md:text-5xl font-black text-indigo-300 mb-8 tracking-widest shrink-0">{subtitle}</span>
+        <h2 className={`font-black tracking-tight leading-snug ${textSizeClass} break-keep-all whitespace-pre-wrap drop-shadow-xl w-full`}>
+          {content}
+        </h2>
+      </div>
+
+      <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-3 z-20">
+        {subjectConcepts.map((_, idx) => (
+          <div key={idx} className={`h-4 rounded-full transition-all duration-500 ${idx === currentIndex ? 'w-16 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.5)]' : 'w-4 bg-white/20'}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const ConceptEditModal = ({ data, subjects, onClose, onSave }) => {
+  const [subjectId, setSubjectId] = useState(data.subjectId || (subjects.length > 0 ? subjects[0].id : ''));
+  const [term, setTerm] = useState(data.term || '');
+  const [hanja, setHanja] = useState(data.hanja || '');
+  const [meaning, setMeaning] = useState(data.meaning || '');
+
+  const handleAutoComplete = () => {
+    if(!term) return alert('단어를 먼저 입력해주세요.');
+    const found = HANJA_DICT[term];
+    if (found) {
+      setHanja(found.hanja);
+      setMeaning(prev => {
+        const prefix = found.meaning;
+        return prev ? `${prefix}\n\n[추가내용]\n${prev}` : prefix;
+      });
+      playSound('magic'); 
+    } else {
+      alert('내장 사전에 없는 단어입니다. 직접 한자와 뜻을 입력해주세요.');
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-8">
+          <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '개념 수정' : '중요 개념 등록'}</h4>
+          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
+        </div>
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">과목 선택</label>
+            <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none font-black text-lg appearance-none text-gray-700 transition-colors cursor-pointer">
+              {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">단어 / 문장</label>
+            <div className="flex gap-3">
+              <input autoFocus value={term} onChange={(e) => setTerm(e.target.value)} placeholder="예: 민주주의" className="flex-1 w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg md:text-xl" />
+              <button onClick={handleAutoComplete} className="bg-indigo-50 text-indigo-700 px-6 rounded-2xl font-black text-base hover:bg-indigo-100 transition-transform active:scale-95 shadow-sm border-2 border-indigo-200 flex flex-col items-center justify-center leading-tight whitespace-nowrap"><Sparkles size={20} className="mb-1"/>자동완성</button>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">한자 (선택)</label>
+            <input value={hanja} onChange={(e) => setHanja(e.target.value)} placeholder="예: 民主主義" className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-xl tracking-[0.3em]" />
+          </div>
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">핵심 내용</label>
+            <textarea value={meaning} onChange={(e) => setMeaning(e.target.value)} rows={5} placeholder="개념의 뜻이나 중요한 설명을 적어주세요." className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-bold text-lg resize-none leading-relaxed" />
+          </div>
+          <button onClick={() => onSave(data.id, subjectId, term, hanja, meaning)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
+            저장 완료
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const LinkEditModal = ({ data, onClose, onSave }) => {
+  const [title, setTitle] = useState(data.title || '');
+  const [url, setUrl] = useState(data.url || '');
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-8">
+          <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '외부 자료 수정' : '새 외부 자료 등록'}</h4>
+          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
+        </div>
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">자료 이름</label>
+            <input 
+              autoFocus 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              placeholder="예: 디지털 교과서, 아이스크림"
+              className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">웹사이트 주소 (URL)</label>
+            <input 
+              value={url} 
+              onChange={(e) => setUrl(e.target.value)} 
+              onKeyDown={(e) => {
+                if(e.key === 'Enter') {
+                  e.preventDefault();
+                  onSave(data.id, title, url);
+                }
+              }}
+              placeholder="예: www.naver.com"
+              className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" 
+            />
+          </div>
+          <button onClick={() => onSave(data.id, title, url)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
+            저장 완료
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SubmissionEditModal = ({ data, onClose, onSave }) => {
+  const [title, setTitle] = useState(data.title || '');
+  const [date, setDate] = useState(data.date || '');
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-8">
+          <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '제출물 수정' : '새 제출물 등록'}</h4>
+          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
+        </div>
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">제출물 제목</label>
+            <input 
+              autoFocus 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              onKeyDown={(e) => {
+                if(e.key === 'Enter') {
+                  e.preventDefault();
+                  onSave(data.id, title, date);
+                }
+              }}
+              placeholder="예: 현장체험학습 동의서"
+              className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">날짜 지정</label>
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 px-6 py-5 rounded-2xl font-black text-lg text-gray-700 outline-none transition-colors cursor-pointer" />
+          </div>
+          <button onClick={() => onSave(data.id, title, date)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
+            저장 완료
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AssignmentEditModal = ({ data, subjects, onClose, onSave }) => {
+  const [title, setTitle] = useState(data.title || '');
+  const [subjectId, setSubjectId] = useState(data.subjectId || '');
+  const [dueDate, setDueDate] = useState(data.dueDate || '');
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-8">
+          <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '과제 수정' : '새 과제 등록'}</h4>
+          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
+        </div>
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">과제 제목</label>
+            <input 
+              autoFocus 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              onKeyDown={(e) => {
+                if(e.key === 'Enter') {
+                  e.preventDefault();
+                  onSave(data.id, title, subjectId, dueDate);
+                }
+              }}
+              placeholder="예: 국어활동 12쪽 풀기"
+              className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">과목 선택</label>
+            <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none font-black text-lg appearance-none text-gray-700 transition-colors cursor-pointer">
+              {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">마감 기한</label>
+            <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl font-black text-lg text-gray-700 outline-none transition-colors cursor-pointer" />
+          </div>
+          <button onClick={() => onSave(data.id, title, subjectId, dueDate)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
+            저장 완료
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const StudentEditModal = ({ data, onClose, onSave }) => {
+  const [num, setNum] = useState(data.num || '');
+  const [name, setName] = useState(data.name || '');
+  const [memo, setMemo] = useState(data.memo || '');
+  const nameRef = useRef(null);
+  const memoRef = useRef(null);
+
+  useEffect(() => {
+    if (nameRef.current) nameRef.current.focus();
+  }, []);
+
+  const handleKeyDown = (e, currentField) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (currentField === 'name') {
+        if (data.id === null) onSave(data.id, num, name, memo, true);
+        else memoRef.current?.focus(); 
+      } else if (currentField === 'memo') {
+        onSave(data.id, num, name, memo, data.id === null); 
+      }
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-8">
+          <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '학생 정보 수정' : '신규 학생 등록'}</h4>
+          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
+        </div>
+        <div className="space-y-6">
+          <div className="flex gap-4">
+            <div className="w-24 md:w-32">
+              <label className="block text-sm font-black text-gray-500 mb-2 ml-1">번호</label>
+              <input value={num} onChange={(e) => setNum(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-4 py-5 rounded-2xl outline-none transition-all font-black text-center text-lg md:text-xl" />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-black text-gray-500 mb-2 ml-1">이름</label>
+              <input 
+                ref={nameRef} 
+                value={name} 
+                onChange={(e) => setName(e.target.value)} 
+                onKeyDown={(e) => handleKeyDown(e, 'name')} 
+                placeholder="이름 입력"
+                className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg md:text-xl" 
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">학생 메모 (선택)</label>
+            <input 
+              ref={memoRef} 
+              value={memo} 
+              onChange={(e) => setMemo(e.target.value)} 
+              onKeyDown={(e) => handleKeyDown(e, 'memo')} 
+              placeholder="참고사항 입력"
+              className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-bold text-lg text-gray-700" 
+            />
+          </div>
+          <button onClick={() => onSave(data.id, num, name, memo, data.id === null)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
+            {data.id ? '수정 완료' : '학생 등록'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default App;
