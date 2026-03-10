@@ -132,7 +132,7 @@ const HANJA_DICT = {
   "비례":{hanja:"比例",meaning:"比(견줄 비), 例(법식 례) : 비가 일정한 관계로 변하는 것"},
   "평균":{hanja:"平均",meaning:"平(평평할 평), 均(고를 균) : 합을 개수로 나눈 값"},
   "확률":{hanja:"確率",meaning:"確(굳을 확), 率(비율 률) : 일어날 가능성을 수로 나타낸 것"},
-  "자연수":{hanja:"自然數",meaning:"自(스스로 자), 然(그럴 연), 數(셈 수) : 1부터 1씩 커지는 수"},
+  "자연수":{hanja:"自然數",meaning:"自(스스로 자), 然(그럴 연), 數(셈 수) : 1부터 시작하여 1씩 커지는 수"},
   "정수":{hanja:"整數",meaning:"整(가지런할 정), 數(셈 수) : 양의 정수, 0, 음의 정수"},
   "방정식":{hanja:"方程式",meaning:"方(모 방), 程(한도 정), 式(법 식) : 미지수에 따라 참/거짓이 되는 등식"},
   "비례식":{hanja:"比例式",meaning:"比(견줄 비), 例(법식 례), 式(법 식) : 비율이 같은 두 비를 나타낸 식"},
@@ -412,6 +412,7 @@ const App = () => {
       const studentData = dayData[studentId] || {};
       return { ...prev, [dueDate]: { ...dayData, [studentId]: { ...studentData, [taskId]: status } } };
     });
+    setStatusPickerTarget(null);
   };
 
   const updateTaskMemo = (studentId, taskId, memo, dueDate) => {
@@ -568,7 +569,6 @@ const App = () => {
     setMagicReasonInput('');
   };
 
-  // [수정 1] 매직점수 스마트 초기화 (현재 총합을 0으로 맞추는 보정 기록 추가)
   const handleResetMagicPoints = () => {
     if(window.confirm('매직 점수를 0점으로 초기화하시겠습니까?\n(기존 과제 점수는 유지되며, 현재 총합이 0이 되도록 보정됩니다.)')) {
       setMagicPoints(prev => {
@@ -580,7 +580,7 @@ const App = () => {
               id: 'p' + Date.now() + Math.random().toString(36).substr(2, 9), 
               date: dateKey, 
               timestamp: new Date().getTime(), 
-              type: 'reset', // 보정용 타입
+              type: 'reset', 
               amount: -currentTotal,
               reason: '🔄 점수 초기화' 
             };
@@ -886,11 +886,13 @@ const App = () => {
                       <button onClick={() => toggleAttendance(student.id)} className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center transition-all shrink-0 ${state.present ? 'bg-green-500 text-white shadow-md scale-105' : 'bg-gray-200 text-white'}`}><CheckCircle size={28} strokeWidth={3} /></button>
                       <div className="w-24 lg:w-32 font-black text-2xl lg:text-3xl text-gray-800 shrink-0 truncate whitespace-nowrap">{student.name}</div>
                       <div className="relative shrink-0">
-                        {/* [복구 2] 출석 체크 시에만 활성화(disabled) 되도록 복구 */}
+                        {/* [복구 완료] 이모지 버튼이 언제든 클릭 가능하고, 팝업이 정상적으로 열리도록 수정 */}
                         <button 
-                          disabled={!state.present}
-                          onClick={(e) => setMoodPickerTarget({ studentId: student.id, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 260, 160) })} 
-                          className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-3xl lg:text-4xl transition-all shadow-sm ${state.present ? 'hover:border-indigo-300 hover:shadow-md cursor-pointer' : 'opacity-30 cursor-not-allowed'}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setMoodPickerTarget({ studentId: student.id, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 260, 160) });
+                          }} 
+                          className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-3xl lg:text-4xl transition-all shadow-sm hover:border-indigo-300 hover:shadow-md cursor-pointer ${state.present ? 'opacity-100' : 'opacity-40'}`}
                         >
                           {state.mood}
                         </button>
@@ -1378,6 +1380,7 @@ const App = () => {
                       <button onClick={(e) => { e.stopPropagation(); handleMagicPointAction([student.id], 'minus'); }} className="flex-1 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white font-black py-3 rounded-2xl transition-colors text-lg border border-red-100 shadow-sm">노력</button>
                     </div>
 
+                    {/* [복구 완료] 최근 기록 리스트 및 개별 삭제 기능 완벽 부활 */}
                     <div className="mt-4 w-full bg-slate-50 rounded-2xl p-3 border border-gray-100 min-h-[80px] flex flex-col justify-start" onClick={(e) => e.stopPropagation()}>
                       <h5 className="text-[12px] font-black text-gray-400 mb-1.5 text-left px-1">최근 기록</h5>
                       {points.slice(0, 2).map(p => (
@@ -1965,6 +1968,141 @@ const ConceptEditModal = ({ data, subjects, onClose, onSave }) => {
             <textarea value={meaning} onChange={(e) => setMeaning(e.target.value)} rows={5} placeholder="개념의 뜻이나 중요한 설명을 적어주세요." className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-bold text-lg resize-none leading-relaxed" />
           </div>
           <button onClick={() => onSave(data.id, subjectId, term, hanja, meaning)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
+            저장 완료
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const LinkEditModal = ({ data, onClose, onSave }) => {
+  const [title, setTitle] = useState(data.title || '');
+  const [url, setUrl] = useState(data.url || '');
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-8">
+          <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '외부 자료 수정' : '새 외부 자료 등록'}</h4>
+          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
+        </div>
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">자료 이름</label>
+            <input 
+              autoFocus 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              placeholder="예: 디지털 교과서, 아이스크림"
+              className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">웹사이트 주소 (URL)</label>
+            <input 
+              value={url} 
+              onChange={(e) => setUrl(e.target.value)} 
+              onKeyDown={(e) => {
+                if(e.key === 'Enter') {
+                  e.preventDefault();
+                  onSave(data.id, title, url);
+                }
+              }}
+              placeholder="예: www.naver.com"
+              className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" 
+            />
+          </div>
+          <button onClick={() => onSave(data.id, title, url)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
+            저장 완료
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SubmissionEditModal = ({ data, onClose, onSave }) => {
+  const [title, setTitle] = useState(data.title || '');
+  const [date, setDate] = useState(data.date || '');
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-8">
+          <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '제출물 수정' : '새 제출물 등록'}</h4>
+          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
+        </div>
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">제출물 제목</label>
+            <input 
+              autoFocus 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              onKeyDown={(e) => {
+                if(e.key === 'Enter') {
+                  e.preventDefault();
+                  onSave(data.id, title, date);
+                }
+              }}
+              placeholder="예: 현장체험학습 동의서"
+              className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">날짜 지정</label>
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 px-6 py-5 rounded-2xl font-black text-lg text-gray-700 outline-none transition-colors cursor-pointer" />
+          </div>
+          <button onClick={() => onSave(data.id, title, date)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
+            저장 완료
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AssignmentEditModal = ({ data, subjects, onClose, onSave }) => {
+  const [title, setTitle] = useState(data.title || '');
+  const [subjectId, setSubjectId] = useState(data.subjectId || '');
+  const [dueDate, setDueDate] = useState(data.dueDate || '');
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
+      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-8">
+          <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '과제 수정' : '새 과제 등록'}</h4>
+          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
+        </div>
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">과제 제목</label>
+            <input 
+              autoFocus 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              onKeyDown={(e) => {
+                if(e.key === 'Enter') {
+                  e.preventDefault();
+                  onSave(data.id, title, subjectId, dueDate);
+                }
+              }}
+              placeholder="예: 국어활동 12쪽 풀기"
+              className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">과목 선택</label>
+            <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none font-black text-lg appearance-none text-gray-700 transition-colors cursor-pointer">
+              {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">마감 기한</label>
+            <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl font-black text-lg text-gray-700 outline-none transition-colors cursor-pointer" />
+          </div>
+          <button onClick={() => onSave(data.id, title, subjectId, dueDate)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
             저장 완료
           </button>
         </div>
