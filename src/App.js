@@ -146,7 +146,7 @@ const HANJA_DICT = {
   "약수":{hanja:"約數",meaning:"約(맺을 약), 數(셈 수) : 나누어떨어지게 하는 수"},
   "배수":{hanja:"倍數",meaning:"倍(곱 배), 數(셈 수) : 몇 배가 되는 수"},
   "공약수":{hanja:"公約數",meaning:"公(공평할 공), 約(맺을 약), 數(셈 수) : 공통 약수"},
-  "공배수":{hanja:"公배수",meaning:"公(공평할 공), 倍(곱 배), 數(셈 수) : 공통 배수"},
+  "공배수":{hanja:"公倍數",meaning:"公(공평할 공), 倍(곱 배), 數(셈 수) : 공통 배수"},
   "각도":{hanja:"角度",meaning:"角(뿔 각), 度(법도 도) : 각의 크기"},
   "직각":{hanja:"直角",meaning:"直(곧을 직), 角(뿔 각) : 90도 각"},
   "평행":{hanja:"平行",meaning:"平(평평할 평), 行(다닐 행) : 만나지 않는 관계"},
@@ -244,10 +244,8 @@ const App = () => {
   const [expandedTask, setExpandedTask] = useState(null);
   const [expandedSubmission, setExpandedSubmission] = useState(null); 
   
-  // 과제 상세 팝업용 상태
   const [assignmentDetailStudent, setAssignmentDetailStudent] = useState(null);
   const [assignmentFilter, setAssignmentFilter] = useState('all'); 
-  
   const [statusPickerTarget, setStatusPickerTarget] = useState(null); 
   const [moodPickerTarget, setMoodPickerTarget] = useState(null); 
 
@@ -867,11 +865,16 @@ const App = () => {
             <div className="shrink-0 w-full xl:w-96">
               <div className="bg-white p-6 lg:p-8 rounded-[40px] shadow-sm border border-gray-100">
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="font-black text-2xl text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
-                  <button onClick={() => setSelectedDate(new Date())} className="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black hover:bg-indigo-100 transition-colors">오늘</button>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"><ChevronLeft size={24} strokeWidth={3}/></button>
+                    <h3 className="font-black text-2xl text-gray-800 min-w-[110px] text-center">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"><ChevronRight size={24} strokeWidth={3}/></button>
+                  </div>
+                  <button onClick={() => setSelectedDate(new Date())} className="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black hover:bg-indigo-100 transition-colors shrink-0">오늘</button>
                 </div>
                 <div className="grid grid-cols-7 gap-y-3 text-center mb-2 font-black text-sm text-gray-400">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d}>{d}</div>)}
+                  {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1).getDay() }).map((_, i) => <div key={`empty-${i}`} />)}
                   {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() }, (_, i) => {
                     const d = i + 1;
                     const curDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), d);
@@ -901,7 +904,6 @@ const App = () => {
                       <button onClick={() => toggleAttendance(student.id)} className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center transition-all shrink-0 ${state.present ? 'bg-green-500 text-white shadow-md scale-105' : 'bg-gray-200 text-white'}`}><CheckCircle size={28} strokeWidth={3} /></button>
                       <div className="w-24 lg:w-32 font-black text-2xl lg:text-3xl text-gray-800 shrink-0 truncate whitespace-nowrap">{student.name}</div>
                       <div className="relative shrink-0">
-                        {/* [완벽 복구] disabled 속성 제거하여 이모지 항상 클릭 가능 */}
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
@@ -1112,11 +1114,16 @@ const App = () => {
             <div className="shrink-0 w-full xl:w-96">
               <div className="bg-white p-6 lg:p-8 rounded-[40px] shadow-sm border border-gray-100">
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="font-black text-2xl text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
-                  <button onClick={() => setSelectedDate(new Date())} className="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black hover:bg-indigo-100 transition-colors">오늘</button>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"><ChevronLeft size={24} strokeWidth={3}/></button>
+                    <h3 className="font-black text-2xl text-gray-800 min-w-[110px] text-center">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"><ChevronRight size={24} strokeWidth={3}/></button>
+                  </div>
+                  <button onClick={() => setSelectedDate(new Date())} className="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black hover:bg-indigo-100 transition-colors shrink-0">오늘</button>
                 </div>
                 <div className="grid grid-cols-7 gap-y-3 text-center mb-2 font-black text-sm text-gray-400">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d}>{d}</div>)}
+                  {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1).getDay() }).map((_, i) => <div key={`empty-${i}`} />)}
                   {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() }, (_, i) => {
                     const d = i + 1;
                     const curDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), d);
@@ -1242,11 +1249,16 @@ const App = () => {
             <div className="shrink-0 w-full xl:w-96">
               <div className="bg-white p-6 lg:p-8 rounded-[40px] shadow-sm border border-gray-100">
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="font-black text-2xl text-gray-800">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
-                  <button onClick={() => setSelectedDate(new Date())} className="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black hover:bg-indigo-100 transition-colors">오늘</button>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"><ChevronLeft size={24} strokeWidth={3}/></button>
+                    <h3 className="font-black text-2xl text-gray-800 min-w-[110px] text-center">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"><ChevronRight size={24} strokeWidth={3}/></button>
+                  </div>
+                  <button onClick={() => setSelectedDate(new Date())} className="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black hover:bg-indigo-100 transition-colors shrink-0">오늘</button>
                 </div>
                 <div className="grid grid-cols-7 gap-y-3 text-center mb-2 font-black text-sm text-gray-400">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d}>{d}</div>)}
+                  {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1).getDay() }).map((_, i) => <div key={`empty-${i}`} />)}
                   {Array.from({ length: new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() }, (_, i) => {
                     const d = i + 1;
                     const curDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), d);
@@ -1557,8 +1569,6 @@ const App = () => {
         )}
 
         {/* --- 공통 팝업 영역 --- */}
-
-        {/* [복구 완료] 과제 상태 변경 팝업창 (Z-index 및 위치 최적화) */}
         {statusPickerTarget && (
           <div className="fixed inset-0 z-[9999]" onClick={() => setStatusPickerTarget(null)}>
             <div 
@@ -1588,7 +1598,6 @@ const App = () => {
           </div>
         )}
 
-        {/* [복구 완료] 출석 이모지 선택 팝업창 (결석 상태에서도 클릭 가능) */}
         {moodPickerTarget && (
           <div className="fixed inset-0 z-[9999]" onClick={() => setMoodPickerTarget(null)}>
             <div 
@@ -1599,7 +1608,8 @@ const App = () => {
               {moods.map(m => (
                 <button 
                   key={m} 
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setAttendanceData(p => ({
                       ...p, 
                       [dateKey]: {
@@ -1622,7 +1632,91 @@ const App = () => {
           </div>
         )}
 
-        {/* --- [안내장 인쇄 모달 완벽 복구] --- */}
+        {/* --- [수정] 과제 관리 학생 상세 모달창 - 팝업 없이 버튼 바로 노출되는 예전 다이렉트 기능 --- */}
+        {assignmentDetailStudent && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-4 md:p-6 pb-20 md:pb-6">
+            <div className="bg-white rounded-[40px] w-full max-w-4xl h-[85vh] md:max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
+              <div className="p-6 md:p-10 border-b-2 border-gray-100 flex justify-between items-start shrink-0 bg-indigo-50/50">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-lg font-black tracking-wide">학생 상세 현황</span>
+                    <h4 className="text-3xl md:text-4xl font-black text-gray-800">{assignmentDetailStudent.num}. {assignmentDetailStudent.name}</h4>
+                  </div>
+                  <p className="text-gray-500 font-bold text-sm md:text-base ml-1">과제별 성취도 확인 및 평가 (버튼을 눌러 바로 평가하세요)</p>
+                </div>
+                <button onClick={() => {setAssignmentDetailStudent(null); setAssignmentFilter('all');}} className="p-3 md:p-4 bg-white hover:bg-red-50 hover:text-red-500 rounded-2xl shadow-sm border border-gray-200 transition-colors"><X size={24} strokeWidth={3} /></button>
+              </div>
+
+              <div className="px-6 md:px-10 py-4 md:py-5 bg-white border-b border-gray-100 flex gap-3 shrink-0 overflow-x-auto hide-scrollbar">
+                <button onClick={() => setAssignmentFilter('all')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'all' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>전체보기</button>
+                <button onClick={() => setAssignmentFilter('incomplete')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'incomplete' ? 'bg-red-500 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>미완료 (△, -)</button>
+                <button onClick={() => setAssignmentFilter('complete')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'complete' ? 'bg-green-500 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>완료 (◎, ○)</button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-4 md:space-y-6 bg-slate-50/50">
+                {assignments
+                  .filter(a => {
+                    const status = assignmentStatus[dateKey]?.[assignmentDetailStudent.id]?.[a.id] || null;
+                    if (assignmentFilter === 'complete') return status === 'done' || status === 'ing';
+                    if (assignmentFilter === 'incomplete') return status !== 'done' && status !== 'ing';
+                    return true;
+                  })
+                  .map(a => {
+                    const status = assignmentStatus[dateKey]?.[assignmentDetailStudent.id]?.[a.id] || null;
+                    const memo = assignmentStatus[dateKey]?.[assignmentDetailStudent.id]?.[`memo_${a.id}`] || '';
+                    const subject = assignmentSubjects.find(s => s.id === a.subjectId);
+                    
+                    return (
+                      <div key={a.id} className="bg-white p-5 md:p-8 rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col md:flex-row gap-5 md:gap-8 items-start md:items-center hover:border-indigo-200 transition-colors">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
+                          <div className="flex-1 overflow-hidden pr-4">
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="text-xs font-black px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded-md uppercase">{subject?.title || '기타'}</span>
+                              <span className="text-sm font-bold text-gray-400">{a.dueDate}</span>
+                            </div>
+                            <h5 className="font-black text-gray-800 text-xl lg:text-2xl truncate">{a.title}</h5>
+                          </div>
+                          
+                          <div className="flex gap-2 w-full md:w-auto shrink-0">
+                            {[
+                              { s: 'done', l: '◎' },
+                              { s: 'ing', l: '○' },
+                              { s: 'bad', l: '△' },
+                              { s: null, l: '-' }
+                            ].map(item => (
+                              <button 
+                                key={item.l}
+                                onClick={() => {
+                                  if(item.s !== null) playSound('magic'); 
+                                  setTaskStatus(assignmentDetailStudent.id, a.id, item.s, dateKey);
+                                }}
+                                className={`flex-1 md:w-16 py-3 rounded-2xl text-2xl font-black transition-all border-2 ${status === item.s ? getStatusColorClass(item.s) + ' border-transparent scale-105 shadow-md' : 'bg-slate-50 text-gray-400 border-gray-100 hover:bg-indigo-50 hover:text-indigo-400'}`}
+                              >
+                                {item.l}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div className="w-full md:w-80 shrink-0 mt-2 md:mt-0">
+                          <input 
+                            value={memo} 
+                            onChange={(e) => updateTaskMemo(assignmentDetailStudent.id, a.id, e.target.value, dateKey)}
+                            placeholder="개별 메모 입력 (선택)" 
+                            className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-400 focus:bg-white px-5 py-3.5 rounded-2xl outline-none text-base font-bold text-gray-700 transition-colors"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })
+                }
+                {assignments.length === 0 && <div className="text-center py-20 text-gray-400 font-bold text-lg">해당 조건에 맞는 과제가 없습니다.</div>}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* --- 안내장 인쇄 모달 --- */}
         {reportStudent && (() => {
           const sCounseling = [];
           Object.entries(counselingData).forEach(([d, records]) => {
@@ -1714,8 +1808,8 @@ const App = () => {
                           {filteredCounseling.map(r => (
                             <div key={r.id} className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col gap-2 page-break-inside-avoid">
                               <div className="flex items-center justify-between border-b border-gray-50 pb-3">
-                                <span className="font-black text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg text-sm">{r.date}</span>
-                                <span className={`font-black text-sm px-3 py-1.5 rounded-lg ${r.resolved ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'}`}>{r.resolved ? '해결 완료' : '미해결/관찰중'}</span>
+                                <span className="font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg text-sm">{r.date}</span>
+                                <span className={`font-black text-sm px-3 py-1 rounded-lg ${r.resolved ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'}`}>{r.resolved ? '해결 완료' : '미해결/관찰중'}</span>
                               </div>
                               <p className="font-bold text-gray-800 text-lg leading-relaxed whitespace-pre-wrap"><span className="text-gray-400 mr-2">상담 내용 |</span> {r.content}</p>
                               {r.result && <p className="font-bold text-gray-600 text-base leading-relaxed whitespace-pre-wrap mt-1"><span className="text-gray-400 mr-2">조치 결과 |</span> {r.result}</p>}
@@ -1740,91 +1834,9 @@ const App = () => {
           );
         })()}
 
-        {/* [복구] 과제 관리 학생 상세 모달창 - 팝업 없이 버튼 바로 노출되는 예전 기능 */}
-        {assignmentDetailStudent && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-4 md:p-6 pb-20 md:pb-6">
-            <div className="bg-white rounded-[40px] w-full max-w-4xl h-[85vh] md:max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
-              <div className="p-6 md:p-10 border-b-2 border-gray-100 flex justify-between items-start shrink-0 bg-indigo-50/50">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-lg font-black tracking-wide">학생 상세 현황</span>
-                    <h4 className="text-3xl md:text-4xl font-black text-gray-800">{assignmentDetailStudent.num}. {assignmentDetailStudent.name}</h4>
-                  </div>
-                  <p className="text-gray-500 font-bold text-sm md:text-base ml-1">과제별 성취도 확인 및 평가 (버튼을 눌러 바로 평가하세요)</p>
-                </div>
-                <button onClick={() => {setAssignmentDetailStudent(null); setAssignmentFilter('all');}} className="p-3 md:p-4 bg-white hover:bg-red-50 hover:text-red-500 rounded-2xl shadow-sm border border-gray-200 transition-colors"><X size={24} strokeWidth={3} /></button>
-              </div>
+        {/* --- 개별 모달 --- */}
 
-              <div className="px-6 md:px-10 py-4 md:py-5 bg-white border-b border-gray-100 flex gap-3 shrink-0 overflow-x-auto hide-scrollbar">
-                <button onClick={() => setAssignmentFilter('all')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'all' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>전체보기</button>
-                <button onClick={() => setAssignmentFilter('incomplete')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'incomplete' ? 'bg-red-500 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>미완료 (△, -)</button>
-                <button onClick={() => setAssignmentFilter('complete')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'complete' ? 'bg-green-500 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>완료 (◎, ○)</button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-4 md:space-y-6 bg-slate-50/50">
-                {assignments
-                  .filter(a => {
-                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
-                    if (assignmentFilter === 'complete') return status === 'done' || status === 'ing';
-                    if (assignmentFilter === 'incomplete') return status !== 'done' && status !== 'ing';
-                    return true;
-                  })
-                  .map(a => {
-                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
-                    const memo = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[`memo_${a.id}`] || '';
-                    const subject = assignmentSubjects.find(s => s.id === a.subjectId);
-                    
-                    return (
-                      <div key={a.id} className="bg-white p-5 md:p-8 rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col gap-4 hover:border-indigo-200 transition-colors">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                          <div className="flex-1 overflow-hidden pr-4">
-                            <div className="flex items-center gap-3 mb-2">
-                              <span className="text-xs font-black px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded-md uppercase">{subject?.title || '기타'}</span>
-                              <span className="text-sm font-bold text-gray-400">{a.dueDate}</span>
-                            </div>
-                            <h5 className="font-black text-gray-800 text-2xl truncate">{a.title}</h5>
-                          </div>
-                          
-                          <div className="flex gap-2 w-full md:w-auto shrink-0">
-                            {[
-                              { s: 'done', l: '◎' },
-                              { s: 'ing', l: '○' },
-                              { s: 'bad', l: '△' },
-                              { s: null, l: '-' }
-                            ].map(item => (
-                              <button 
-                                key={item.l}
-                                onClick={() => {
-                                  if(item.s !== null) playSound('magic'); 
-                                  setTaskStatus(assignmentDetailStudent.id, a.id, item.s, a.dueDate);
-                                }}
-                                className={`flex-1 md:w-16 py-3 rounded-2xl text-2xl font-black transition-all border-2 ${status === item.s ? getStatusColorClass(item.s) + ' border-transparent scale-105 shadow-md' : 'bg-slate-50 text-gray-400 border-gray-100 hover:bg-indigo-50 hover:text-indigo-400'}`}
-                              >
-                                {item.l}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                        
-                        <div className="w-full">
-                          <input 
-                            value={memo} 
-                            onChange={(e) => updateTaskMemo(assignmentDetailStudent.id, a.id, e.target.value, a.dueDate)}
-                            placeholder="개별 메모 입력 (선택)" 
-                            className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-400 focus:bg-white px-5 py-3.5 rounded-2xl outline-none text-base font-bold text-gray-700 transition-colors"
-                          />
-                        </div>
-                      </div>
-                    );
-                  })
-                }
-                {assignments.length === 0 && <div className="text-center py-20 text-gray-400 font-bold text-lg">할당된 과제가 없습니다.</div>}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* --- 개별 모달 (뷰어, 슬라이드, 외부링크, 학생추가, 개념추가 등) --- */}
+        {/* 대형 뷰어 모달 */}
         {viewerTarget && (
           <ConceptViewerModal
             subjectId={viewerTarget.subjectId}
@@ -1834,6 +1846,7 @@ const App = () => {
           />
         )}
 
+        {/* 스마트 슬라이드 모달 */}
         {slideSubjectId && (
           <ConceptSlideModal
             subjectId={slideSubjectId}
@@ -1920,7 +1933,7 @@ const App = () => {
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* [수정 완료] 인쇄 전용 CSS (A4 1장에 맞게 최적화) */
+        /* [완벽 복구] 인쇄 전용 CSS (A4 1장에 맞게 최적화 및 불필요한 요소 제거) */
         @media print {
           @page {
             size: A4 portrait;
