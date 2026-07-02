@@ -50,7 +50,7 @@ const HANJA_DICT = {
   "기준":{hanja:"基準",meaning:"基(터 기), 準(기준 준) : 판단의 바탕"},
   "문제":{hanja:"問題",meaning:"問(물을 문), 題(제목 제) : 해결해야 할 일"},
   "해결":{hanja:"解決",meaning:"解(풀 해), 決(결단할 결) : 풀어서 마무리함"},
-  "방법":{hanja:"方法",meaning:"方(모 방), 法(법 법) : 일을 하는 방식"},
+  "방법":{hanja:"방법",meaning:"方(모 방), 法(법 법) : 일을 하는 방식"},
   "자료":{hanja:"資料",meaning:"資(바탕 자), 料(헤아릴 료) : 참고하는 것"},
   "정보":{hanja:"情報",meaning:"情(뜻 정), 報(알릴 보) : 알아야 할 내용"},
   "계획":{hanja:"計劃",meaning:"計(셀 계), 劃(그을 획) : 미리 정해 세움"},
@@ -62,7 +62,7 @@ const HANJA_DICT = {
   "실험":{hanja:"實驗",meaning:"實(열매 실), 驗(시험 험) : 해 보고 확인함"},
   "측정":{hanja:"測定",meaning:"測(잴 측), 定(정할 정) : 길이나 양 등을 재어 정함"},
   "비교":{hanja:"比較",meaning:"比(견줄 비), 較(견줄 교) : 서로 견주어 봄"},
-  "분류":{hanja:"分類",meaning:"分(나눌 분), 류(무리 류) : 나누어 묶음"},
+  "분류":{hanja:"分類",meaning:"分(나눌 분), 類(무리 류) : 나누어 묶음"},
   "분석":{hanja:"分析",meaning:"分(나눌 분), 析(쪼갤 석) : 나누어 살펴봄"},
   "해석":{hanja:"解釋",meaning:"解(풀 해), 釋(풀 석) : 뜻을 풀이함"},
   "추론":{hanja:"推論",meaning:"推(밀 추), 論(논할 론) : 근거로 미루어 생각함"},
@@ -100,7 +100,7 @@ const HANJA_DICT = {
   "상징":{hanja:"象徵",meaning:"象(코끼리 상), 徵(징조 징) : 추상적인 것을 구체적인 사물로 나타냄"},
   "문단":{hanja:"文段",meaning:"文(글월 문), 段(구분 단) : 여러 문장이 모인 덩어리"},
   "서술":{hanja:"敍述",meaning:"敍(펼 서), 述(지을 술) : 사건이나 생각을 차례대로 적음"},
-  "요약":{hanja:"要約",meaning:"要(요긴할 요), 약(맺을 약) : 글의 요점을 간추림"},
+  "요약":{hanja:"요약",meaning:"要(요긴할 요), 약(맺을 약) : 글의 요점을 간추림"},
   "의견":{hanja:"意見",meaning:"意(뜻 의), 見(볼 견) : 어떤 일에 대한 자신의 생각"},
   "근거":{hanja:"根據",meaning:"根(뿌리 근), 據(의지할 거) : 주장의 바탕이 되는 이유"},
   "서론":{hanja:"序論",meaning:"序(차례 서), 論(논할 론) : 글을 시작하는 부분"},
@@ -123,9 +123,9 @@ const HANJA_DICT = {
   "분수":{hanja:"分數",meaning:"分(나눌 분), 數(셈 수) : 전체를 나눈 것 중 일부분을 나타내는 수"},
   "소수":{hanja:"小數",meaning:"小(작을 소), 數(셈 수) : 1보다 작은 크기를 나타내는 수"},
   "도형":{hanja:"圖形",meaning:"圖(그림 도), 形(모양 형) : 점, 선, 면 등으로 이루어진 모양"},
-  "직사각형":{hanja:"直四角形",meaning:"直(곧을 직), 四(넉 사), 角(뿔 각), 形(모양 형) : 네 각이 직각인 사각형"},
+  "직사각형":{hanja:"直四角形",meaning:"直(곧을 직), 四(넉 사), 角(뿔 각), 形(모양 형) : 네 각이 모두 직각인 사각형"},
   "삼각형":{hanja:"三角形",meaning:"三(석 삼), 角(뿔 각), 形(모양 형) : 세 선분으로 둘러싸인 다각형"},
-  "부피":{hanja:"體積",meaning:"體(몸 체), 積(쌓을 적) : 물체가 공간에서 차지하는 크기"},
+  "부피":{hanja:"體적",meaning:"體(몸 체), 積(쌓을 적) : 물체가 공간에서 차지하는 크기"},
   "넓이":{hanja:"面積",meaning:"面(표면 면), 積(쌓을 적) : 평면이나 겉면이 차지하는 크기"},
   "합동":{hanja:"合同",meaning:"合(합할 합), 同(같을 동) : 포개어지는 관계"},
   "대칭":{hanja:"對稱",meaning:"對(대할 대), 稱(일컬을 칭) : 양쪽이 똑같은 모양"},
@@ -145,8 +145,8 @@ const HANJA_DICT = {
   "기약분수":{hanja:"既約分數",meaning:"既(이미 기), 約(맺을 약), 分(나눌 분), 數(셈 수) : 더 이상 약분 안 되는 분수"},
   "약수":{hanja:"約數",meaning:"約(맺을 약), 數(셈 수) : 나누어떨어지게 하는 수"},
   "배수":{hanja:"倍數",meaning:"倍(곱 배), 數(셈 수) : 몇 배가 되는 수"},
-  "공약수":{hanja:"公約數",meaning:"公(공평할 공), 約(맺을 약), 數(셈 수) : 공통 약수"},
-  "공배수":{hanja:"公倍數",meaning:"公(공평할 공), 倍(곱 배), 數(셈 수) : 공통 배수"},
+  "공약수":{hanja:"公약수",meaning:"公(공평할 공), 約(맺을 약), 數(셈 수) : 공통 약수"},
+  "공배수":{hanja:"公배수",meaning:"公(공평할 공), 倍(곱 배), 數(셈 수) : 공통 배수"},
   "각도":{hanja:"角度",meaning:"角(뿔 각), 度(법도 도) : 각의 크기"},
   "직각":{hanja:"直角",meaning:"直(곧을 직), 角(뿔 각) : 90도 각"},
   "평행":{hanja:"平行",meaning:"平(평평할 평), 行(다닐 행) : 만나지 않는 관계"},
@@ -270,8 +270,6 @@ const App = () => {
   const [selectedExternalLink, setSelectedExternalLink] = useState(null);
   const [viewerTarget, setViewerTarget] = useState(null); 
   const [slideSubjectId, setSlideSubjectId] = useState(null);
-  
-  // 안내장 모달용 상태
   const [reportStudent, setReportStudent] = useState(null);
 
   const dateKey = formatDate(selectedDate);
@@ -311,26 +309,44 @@ const App = () => {
 
   const moods = ['😊', '🤩', '😐', '😴', '🤒', '😡', '😢', '😑'];
 
-  // --- 자동 연계 로직 ---
+  // --- [교체 1] 자동 연계 로직 전체 교체 ---
+  const getAssignmentPointValue = (status) => {
+    if (status === 'done') return 3;
+    if (status === 'ing') return 2;
+    if (status === 'bad') return 1;
+    return 0;
+  };
+
+  const isAssignmentComplete = (status) => status === 'done' || status === 'ing';
+
   const getStudentTaskPoints = (studentId) => {
-    let taskPts = 0;
-    Object.values(assignmentStatus || {}).forEach(dayData => {
-      const sData = dayData[studentId] || {};
-      Object.entries(sData).forEach(([k, v]) => {
-        if (!k.startsWith('memo_')) {
-          if (v === 'done') taskPts += 3;
-          else if (v === 'ing') taskPts += 2;
-          else if (v === 'bad') taskPts += 1;
-        }
-      });
-    });
-    return taskPts;
+    return assignments.reduce((total, task) => {
+      const status = assignmentStatus[task.dueDate]?.[studentId]?.[task.id] || null;
+      return total + getAssignmentPointValue(status);
+    }, 0);
   };
 
   const getStudentTotalPoints = (studentId) => {
-    const manualPoints = (magicPoints[studentId] || []).reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
+    const manualPoints = (magicPoints[studentId] || []).reduce(
+      (acc, p) => acc + (Number(p.amount) || 0),
+      0
+    );
     const taskPoints = getStudentTaskPoints(studentId);
     return manualPoints + taskPoints;
+  };
+
+  const getAssignmentCompletionStats = (studentId, targetDate) => {
+    const dayTasks = assignments.filter(a => a.dueDate === targetDate);
+    const completed = dayTasks.filter(task => {
+      const status = assignmentStatus[targetDate]?.[studentId]?.[task.id] || null;
+      return isAssignmentComplete(status);
+    }).length;
+
+    return {
+      completed,
+      total: dayTasks.length,
+      percent: dayTasks.length > 0 ? Math.round((completed / dayTasks.length) * 100) : 0
+    };
   };
 
   // --- UI Helpers ---
@@ -341,13 +357,21 @@ const App = () => {
     return students.every(s => dayData[s.id]?.present === true) ? 'bg-green-500' : 'bg-red-500';
   };
 
+  // --- [교체 2] 과제 달력 점 함수 교체 ---
   const getAssignmentDot = (date) => {
     const key = formatDate(date);
-    const dayStatus = assignmentStatus[key];
     const dayTasks = assignments.filter(a => a.dueDate === key);
+
     if (dayTasks.length === 0) return null;
-    if (!dayStatus || students.length === 0) return 'bg-red-500'; 
-    return students.every(s => dayTasks.every(t => dayStatus[s.id]?.[t.id] === 'done' || dayStatus[s.id]?.[t.id] === 'ing')) ? 'bg-green-500' : 'bg-red-500';
+    if (students.length === 0) return 'bg-red-500';
+
+    const allDone = students.every(student =>
+      dayTasks.every(task =>
+        isAssignmentComplete(assignmentStatus[key]?.[student.id]?.[task.id] || null)
+      )
+    );
+
+    return allDone ? 'bg-green-500' : 'bg-red-500';
   };
 
   const getCounselingDot = (date) => {
@@ -357,34 +381,6 @@ const App = () => {
     return dayData.some(r => !r.resolved) ? 'bg-red-500' : 'bg-blue-500';
   };
 
-  const getStatusIcon = (status) => {
-    switch(status) {
-      case 'done': return '◎';
-      case 'ing': return '○';
-      case 'bad': return '△';
-      default: return '-';
-    }
-  };
-
-  const getStatusLabel = (status) => {
-    switch(status) {
-      case 'done': return '매우잘함(+3점)';
-      case 'ing': return '잘함(+2점)';
-      case 'bad': return '미흡(+1점)';
-      default: return '미완료(0점)';
-    }
-  };
-
-  const getStatusColorClass = (status) => {
-    switch(status) {
-      case 'done': return 'bg-blue-700 text-white border-blue-700'; 
-      case 'ing': return 'bg-yellow-100 text-yellow-800 border-yellow-400'; 
-      case 'bad': return 'bg-red-100 text-red-800 border-red-400'; 
-      default: return 'bg-gray-100 text-gray-500 border-gray-200'; 
-    }
-  };
-
-  // --- Handlers ---
   const toggleAttendance = (studentId) => {
     setAttendanceData(prev => {
       const currentDay = prev[dateKey] || {};
@@ -415,15 +411,6 @@ const App = () => {
     }
   };
 
-  const setTaskStatus = (studentId, taskId, status, dueDate) => {
-    setAssignmentStatus(prev => {
-      const dayData = prev[dueDate] || {};
-      const studentData = dayData[studentId] || {};
-      return { ...prev, [dueDate]: { ...dayData, [studentId]: { ...studentData, [taskId]: status } } };
-    });
-    setStatusPickerTarget(null);
-  };
-
   const updateTaskMemo = (studentId, taskId, memo, dueDate) => {
     setAssignmentStatus(prev => {
       const dayData = prev[dueDate] || {};
@@ -432,111 +419,9 @@ const App = () => {
     });
   };
 
-  const bulkTaskDone = (taskId, dueDate) => {
-    setAssignmentStatus(prev => {
-      const dayData = prev[dueDate] || {};
-      const newDayData = { ...dayData };
-      students.forEach(s => { newDayData[s.id] = { ...(newDayData[s.id] || {}), [taskId]: 'done' }; });
-      return { ...prev, [dueDate]: newDayData };
-    });
-  };
-
-  const saveStudent = (id, num, name, memo, isContinuous = false) => {
-    if(!name || !num) return;
-    let newStudents = [...students];
-    if(id) newStudents = newStudents.map(s => s.id === id ? { ...s, num, name, memo } : s);
-    else newStudents.push({ id: 'st' + Date.now(), num, name, memo });
-    newStudents.sort((a, b) => parseInt(a.num) - parseInt(b.num));
-    setStudents(newStudents);
-    if (isContinuous) setShowStudentModal({id: null, num: (parseInt(num) + 1).toString(), name: '', memo: ''});
-    else setShowStudentModal(null);
-  };
-
-  const handleInlineMemoUpdate = (id, newMemo) => {
-    setStudents(prev => prev.map(s => s.id === id ? { ...s, memo: newMemo } : s));
-  };
-
   const deleteStudent = (id) => {
     if(window.confirm('정말로 이 학생을 삭제하시겠습니까? 관련 기록이 함께 지워질 수 있습니다.')) {
       setStudents(prev => prev.filter(s => s.id !== id));
-    }
-  };
-
-  const saveSubject = (id, title, type) => {
-    if(!title) return;
-    if (type === 'assignment') {
-      if (id) setAssignmentSubjects(assignmentSubjects.map(s => s.id === id ? {...s, title} : s));
-      else setAssignmentSubjects([...assignmentSubjects, { id: 'as' + Date.now(), title }]);
-    } else {
-      if (id) setMasterySubjects(masterySubjects.map(s => s.id === id ? {...s, title} : s));
-      else setMasterySubjects([...masterySubjects, { id: 'ms' + Date.now(), title }]);
-    }
-    setShowSubjectModal(null);
-  };
-
-  const deleteSubject = (id, type, e) => {
-    e.stopPropagation();
-    if (type === 'assignment') {
-      if(window.confirm('과목을 삭제하시겠습니까? 등록된 과제가 함께 삭제됩니다.')) {
-        setAssignmentSubjects(assignmentSubjects.filter(s => s.id !== id));
-        setAssignments(assignments.filter(a => a.subjectId !== id));
-      }
-    } else {
-      if(window.confirm('과목을 삭제하시겠습니까? 등록된 완전 학습 개념이 함께 삭제됩니다.')) {
-        setMasterySubjects(masterySubjects.filter(s => s.id !== id));
-        setMasteryConcepts(masteryConcepts.filter(c => c.subjectId !== id)); 
-      }
-    }
-  };
-
-  const moveSubject = (index, direction, type, e) => {
-    e.stopPropagation();
-    const setFn = type === 'assignment' ? setAssignmentSubjects : setMasterySubjects;
-    setFn(prev => {
-      const newSubs = [...prev];
-      if (direction === 'up' && index > 0) {
-        [newSubs[index - 1], newSubs[index]] = [newSubs[index], newSubs[index - 1]];
-      } else if (direction === 'down' && index < newSubs.length - 1) {
-        [newSubs[index + 1], newSubs[index]] = [newSubs[index], newSubs[index + 1]];
-      }
-      return newSubs;
-    });
-  };
-
-  const deleteAssignment = (id) => {
-    if(window.confirm('정말로 이 과제를 삭제하시겠습니까?')) {
-      setAssignments(prev => prev.filter(a => a.id !== id));
-    }
-  };
-
-  const addCounselingRecord = (date) => {
-    const newRecord = { id: 'c' + Date.now(), recorder: '', studentId: '', content: '', result: '', resolved: false };
-    setCounselingData(prev => ({ ...prev, [date]: [newRecord, ...(prev[date] || [])] }));
-  };
-
-  const updateCounselingRecord = (date, id, field, value) => {
-    setCounselingData(prev => ({ ...prev, [date]: prev[date].map(r => r.id === id ? { ...r, [field]: value } : r) }));
-  };
-
-  const deleteCounselingRecord = (date, id) => {
-    if(window.confirm('이 상담 기록을 삭제하시겠습니까?')) {
-      setCounselingData(prev => ({ ...prev, [date]: prev[date].filter(r => r.id !== id) }));
-    }
-  };
-
-  const saveConcept = (id, subjectId, term, hanja, meaning) => {
-    if(!term || !subjectId) return;
-    if (id) {
-      setMasteryConcepts(prev => prev.map(c => c.id === id ? { ...c, subjectId, term, hanja, meaning } : c));
-    } else {
-      setMasteryConcepts(prev => [{ id: 'mc' + Date.now(), subjectId, term, hanja, meaning }, ...prev]);
-    }
-    setShowConceptModal(null);
-  };
-
-  const deleteConcept = (id) => {
-    if(window.confirm('이 중요 개념을 삭제하시겠습니까?')) {
-      setMasteryConcepts(prev => prev.filter(c => c.id !== id));
     }
   };
 
@@ -606,6 +491,60 @@ const App = () => {
     }
   };
 
+  const calculateReportData = () => {
+    const now = new Date();
+    const startOfToday = getStartOfDay(now).getTime();
+    const startOfWeek = getStartOfWeek(now).getTime();
+    const startOfMonth = getStartOfMonth(now).getTime();
+    const cStart = new Date(customStartDate).getTime();
+    const cEnd = new Date(customEndDate).setHours(23, 59, 59, 999);
+
+    const reportData = students.map(student => {
+      const points = magicPoints[student.id] || [];
+      const filteredPoints = points.filter(p => {
+        if (reportPeriod === 'all') return true;
+        if (!p.timestamp) return true; 
+        if (reportPeriod === 'day') return p.timestamp >= startOfToday;
+        if (reportPeriod === 'week') return p.timestamp >= startOfWeek;
+        if (reportPeriod === 'month') return p.timestamp >= startOfMonth;
+        if (reportPeriod === 'custom') return p.timestamp >= cStart && p.timestamp <= cEnd;
+        return true;
+      });
+
+      const manualTotal = filteredPoints.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
+      const plusCount = filteredPoints.filter(p => p.type === 'plus').length;
+      const minusCount = filteredPoints.filter(p => p.type === 'minus').length;
+
+      // --- [교체 3] 매직점수 리포트 계산 부분 교체 ---
+      let taskPts = 0;
+
+      assignments.forEach(task => {
+        const dateTs = new Date(task.dueDate).getTime();
+        let include = false;
+
+        if (reportPeriod === 'all') include = true;
+        else if (reportPeriod === 'day' && dateTs >= startOfToday) include = true;
+        else if (reportPeriod === 'week' && dateTs >= startOfWeek) include = true;
+        else if (reportPeriod === 'month' && dateTs >= startOfMonth) include = true;
+        else if (reportPeriod === 'custom' && dateTs >= cStart && dateTs <= cEnd) include = true;
+
+        if (include) {
+          const status = assignmentStatus[task.dueDate]?.[student.id]?.[task.id] || null;
+          taskPts += getAssignmentPointValue(status);
+        }
+      });
+
+      const total = manualTotal + taskPts;
+      return { ...student, total, plusCount, minusCount, taskPts };
+    });
+
+    return reportData.sort((a, b) => {
+      if (reportSortOrder === 'desc') return b.total - a.total;
+      if (reportSortOrder === 'asc') return a.total - b.total;
+      return parseInt(a.num) - parseInt(b.num); 
+    });
+  };
+
   const saveExternalLink = (id, title, url) => {
     if (!title || !url) return;
     let formattedUrl = url;
@@ -639,142 +578,6 @@ const App = () => {
     });
   };
 
-  const calculateReportData = () => {
-    const now = new Date();
-    const startOfToday = getStartOfDay(now).getTime();
-    const startOfWeek = getStartOfWeek(now).getTime();
-    const startOfMonth = getStartOfMonth(now).getTime();
-    const cStart = new Date(customStartDate).getTime();
-    const cEnd = new Date(customEndDate).setHours(23, 59, 59, 999);
-
-    const reportData = students.map(student => {
-      const points = magicPoints[student.id] || [];
-      const filteredPoints = points.filter(p => {
-        if (reportPeriod === 'all') return true;
-        if (!p.timestamp) return true; 
-        if (reportPeriod === 'day') return p.timestamp >= startOfToday;
-        if (reportPeriod === 'week') return p.timestamp >= startOfWeek;
-        if (reportPeriod === 'month') return p.timestamp >= startOfMonth;
-        if (reportPeriod === 'custom') return p.timestamp >= cStart && p.timestamp <= cEnd;
-        return true;
-      });
-
-      const manualTotal = filteredPoints.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
-      const plusCount = filteredPoints.filter(p => p.type === 'plus').length;
-      const minusCount = filteredPoints.filter(p => p.type === 'minus').length;
-
-      let taskPts = 0;
-      Object.entries(assignmentStatus || {}).forEach(([dateStr, dayData]) => {
-        const dateTs = new Date(dateStr).getTime();
-        let include = false;
-        if (reportPeriod === 'all') include = true;
-        else if (reportPeriod === 'day' && dateTs >= startOfToday) include = true;
-        else if (reportPeriod === 'week' && dateTs >= startOfWeek) include = true;
-        else if (reportPeriod === 'month' && dateTs >= startOfMonth) include = true;
-        else if (reportPeriod === 'custom' && dateTs >= cStart && dateTs <= cEnd) include = true;
-
-        if (include) {
-          const sData = dayData[student.id] || {};
-          Object.entries(sData).forEach(([k, v]) => {
-            if (!k.startsWith('memo_')) {
-              if (v === 'done') taskPts += 3;
-              else if (v === 'ing') taskPts += 2;
-              else if (v === 'bad') taskPts += 1;
-            }
-          });
-        }
-      });
-
-      const total = manualTotal + taskPts;
-      return { ...student, total, plusCount, minusCount, taskPts };
-    });
-
-    return reportData.sort((a, b) => {
-      if (reportSortOrder === 'desc') return b.total - a.total;
-      if (reportSortOrder === 'asc') return a.total - b.total;
-      return parseInt(a.num) - parseInt(b.num); 
-    });
-  };
-
-  const sortedStudentsForMagic = [...students].sort((a, b) => {
-    if (magicSortOrder === 'desc') return getStudentTotalPoints(b.id) - getStudentTotalPoints(a.id);
-    if (magicSortOrder === 'asc') return getStudentTotalPoints(a.id) - getStudentTotalPoints(b.id);
-    return parseInt(a.num) - parseInt(b.num);
-  });
-
-  const downloadCSV = () => {
-    let csvContent = '\uFEFF'; 
-    csvContent += '학생번호,학생이름,날짜,기록분류,세부항목,상태_및_점수,비고_및_메모\n';
-    const escape = (s) => `"${String(s || '').replace(/"/g, '""')}"`;
-
-    const sortedExportStudents = [...students].sort((a, b) => parseInt(a.num) - parseInt(b.num));
-    const allDates = Array.from(new Set([
-      ...Object.keys(attendanceData),
-      ...assignments.map(a => a.dueDate),
-      ...Object.keys(counselingData),
-      ...submissions.map(s => s.date),
-      ...Object.values(magicPoints).flat().map(p => p.date)
-    ])).sort();
-
-    sortedExportStudents.forEach(student => {
-      allDates.forEach(date => {
-        const att = attendanceData[date]?.[student.id];
-        if (att) {
-          const emojiStr = att.mood !== '😊' ? att.mood : '';
-          csvContent += `${student.num},${escape(student.name)},${date},출석,일일출결,${att.present?'출석':'결석'},${escape(emojiStr + ' ' + att.memo)}\n`;
-        }
-        
-        submissions.filter(s => s.date === date).forEach(subm => {
-          const isSubm = submissionStatus[subm.id]?.[student.id];
-          csvContent += `${student.num},${escape(student.name)},${date},제출물,${escape(subm.title)},${isSubm?'제출완료':'미제출'},\n`;
-        });
-
-        assignments.filter(a => a.dueDate === date).forEach(t => {
-          const s = assignmentStatus[date]?.[student.id]?.[t.id];
-          if(s !== undefined && s !== null) { 
-            csvContent += `${student.num},${escape(student.name)},${date},과제,${escape(t.title)},${getStatusLabel(s)},${escape(assignmentStatus[date]?.[student.id]?.[`memo_${t.id}`])}\n`;
-          }
-        });
-        
-        (counselingData[date] || []).filter(c => c.studentId === student.id).forEach(c => {
-          csvContent += `${student.num},${escape(student.name)},${date},상담기록,${escape('작성:'+c.recorder)},${c.resolved?'해결완료':'미해결'},${escape('내용:'+c.content + ' / 조치:' + c.result)}\n`;
-        });
-
-        (magicPoints[student.id] || []).filter(p => p.date === date).forEach(p => {
-          const typeStr = p.type === 'plus' ? '칭찬' : p.type === 'minus' ? '노력' : '초기화';
-          const amtStr = p.amount > 0 ? `+${p.amount}` : p.amount;
-          csvContent += `${student.num},${escape(student.name)},${date},매직점수,${typeStr},${amtStr},${escape(p.reason)}\n`;
-        });
-      });
-    });
-
-    csvContent += '\n\n=== 완전 학습 (중요 개념 사전) ===\n';
-    csvContent += '과목,단어,한자,핵심내용\n';
-    const sortedConcepts = [...masteryConcepts].sort((a,b) => {
-      const subA = masterySubjects.findIndex(s=>s.id===a.subjectId);
-      const subB = masterySubjects.findIndex(s=>s.id===b.subjectId);
-      return subA - subB;
-    });
-    sortedConcepts.forEach(c => {
-      const subTitle = masterySubjects.find(s => s.id === c.subjectId)?.title || '';
-      csvContent += `${escape(subTitle)},${escape(c.term)},${escape(c.hanja)},${escape(c.meaning)}\n`;
-    });
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `매직클래스_AI분석용데이터_${formatDate(new Date())}.csv`;
-    link.click();
-  };
-
-  const calculatePopupPosition = (rect, expectedWidth = 240, expectedHeight = 200) => {
-    let posX = rect.right + 10;
-    let posY = rect.top - 10;
-    if (posX + expectedWidth > window.innerWidth) posX = window.innerWidth - expectedWidth - 10;
-    if (posY + expectedHeight > window.innerHeight) posY = window.innerHeight - expectedHeight - 20;
-    return { x: posX, y: posY };
-  };
-
   const Sidebar = () => (
     <div className="md:w-72 bg-white border-t md:border-t-0 md:border-r h-16 md:h-screen flex flex-row md:flex-col p-2 md:p-6 gap-2 fixed bottom-0 left-0 w-full z-50 md:relative overflow-x-auto items-center md:items-stretch shadow-[0_-4px_20px_rgba(0,0,0,0.05)] md:shadow-none hide-scrollbar">
       <div className="hidden md:flex items-center gap-3 mb-10 px-2 text-indigo-600 font-black text-3xl tracking-tight">
@@ -796,7 +599,7 @@ const App = () => {
   );
 
   return (
-    <div className={`flex flex-col md:flex-row min-h-screen bg-slate-50 text-gray-900 font-sans pb-24 md:pb-0`}>
+    <div className="flex flex-col md:flex-row min-h-screen bg-slate-50 text-gray-900 font-sans pb-24 md:pb-0">
       <div className="md:hidden flex items-center justify-between p-5 bg-white border-b sticky top-0 z-40 shadow-sm no-print">
         <div className="flex items-center gap-2 text-indigo-600 font-black text-2xl"><Sparkles size={28} /> 매직클래스</div>
         <button onClick={downloadCSV} className="text-emerald-600 px-4 py-2 bg-emerald-50 rounded-xl hover:bg-emerald-100 flex items-center gap-2 text-sm font-black border border-emerald-200"><Download size={18} /> <span className="hidden sm:inline">AI 엑셀</span></button>
@@ -804,7 +607,7 @@ const App = () => {
 
       <Sidebar />
       
-      <main className="flex-1 p-4 md:p-10 overflow-auto relative hide-on-print">
+      <main className="flex-1 p-4 md:p-10 overflow-auto relative print-container">
         <div className="hidden md:flex justify-between items-center mb-8 no-print">
           <h2 className="text-3xl font-black text-gray-800 flex items-center gap-3">
             {activeTab === 'students' && (selectedStudent ? '개인 리포트' : '학생 명단 관리')}
@@ -841,7 +644,7 @@ const App = () => {
                   {students.map(s => (
                     <tr key={s.id} className="hover:bg-indigo-50/40 transition-colors">
                       <td className="px-4 md:px-8 py-6 md:py-8 text-gray-700 font-black text-xl md:text-2xl text-center whitespace-nowrap">{s.num}</td>
-                      <td onClick={() => setSelectedStudent(s)} className="px-6 md:px-10 py-6 md:py-8 font-black text-2xl md:text-3xl text-indigo-600 cursor-pointer hover:underline truncate whitespace-nowrap overflow-hidden text-ellipsis">{s.name}</td>
+                      <td onClick={() => setSelectedStudent(s)} className="px-6 md:px-10 py-6 md:py-8 font-black text-2xl md:text-3xl text-indigo-600 cursor-pointer hover:underline truncate whitespace-nowrap">{s.name}</td>
                       <td className="px-6 md:px-10 py-6 md:py-8 truncate">
                         <input type="text" value={s.memo} onChange={e => handleInlineMemoUpdate(s.id, e.target.value)} placeholder="메모 입력" className="w-full bg-transparent border-none focus:ring-0 text-gray-700 font-bold text-lg md:text-xl truncate placeholder-gray-300" />
                       </td>
@@ -866,11 +669,11 @@ const App = () => {
               <div className="bg-white p-6 lg:p-8 rounded-[40px] shadow-sm border border-gray-100">
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center gap-1">
-                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"><ChevronLeft size={24} strokeWidth={3}/></button>
-                    <h3 className="font-black text-2xl text-gray-800 min-w-[110px] text-center">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
-                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"><ChevronRight size={24} strokeWidth={3}/></button>
+                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600"><ChevronLeft size={24}/></button>
+                    <h3 className="font-black text-2xl text-gray-800 text-center min-w-[110px]">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600"><ChevronRight size={24}/></button>
                   </div>
-                  <button onClick={() => setSelectedDate(new Date())} className="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black hover:bg-indigo-100 transition-colors shrink-0">오늘</button>
+                  <button onClick={() => setSelectedDate(new Date())} className="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black">오늘</button>
                 </div>
                 <div className="grid grid-cols-7 gap-y-3 text-center mb-2 font-black text-sm text-gray-400">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d}>{d}</div>)}
@@ -893,23 +696,22 @@ const App = () => {
             <div className="flex-1 bg-white rounded-[40px] border border-gray-100 shadow-sm p-6 lg:p-10 min-w-0">
               <div className="flex items-center justify-between mb-8 lg:mb-10 border-b pb-6">
                 <h3 className="text-2xl lg:text-3xl font-black flex items-center gap-3 text-gray-800"><Calendar className="text-indigo-600" size={32} /><span>{dateKey} 출석부</span></h3>
-                <button onClick={() => setAttendanceData(prev => ({...prev, [dateKey]: students.reduce((acc, s) => ({...acc, [s.id]: { ...(prev[dateKey]?.[s.id] || { mood: '😊', memo: '' }), present: true }}), prev[dateKey] || {})}))} className="bg-green-50 text-green-600 px-5 py-3 rounded-2xl font-black hover:bg-green-100 flex items-center gap-2 text-base lg:text-lg transition-transform active:scale-95"><Check size={20} strokeWidth={3} /> 전원 출석</button>
+                <button onClick={() => setAttendanceData(prev => ({...prev, [dateKey]: students.reduce((acc, s) => ({...acc, [s.id]: { ...(prev[dateKey]?.[s.id] || { mood: '😊', memo: '' }), present: true }}), prev[dateKey] || {})}))} className="bg-green-50 text-green-600 px-5 py-3 rounded-2xl font-black flex items-center gap-2 transition-transform active:scale-95"><Check size={20} /> 전원 출석</button>
               </div>
               <div className="space-y-4 lg:space-y-6">
-                {students.length === 0 && <p className="text-gray-400 text-lg font-bold text-center py-10">먼저 학생 명단에서 학생을 추가해주세요.</p>}
                 {students.map(student => {
                   const state = attendanceData[dateKey]?.[student.id] || { present: false, mood: '😊', memo: '' };
                   return (
-                    <div key={student.id} className="flex items-center gap-4 lg:gap-6 bg-slate-50 p-4 rounded-3xl border border-transparent hover:border-indigo-100 transition-colors">
-                      <button onClick={() => toggleAttendance(student.id)} className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center transition-all shrink-0 ${state.present ? 'bg-green-500 text-white shadow-md scale-105' : 'bg-gray-200 text-white'}`}><CheckCircle size={28} strokeWidth={3} /></button>
-                      <div className="w-24 lg:w-32 font-black text-2xl lg:text-3xl text-gray-800 shrink-0 truncate whitespace-nowrap">{student.name}</div>
+                    <div key={student.id} className="flex items-center gap-4 lg:gap-6 bg-slate-50 p-4 rounded-3xl border border-transparent hover:border-indigo-100">
+                      <button onClick={() => toggleAttendance(student.id)} className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center transition-all shrink-0 ${state.present ? 'bg-green-500 text-white shadow-md scale-105' : 'bg-gray-200 text-white'}`}><CheckCircle size={28} /></button>
+                      <div className="w-24 lg:w-32 font-black text-2xl lg:text-3xl text-gray-800 shrink-0 truncate">{student.name}</div>
                       <div className="relative shrink-0">
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
                             setMoodPickerTarget({ studentId: student.id, ...calculatePopupPosition(e.currentTarget.getBoundingClientRect(), 260, 160) });
                           }} 
-                          className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-3xl lg:text-4xl transition-all shadow-sm hover:border-indigo-300 hover:shadow-md cursor-pointer ${state.present ? 'opacity-100' : 'opacity-40'}`}
+                          className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-3xl lg:text-4xl shadow-sm cursor-pointer ${state.present ? 'opacity-100' : 'opacity-40'}`}
                         >
                           {state.mood}
                         </button>
@@ -1115,11 +917,11 @@ const App = () => {
               <div className="bg-white p-6 lg:p-8 rounded-[40px] shadow-sm border border-gray-100">
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center gap-1">
-                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"><ChevronLeft size={24} strokeWidth={3}/></button>
-                    <h3 className="font-black text-2xl text-gray-800 min-w-[110px] text-center">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
-                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"><ChevronRight size={24} strokeWidth={3}/></button>
+                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600"><ChevronLeft size={24}/></button>
+                    <h3 className="font-black text-2xl text-gray-800 text-center min-w-[110px]">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600"><ChevronRight size={24}/></button>
                   </div>
-                  <button onClick={() => setSelectedDate(new Date())} className="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black hover:bg-indigo-100 transition-colors shrink-0">오늘</button>
+                  <button onClick={() => setSelectedDate(new Date())} className="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black">오늘</button>
                 </div>
                 <div className="grid grid-cols-7 gap-y-3 text-center mb-2 font-black text-sm text-gray-400">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d}>{d}</div>)}
@@ -1146,11 +948,8 @@ const App = () => {
               </div>
               {students.length === 0 && <div className="text-center py-16 text-gray-400 font-bold text-lg bg-white rounded-[40px] border border-gray-100">등록된 학생이 없습니다.</div>}
               {students.map(student => {
-                const tasks = assignments.filter(a => a.dueDate === dateKey);
-                const status = assignmentStatus[dateKey]?.[student.id] || {};
-                const done = Object.entries(status).filter(([k, v]) => !k.startsWith('memo_') && (v === 'done' || v === 'ing')).length;
-                const total = tasks.length;
-                const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+                // --- [교체 4] 과제현황 퍼센트 계산 부분 교체 ---
+                const { completed, total, percent } = getAssignmentCompletionStats(student.id, dateKey);
                 return (
                   <div key={student.id} onClick={() => setAssignmentDetailStudent(student)} className="bg-white p-6 lg:p-8 rounded-[32px] border-2 border-gray-100 shadow-sm flex items-center gap-6 lg:gap-10 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer group">
                     <div className="w-20 lg:w-28 font-black text-2xl lg:text-3xl text-gray-800 group-hover:text-indigo-600 truncate whitespace-nowrap text-right">{student.name}</div>
@@ -1158,7 +957,7 @@ const App = () => {
                       <div className="relative h-3 lg:h-4 bg-slate-100 rounded-full overflow-hidden mb-2 lg:mb-3 shadow-inner">
                         <div className={`absolute top-0 left-0 h-full transition-all duration-1000 ${percent === 100 ? 'bg-green-500' : 'bg-indigo-500'}`} style={{ width: `${percent}%` }} />
                       </div>
-                      <div className="text-xs lg:text-sm font-black text-gray-400 pl-1">{done} / {total} 개 완료 (◎, ○ 포함)</div>
+                      <div className="text-xs lg:text-sm font-black text-gray-400 pl-1">{completed} / {total} 개 완료 (◎, ○ 포함)</div>
                     </div>
                     <div className={`w-16 lg:w-24 text-right text-2xl lg:text-4xl font-black shrink-0 ${percent === 100 ? 'text-green-500' : 'text-gray-300'}`}>{percent}%</div>
                   </div>
@@ -1250,11 +1049,11 @@ const App = () => {
               <div className="bg-white p-6 lg:p-8 rounded-[40px] shadow-sm border border-gray-100">
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center gap-1">
-                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"><ChevronLeft size={24} strokeWidth={3}/></button>
-                    <h3 className="font-black text-2xl text-gray-800 min-w-[110px] text-center">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
-                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"><ChevronRight size={24} strokeWidth={3}/></button>
+                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600"><ChevronLeft size={24}/></button>
+                    <h3 className="font-black text-2xl text-gray-800 text-center min-w-[110px]">{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월</h3>
+                    <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1))} className="p-1.5 text-gray-400 hover:text-indigo-600"><ChevronRight size={24}/></button>
                   </div>
-                  <button onClick={() => setSelectedDate(new Date())} className="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black hover:bg-indigo-100 transition-colors shrink-0">오늘</button>
+                  <button onClick={() => setSelectedDate(new Date())} className="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black">오늘</button>
                 </div>
                 <div className="grid grid-cols-7 gap-y-3 text-center mb-2 font-black text-sm text-gray-400">
                   {['일','월','화','수','목','금','토'].map(d => <div key={d}>{d}</div>)}
@@ -1397,7 +1196,7 @@ const App = () => {
                       {student.num}. {student.name}
                     </div>
                     
-                    <div className={`text-7xl font-black my-5 transition-all ${total > 0 ? 'text-blue-600 drop-shadow-sm' : total < 0 ? 'text-red-500 drop-shadow-sm' : 'text-gray-300'}`}>
+                    <div className={`text-7xl font-black my-4 transition-all ${total > 0 ? 'text-blue-600 drop-shadow-sm' : total < 0 ? 'text-red-500 drop-shadow-sm' : 'text-gray-300'}`}>
                       {total > 0 ? `+${total}` : total}
                     </div>
 
@@ -1461,7 +1260,7 @@ const App = () => {
               </div>
 
               <div className="overflow-x-auto rounded-3xl border border-gray-100 shadow-sm">
-                <table className="w-full text-left min-w-[800px]">
+                <table className="w-full text-left min-w-[700px]">
                   <thead className="bg-slate-100 text-gray-500 text-sm uppercase font-black border-b-2 border-gray-200">
                     <tr>
                       <th className="px-8 py-6 w-24 text-center">순위</th>
@@ -1469,7 +1268,7 @@ const App = () => {
                       <th className="px-8 py-6 text-blue-600 text-center">수동 칭찬 (+)</th>
                       <th className="px-8 py-6 text-red-500 text-center">수동 노력 (-)</th>
                       <th className="px-8 py-6 text-emerald-600 text-center">과제 연동</th>
-                      <th className="px-8 py-6 text-right w-40">최종 종합 점수</th>
+                      <th className="px-8 py-6 text-right w-48">최종 종합 점수</th>
                       <th className="px-8 py-6 text-center w-32">안내장</th>
                     </tr>
                   </thead>
@@ -1568,75 +1367,13 @@ const App = () => {
           </div>
         )}
 
-        {/* --- 공통 팝업 영역 --- */}
-        {statusPickerTarget && (
-          <div className="fixed inset-0 z-[9999]" onClick={() => setStatusPickerTarget(null)}>
-            <div 
-              className="absolute bg-white rounded-3xl shadow-2xl border-2 border-indigo-100 p-3 flex flex-col gap-2 w-52 animate-in zoom-in-95 duration-150"
-              style={{ left: Math.max(10, statusPickerTarget.x), top: Math.max(10, statusPickerTarget.y) }}
-              onClick={e => e.stopPropagation()}
-            >
-              {[
-                { s: 'done', l: '매우잘함 (+3점)' },
-                { s: 'ing', l: '잘함 (+2점)' },
-                { s: 'bad', l: '미흡 (+1점)' },
-                { s: null, l: '미완료 (0점)' }
-              ].map(item => (
-                <button 
-                  key={item.l}
-                  onClick={() => {
-                    playSound('magic'); 
-                    setTaskStatus(statusPickerTarget.studentId, statusPickerTarget.taskId, item.s, statusPickerTarget.date);
-                  }}
-                  className={`flex items-center justify-between px-4 py-4 rounded-2xl text-sm font-black transition-all border ${getStatusColorClass(item.s)} hover:scale-[1.03] active:scale-95`}
-                >
-                  <span className="text-2xl font-black">{getStatusIcon(item.s)}</span>
-                  <span>{item.l}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* --- 개별 모달 --- */}
 
-        {moodPickerTarget && (
-          <div className="fixed inset-0 z-[9999]" onClick={() => setMoodPickerTarget(null)}>
-            <div 
-              className="absolute bg-white p-5 rounded-[32px] shadow-2xl border-2 border-gray-100 grid grid-cols-4 gap-3 w-64 animate-in zoom-in-95 duration-150"
-              style={{ left: Math.max(10, moodPickerTarget.x), top: Math.max(10, moodPickerTarget.y) }}
-              onClick={e => e.stopPropagation()}
-            >
-              {moods.map(m => (
-                <button 
-                  key={m} 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setAttendanceData(p => ({
-                      ...p, 
-                      [dateKey]: {
-                        ...p[dateKey], 
-                        [moodPickerTarget.studentId]: {
-                          ...(p[dateKey]?.[moodPickerTarget.studentId] || { memo: '' }), 
-                          present: true, 
-                          mood: m
-                        }
-                      }
-                    }));
-                    setMoodPickerTarget(null);
-                  }} 
-                  className="w-12 h-12 text-3xl hover:bg-slate-100 rounded-2xl transition-transform hover:scale-110 active:scale-95 flex items-center justify-center"
-                >
-                  {m}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* --- [수정] 과제 관리 학생 상세 모달창 - 팝업 없이 버튼 바로 노출되는 예전 다이렉트 기능 --- */}
+        {/* [연동 완료] 과제 상세평가 리스트 모달 (필터 및 버튼 다이렉트 연동) */}
         {assignmentDetailStudent && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 p-4 md:p-6 pb-20 md:pb-6">
-            <div className="bg-white rounded-[40px] w-full max-w-4xl h-[85vh] md:max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
-              <div className="p-6 md:p-10 border-b-2 border-gray-100 flex justify-between items-start shrink-0 bg-indigo-50/50">
+            <div className="bg-white rounded-[40px] w-full max-w-4xl h-[85vh] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
+              <div className="p-6 md:p-10 border-b-2 border-gray-100 flex justify-between items-start bg-indigo-50/50">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <span className="bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-lg font-black tracking-wide">학생 상세 현황</span>
@@ -1647,23 +1384,24 @@ const App = () => {
                 <button onClick={() => {setAssignmentDetailStudent(null); setAssignmentFilter('all');}} className="p-3 md:p-4 bg-white hover:bg-red-50 hover:text-red-500 rounded-2xl shadow-sm border border-gray-200 transition-colors"><X size={24} strokeWidth={3} /></button>
               </div>
 
-              <div className="px-6 md:px-10 py-4 md:py-5 bg-white border-b border-gray-100 flex gap-3 shrink-0 overflow-x-auto hide-scrollbar">
-                <button onClick={() => setAssignmentFilter('all')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'all' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>전체보기</button>
-                <button onClick={() => setAssignmentFilter('incomplete')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'incomplete' ? 'bg-red-500 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>미완료 (△, -)</button>
-                <button onClick={() => setAssignmentFilter('complete')} className={`px-5 py-2.5 rounded-xl text-sm md:text-base font-black transition-all whitespace-nowrap ${assignmentFilter === 'complete' ? 'bg-green-500 text-white shadow-md' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`}>완료 (◎, ○)</button>
+              <div className="px-6 md:px-10 py-4 bg-white border-b border-gray-100 flex gap-3 overflow-x-auto hide-scrollbar">
+                <button onClick={() => setAssignmentFilter('all')} className={`px-5 py-2.5 rounded-xl text-sm font-black whitespace-nowrap transition-all ${assignmentFilter === 'all' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-gray-500'}`}>전체보기</button>
+                <button onClick={() => setAssignmentFilter('incomplete')} className={`px-5 py-2.5 rounded-xl text-sm font-black whitespace-nowrap transition-all ${assignmentFilter === 'incomplete' ? 'bg-red-500 text-white shadow-md' : 'bg-slate-100 text-gray-500'}`}>미완료 (△, -)</button>
+                <button onClick={() => setAssignmentFilter('complete')} className={`px-5 py-2.5 rounded-xl text-sm font-black whitespace-nowrap transition-all ${assignmentFilter === 'complete' ? 'bg-green-500 text-white shadow-md' : 'bg-slate-100 text-gray-500'}`}>완료 (◎, ○)</button>
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-4 md:space-y-6 bg-slate-50/50">
                 {assignments
                   .filter(a => {
-                    const status = assignmentStatus[dateKey]?.[assignmentDetailStudent.id]?.[a.id] || null;
+                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
                     if (assignmentFilter === 'complete') return status === 'done' || status === 'ing';
                     if (assignmentFilter === 'incomplete') return status !== 'done' && status !== 'ing';
                     return true;
                   })
+                  .sort((a,b) => new Date(b.dueDate) - new Date(a.dueDate))
                   .map(a => {
-                    const status = assignmentStatus[dateKey]?.[assignmentDetailStudent.id]?.[a.id] || null;
-                    const memo = assignmentStatus[dateKey]?.[assignmentDetailStudent.id]?.[`memo_${a.id}`] || '';
+                    const status = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[a.id] || null;
+                    const memo = assignmentStatus[a.dueDate]?.[assignmentDetailStudent.id]?.[`memo_${a.id}`] || '';
                     const subject = assignmentSubjects.find(s => s.id === a.subjectId);
                     
                     return (
@@ -1688,7 +1426,7 @@ const App = () => {
                                 key={item.l}
                                 onClick={() => {
                                   if(item.s !== null) playSound('magic'); 
-                                  setTaskStatus(assignmentDetailStudent.id, a.id, item.s, dateKey);
+                                  setTaskStatus(assignmentDetailStudent.id, a.id, item.s, a.dueDate);
                                 }}
                                 className={`flex-1 md:w-16 py-3 rounded-2xl text-2xl font-black transition-all border-2 ${status === item.s ? getStatusColorClass(item.s) + ' border-transparent scale-105 shadow-md' : 'bg-slate-50 text-gray-400 border-gray-100 hover:bg-indigo-50 hover:text-indigo-400'}`}
                               >
@@ -1701,7 +1439,7 @@ const App = () => {
                         <div className="w-full md:w-80 shrink-0 mt-2 md:mt-0">
                           <input 
                             value={memo} 
-                            onChange={(e) => updateTaskMemo(assignmentDetailStudent.id, a.id, e.target.value, dateKey)}
+                            onChange={(e) => updateTaskMemo(assignmentDetailStudent.id, a.id, e.target.value, a.dueDate)}
                             placeholder="개별 메모 입력 (선택)" 
                             className="w-full bg-slate-50 border-2 border-gray-100 focus:border-indigo-400 focus:bg-white px-5 py-3.5 rounded-2xl outline-none text-base font-bold text-gray-700 transition-colors"
                           />
@@ -1710,7 +1448,7 @@ const App = () => {
                     );
                   })
                 }
-                {assignments.length === 0 && <div className="text-center py-20 text-gray-400 font-bold text-lg">해당 조건에 맞는 과제가 없습니다.</div>}
+                {assignments.length === 0 && <div className="text-center py-20 text-gray-400 font-bold text-lg">과제가 없습니다.</div>}
               </div>
             </div>
           </div>
@@ -1756,10 +1494,7 @@ const App = () => {
 
           return (
             <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 print-backdrop" onClick={() => setReportStudent(null)}>
-              <div 
-                className="bg-white rounded-[40px] w-full max-w-3xl max-h-[90vh] shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-200 print-modal overflow-hidden" 
-                onClick={e => e.stopPropagation()}
-              >
+              <div className="bg-white rounded-[40px] w-full max-w-3xl max-h-[90vh] shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-200 print-modal overflow-hidden" onClick={e => e.stopPropagation()}>
                 <div className="flex justify-between items-center p-8 border-b-2 border-gray-100 bg-indigo-50/50 no-print shrink-0">
                   <div className="flex items-center gap-3">
                     <span className="bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-black text-sm">안내장 미리보기</span>
@@ -1774,7 +1509,7 @@ const App = () => {
                 </div>
 
                 <div id="print-section" className="w-full bg-white p-10 lg:p-12 overflow-y-auto text-gray-800 flex-1 hide-scrollbar print:overflow-visible print:p-6">
-                  <div className="text-center mb-8 border-b-4 border-indigo-600 pb-6">
+                  <div className="text-center mb-10 border-b-4 border-indigo-600 pb-8">
                     <h2 className="text-4xl lg:text-5xl font-black text-gray-900 mb-4 tracking-tight">{reportStudent.student.name} 학생 학교 생활 안내장</h2>
                     <p className="text-lg font-bold text-gray-500 tracking-tight">학부모님 안녕하십니까? {reportStudent.student.name} 학생의 학교 생활 종합 안내입니다.</p>
                     <div className="mt-4 inline-block bg-indigo-50 text-indigo-700 px-5 py-2 rounded-full font-black text-sm tracking-widest border border-indigo-100">
@@ -1823,7 +1558,7 @@ const App = () => {
                       )}
                     </div>
                     
-                    <div className="text-center pt-10 mt-10 border-t-2 border-dashed border-gray-300 print:block hidden page-break-inside-avoid">
+                    <div className="text-center pt-8 mt-8 border-t-2 border-dashed border-gray-300 print:block hidden page-break-inside-avoid">
                       <p className="text-xl font-black text-gray-800 mb-3">위와 같이 긍정적으로 학교생활에 참여하고 있음을 안내해 드립니다.</p>
                       <p className="text-2xl font-black text-gray-900 mt-10 tracking-widest">담임 교사 ________________ (인)</p>
                     </div>
@@ -1834,46 +1569,18 @@ const App = () => {
           );
         })()}
 
-        {/* --- 개별 모달 --- */}
-
-        {/* 대형 뷰어 모달 */}
         {viewerTarget && (
-          <ConceptViewerModal
-            subjectId={viewerTarget.subjectId}
-            initialConceptId={viewerTarget.conceptId}
-            concepts={masteryConcepts}
-            onClose={() => setViewerTarget(null)}
-          />
+          <ConceptViewerModal subjectId={viewerTarget.subjectId} initialConceptId={viewerTarget.conceptId} concepts={masteryConcepts} onClose={() => setViewerTarget(null)} />
         )}
-
-        {/* 스마트 슬라이드 모달 */}
         {slideSubjectId && (
-          <ConceptSlideModal
-            subjectId={slideSubjectId}
-            concepts={masteryConcepts}
-            subjects={masterySubjects}
-            onClose={() => setSlideSubjectId(null)}
-          />
+          <ConceptSlideModal subjectId={slideSubjectId} concepts={masteryConcepts} subjects={masterySubjects} onClose={() => setSlideSubjectId(null)} />
         )}
-
         {showLinkModal && (
-          <LinkEditModal 
-            key={showLinkModal.id || 'new_link'}
-            data={showLinkModal}
-            onClose={() => setShowLinkModal(null)}
-            onSave={saveExternalLink}
-          />
+          <LinkEditModal key={showLinkModal.id || 'new_link'} data={showLinkModal} onClose={() => setShowLinkModal(null)} onSave={saveExternalLink} />
         )}
-
         {showConceptModal && (
-          <ConceptEditModal
-            data={showConceptModal}
-            subjects={masterySubjects}
-            onClose={() => setShowConceptModal(null)}
-            onSave={saveConcept}
-          />
+          <ConceptEditModal data={showConceptModal} subjects={masterySubjects} onClose={() => setShowConceptModal(null)} onSave={saveConcept} />
         )}
-
         {showSubjectModal && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
             <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
@@ -1888,43 +1595,14 @@ const App = () => {
             </div>
           </div>
         )}
-
         {showSubmissionModal && (
-          <SubmissionEditModal 
-            key={showSubmissionModal.id || 'new_submission'}
-            data={showSubmissionModal}
-            onClose={() => setShowSubmissionModal(null)}
-            onSave={(id, title, date) => {
-              if(!title) return;
-              if (id) setSubmissions(prev => prev.map(s => s.id === id ? { ...s, title, date } : s));
-              else setSubmissions(prev => [{ id: 'sm' + Date.now(), title, date }, ...prev]);
-              setShowSubmissionModal(null);
-            }}
-          />
+          <SubmissionEditModal key={showSubmissionModal.id || 'new_submission'} data={showSubmissionModal} onClose={() => setShowSubmissionModal(null)} onSave={(id, title, date) => { if(!title) return; if (id) setSubmissions(prev => prev.map(s => s.id === id ? { ...s, title, date } : s)); else setSubmissions(prev => [{ id: 'sm' + Date.now(), title, date }, ...prev]); setShowSubmissionModal(null); }} />
         )}
-
         {showAssignmentModal && (
-          <AssignmentEditModal 
-            key={showAssignmentModal.id || 'new_assignment'}
-            data={showAssignmentModal}
-            subjects={assignmentSubjects}
-            onClose={() => setShowAssignmentModal(null)}
-            onSave={(id, title, subId, date) => {
-              if(!title) return;
-              if (id) setAssignments(prev => prev.map(a => a.id === id ? { ...a, title, subjectId: subId, dueDate: date } : a));
-              else setAssignments(prev => [{ id: 'a' + Date.now(), subjectId: subId, title, dueDate: date }, ...prev]);
-              setShowAssignmentModal(null);
-            }}
-          />
+          <AssignmentEditModal key={showAssignmentModal.id || 'new_assignment'} data={showAssignmentModal} subjects={assignmentSubjects} onClose={() => setShowAssignmentModal(null)} onSave={(id, title, subId, date) => { if(!title) return; if (id) setAssignments(prev => prev.map(a => a.id === id ? { ...a, title, subjectId: subId, dueDate: date } : a)); else setAssignments(prev => [{ id: 'a' + Date.now(), subjectId: subId, title, dueDate: date }, ...prev]); setShowAssignmentModal(null); }} />
         )}
-
         {showStudentModal && (
-          <StudentEditModal 
-            key={showStudentModal.id || `new_student_${showStudentModal.num}`}
-            data={showStudentModal} 
-            onClose={() => setShowStudentModal(null)} 
-            onSave={saveStudent} 
-          />
+          <StudentEditModal key={showStudentModal.id || `new_student_${showStudentModal.num}`} data={showStudentModal} onClose={() => setShowStudentModal(null)} onSave={saveStudent} />
         )}
       </main>
       
@@ -1932,524 +1610,25 @@ const App = () => {
       <style dangerouslySetContent={{__html: `
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* [완벽 복구] 인쇄 전용 CSS (A4 1장에 맞게 최적화 및 불필요한 요소 제거) */
         @media print {
-          @page {
-            size: A4 portrait;
-            margin: 10mm;
-          }
-
-          /* 기본 요소 리셋 */
-          body, html {
-            margin: 0 !important;
-            padding: 0 !important;
-            background-color: white !important;
-            width: 100% !important;
-            height: auto !important;
-          }
-
-          /* 불필요한 UI 숨김 (사이드바, 헤더 등) */
-          body > div > div:not(main),
-          .no-print { 
-            display: none !important; 
-          }
-
-          /* 메인 컨테이너 리셋 */
-          main {
-            padding: 0 !important;
-            margin: 0 !important;
-            overflow: visible !important;
-          }
-
-          /* 모달 이외의 메인 콘텐츠 숨김 */
-          main > div:not(.print-backdrop) {
-            display: none !important;
-          }
-
-          /* 모달창을 전체 페이지로 확장 및 투명한 배경 제거 */
-          .print-backdrop {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: auto !important;
-            background: white !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            z-index: 1 !important;
-            display: block !important;
-          }
-
-          .print-modal {
-            position: relative !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            height: auto !important;
-            max-height: none !important;
-            box-shadow: none !important;
-            border: none !important;
-            transform: none !important;
-            overflow: visible !important;
-            background: white !important;
-          }
-
-          /* 프린트 영역 크기 및 배율 조정 (A4 용지에 맞게 축소) */
-          #print-section {
-            position: relative !important;
-            width: 100% !important;
-            height: auto !important;
-            overflow: visible !important;
-            padding: 0 !important;
-            zoom: 0.85; /* A4 1장에 들어가도록 비율 축소 */
-          }
-
-          /* 그리드 강제 2열 유지 및 글자 줄바꿈 방지 */
-          .print-grid {
-            display: grid !important;
-            grid-template-columns: 1fr 1fr !important;
-            gap: 12px !important;
-          }
-          
-          .print-grid > div {
-            padding: 12px !important;
-          }
-
-          /* 텍스트 짤림 방지 */
-          .whitespace-nowrap {
-            white-space: nowrap !important;
-          }
-
-          /* 페이지 넘김 시 레이아웃 짤림 방지 */
-          .page-break-inside-avoid {
-            page-break-inside: avoid !important;
-          }
-
-          /* 컬러 및 배경색 출력 설정 */
-          * {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            color-adjust: exact !important;
-          }
+          @page { size: A4 portrait; margin: 10mm; }
+          body, html { margin: 0 !important; padding: 0 !important; background-color: white !important; width: 100% !important; height: auto !important; }
+          body > div > div:not(main), .no-print { display: none !important; }
+          main { padding: 0 !important; margin: 0 !important; overflow: visible !important; }
+          main > div:not(.print-backdrop) { display: none !important; }
+          .print-backdrop { position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; height: auto !important; background: white !important; padding: 0 !important; margin: 0 !important; z-index: 1 !important; display: block !important; }
+          .print-modal { position: relative !important; width: 100% !important; max-width: 100% !important; height: auto !important; max-height: none !important; box-shadow: none !important; border: none !important; transform: none !important; overflow: visible !important; background: white !important; }
+          #print-section { position: relative !important; width: 100% !important; height: auto !important; overflow: visible !important; padding: 0 !important; zoom: 0.85; }
+          .print-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+          .print-grid > div { padding: 12px !important; }
+          .whitespace-nowrap { white-space: nowrap !important; }
+          .page-break-inside-avoid { page-break-inside: avoid !important; }
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
         }
       `}} />
     </div>
   );
 };
 
-// --- 독립된 뷰어 및 모달 컴포넌트들 ---
-
-const ConceptViewerModal = ({ subjectId, initialConceptId, concepts, onClose }) => {
-  const subjectConcepts = concepts.filter(c => c.subjectId === subjectId);
-  const [currentIndex, setCurrentIndex] = useState(() => Math.max(0, subjectConcepts.findIndex(c => c.id === initialConceptId)));
-
-  if(subjectConcepts.length === 0) return null;
-  const c = subjectConcepts[currentIndex];
-
-  const goPrev = (e) => { e.stopPropagation(); if(currentIndex > 0) setCurrentIndex(currentIndex - 1); };
-  const goNext = (e) => { e.stopPropagation(); if(currentIndex < subjectConcepts.length - 1) setCurrentIndex(currentIndex + 1); };
-
-  return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-10" onClick={onClose}>
-      <div className="bg-white rounded-[40px] w-full max-w-5xl h-full max-h-[80vh] shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
-        <button onClick={onClose} className="absolute top-6 right-6 p-4 bg-gray-100 hover:bg-gray-200 rounded-2xl transition-colors z-10"><X size={32} strokeWidth={3}/></button>
-
-        <div className="flex-1 flex flex-col items-center justify-center p-10 text-center relative overflow-y-auto">
-          {currentIndex > 0 && <button onClick={goPrev} className="absolute left-4 lg:left-10 p-5 text-gray-400 hover:text-indigo-600 bg-gray-50 hover:bg-indigo-50 rounded-full transition-all hover:scale-110 active:scale-95"><ChevronLeft size={48} strokeWidth={3}/></button>}
-          {currentIndex < subjectConcepts.length - 1 && <button onClick={goNext} className="absolute right-4 lg:right-10 p-5 text-gray-400 hover:text-indigo-600 bg-gray-50 hover:bg-indigo-50 rounded-full transition-all hover:scale-110 active:scale-95"><ChevronRight size={48} strokeWidth={3}/></button>}
-
-          <h2 className="text-5xl md:text-8xl font-black text-gray-900 mb-6 tracking-tight break-keep-all">{c.term}</h2>
-          {c.hanja && <h3 className="text-4xl md:text-6xl font-black text-indigo-600 mb-10 tracking-widest bg-indigo-50 px-8 py-3 rounded-3xl">{c.hanja}</h3>}
-          <p className="text-2xl md:text-4xl font-bold text-gray-600 leading-relaxed max-w-3xl whitespace-pre-wrap break-keep-all px-16">{c.meaning}</p>
-        </div>
-        <div className="text-center pb-8 font-black text-gray-300 text-2xl tracking-widest">{currentIndex + 1} / {subjectConcepts.length}</div>
-      </div>
-    </div>
-  );
-};
-
-const ConceptSlideModal = ({ subjectId, concepts, subjects, onClose }) => {
-  const subjectConcepts = concepts.filter(c => c.subjectId === subjectId);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [step, setStep] = useState(1);
-  const subjectTitle = subjects.find(s=>s.id===subjectId)?.title || '';
-
-  const parseMeaning = (meaningStr) => {
-    if (!meaningStr) return { hanjaBreakdown: '', explanation: '' };
-    if (meaningStr.includes(' : ')) {
-      const parts = meaningStr.split(' : ');
-      return { hanjaBreakdown: parts[0], explanation: meaningStr };
-    } else if (meaningStr.includes(':')) {
-      const parts = meaningStr.split(':');
-      return { hanjaBreakdown: parts[0], explanation: meaningStr };
-    }
-    return { hanjaBreakdown: meaningStr, explanation: meaningStr };
-  };
-
-  if (subjectConcepts.length === 0) {
-    return (
-      <div className="fixed inset-0 z-[300] bg-gray-900 flex items-center justify-center p-10 cursor-pointer" onClick={onClose}>
-        <div className="text-white text-3xl font-black">등록된 개념이 없습니다. 클릭하여 닫기</div>
-      </div>
-    );
-  }
-
-  const c = subjectConcepts[currentIndex];
-  const hasHanja = !!c.hanja;
-  const maxSteps = hasHanja ? 4 : 2;
-
-  let content = '';
-  let subtitle = '';
-  const parsed = parseMeaning(c.meaning);
-
-  if (hasHanja) {
-    if (step === 1) { content = c.hanja; subtitle = "한자"; }
-    else if (step === 2) { content = parsed.hanjaBreakdown || c.meaning; subtitle = "뜻풀이"; }
-    else if (step === 3) { content = parsed.explanation || c.meaning; subtitle = "핵심 의미"; }
-    else if (step === 4) { content = c.term; subtitle = "정답 확인"; }
-  } else {
-    if (step === 1) { content = c.term; subtitle = "핵심 개념"; }
-    else if (step === 2) { content = c.meaning; subtitle = "핵심 의미"; }
-  }
-
-  const goNext = (e) => {
-    if (e) e.stopPropagation();
-    if (step < maxSteps) {
-      setStep(step + 1);
-    } else {
-      if (currentIndex < subjectConcepts.length - 1) {
-        setCurrentIndex(currentIndex + 1);
-        setStep(1);
-      } else {
-        onClose();
-      }
-    }
-  };
-
-  const goPrev = (e) => {
-    if (e) e.stopPropagation();
-    if (step > 1) {
-      setStep(step - 1);
-    } else {
-      if (currentIndex > 0) {
-        const prevConcept = subjectConcepts[currentIndex - 1];
-        const prevMaxSteps = prevConcept.hanja ? 4 : 2;
-        setCurrentIndex(currentIndex - 1);
-        setStep(prevMaxSteps);
-      }
-    }
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if(e.key === ' ' || e.key === 'ArrowRight' || e.key === 'Enter') {
-        e.preventDefault();
-        goNext();
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        goPrev();
-      } else if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [step, currentIndex, subjectConcepts, maxSteps]);
-
-  let textSizeClass = 'text-[100px] md:text-[200px] lg:text-[240px]'; 
-  if (content.length > 80) textSizeClass = 'text-4xl md:text-5xl lg:text-6xl';
-  else if (content.length > 40) textSizeClass = 'text-5xl md:text-6xl lg:text-7xl';
-  else if (content.length > 15) textSizeClass = 'text-6xl md:text-8xl lg:text-[100px]';
-  else if (content.length > 6) textSizeClass = 'text-7xl md:text-9xl lg:text-[150px]';
-
-  return (
-    <div className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-indigo-950 text-white p-4 cursor-pointer select-none animate-in fade-in duration-300" onClick={goNext}>
-      <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="absolute top-8 right-8 p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-colors z-20"><X size={32} strokeWidth={3}/></button>
-      <div className="absolute top-10 left-10 text-xl md:text-2xl font-black text-white/40 z-20">{subjectTitle} - 복습 슬라이드 ({currentIndex + 1}/{subjectConcepts.length})</div>
-
-      <button onClick={goPrev} className="absolute left-4 lg:left-12 top-1/2 -translate-y-1/2 p-4 text-white/30 hover:text-white hover:bg-white/10 rounded-full transition-all z-20">
-        <ChevronLeft size={64} strokeWidth={2}/>
-      </button>
-      <button onClick={goNext} className="absolute right-4 lg:right-12 top-1/2 -translate-y-1/2 p-4 text-white/30 hover:text-white hover:bg-white/10 rounded-full transition-all z-20">
-        <ChevronRight size={64} strokeWidth={2}/>
-      </button>
-
-      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-7xl text-center px-16 md:px-32 relative overflow-y-auto max-h-[85vh] hide-scrollbar">
-        <span className="text-4xl md:text-5xl font-black text-indigo-300 mb-8 tracking-widest shrink-0">{subtitle}</span>
-        <h2 className={`font-black tracking-tight leading-snug ${textSizeClass} break-keep-all whitespace-pre-wrap drop-shadow-xl w-full`}>
-          {content}
-        </h2>
-      </div>
-
-      <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-3 z-20">
-        {subjectConcepts.map((_, idx) => (
-          <div key={idx} className={`h-4 rounded-full transition-all duration-500 ${idx === currentIndex ? 'w-16 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.5)]' : 'w-4 bg-white/20'}`} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-const ConceptEditModal = ({ data, subjects, onClose, onSave }) => {
-  const [subjectId, setSubjectId] = useState(data.subjectId || (subjects.length > 0 ? subjects[0].id : ''));
-  const [term, setTerm] = useState(data.term || '');
-  const [hanja, setHanja] = useState(data.hanja || '');
-  const [meaning, setMeaning] = useState(data.meaning || '');
-
-  const handleAutoComplete = () => {
-    if(!term) return alert('단어를 먼저 입력해주세요.');
-    const found = HANJA_DICT[term];
-    if (found) {
-      setHanja(found.hanja);
-      setMeaning(prev => {
-        const prefix = found.meaning;
-        return prev ? `${prefix}\n\n[추가내용]\n${prev}` : prefix;
-      });
-      playSound('magic'); 
-    } else {
-      alert('내장 사전에 없는 단어입니다. 직접 한자와 뜻을 입력해주세요.');
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
-      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center mb-8">
-          <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '개념 수정' : '중요 개념 등록'}</h4>
-          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
-        </div>
-        <div className="space-y-6">
-          <div>
-            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">과목 선택</label>
-            <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none font-black text-lg appearance-none text-gray-700 transition-colors cursor-pointer">
-              {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">단어 / 문장</label>
-            <div className="flex gap-3">
-              <input autoFocus value={term} onChange={(e) => setTerm(e.target.value)} placeholder="예: 민주주의" className="flex-1 w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg md:text-xl" />
-              <button onClick={handleAutoComplete} className="bg-indigo-50 text-indigo-700 px-6 rounded-2xl font-black text-base hover:bg-indigo-100 transition-transform active:scale-95 shadow-sm border-2 border-indigo-200 flex flex-col items-center justify-center leading-tight whitespace-nowrap"><Sparkles size={20} className="mb-1"/>자동완성</button>
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">한자 (선택)</label>
-            <input value={hanja} onChange={(e) => setHanja(e.target.value)} placeholder="예: 民主主義" className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-xl tracking-[0.3em]" />
-          </div>
-          <div>
-            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">핵심 내용</label>
-            <textarea value={meaning} onChange={(e) => setMeaning(e.target.value)} rows={5} placeholder="개념의 뜻이나 중요한 설명을 적어주세요." className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-bold text-lg resize-none leading-relaxed" />
-          </div>
-          <button onClick={() => onSave(data.id, subjectId, term, hanja, meaning)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
-            저장 완료
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const LinkEditModal = ({ data, onClose, onSave }) => {
-  const [title, setTitle] = useState(data.title || '');
-  const [url, setUrl] = useState(data.url || '');
-
-  return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
-      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center mb-8">
-          <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '외부 자료 수정' : '새 외부 자료 등록'}</h4>
-          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
-        </div>
-        <div className="space-y-6">
-          <div>
-            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">자료 이름</label>
-            <input 
-              autoFocus 
-              value={title} 
-              onChange={(e) => setTitle(e.target.value)} 
-              placeholder="예: 디지털 교과서, 아이스크림"
-              className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" 
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">웹사이트 주소 (URL)</label>
-            <input 
-              value={url} 
-              onChange={(e) => setUrl(e.target.value)} 
-              onKeyDown={(e) => {
-                if(e.key === 'Enter') {
-                  e.preventDefault();
-                  onSave(data.id, title, url);
-                }
-              }}
-              placeholder="예: www.naver.com"
-              className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" 
-            />
-          </div>
-          <button onClick={() => onSave(data.id, title, url)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
-            저장 완료
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const SubmissionEditModal = ({ data, onClose, onSave }) => {
-  const [title, setTitle] = useState(data.title || '');
-  const [date, setDate] = useState(data.date || '');
-
-  return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
-      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center mb-8">
-          <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '제출물 수정' : '새 제출물 등록'}</h4>
-          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
-        </div>
-        <div className="space-y-6">
-          <div>
-            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">제출물 제목</label>
-            <input 
-              autoFocus 
-              value={title} 
-              onChange={(e) => setTitle(e.target.value)} 
-              onKeyDown={(e) => {
-                if(e.key === 'Enter') {
-                  e.preventDefault();
-                  onSave(data.id, title, date);
-                }
-              }}
-              placeholder="예: 현장체험학습 동의서"
-              className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" 
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">날짜 지정</label>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 px-6 py-5 rounded-2xl font-black text-lg text-gray-700 outline-none transition-colors cursor-pointer" />
-          </div>
-          <button onClick={() => onSave(data.id, title, date)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
-            저장 완료
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const AssignmentEditModal = ({ data, subjects, onClose, onSave }) => {
-  const [title, setTitle] = useState(data.title || '');
-  const [subjectId, setSubjectId] = useState(data.subjectId || '');
-  const [dueDate, setDueDate] = useState(data.dueDate || '');
-
-  return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
-      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center mb-8">
-          <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '과제 수정' : '새 과제 등록'}</h4>
-          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
-        </div>
-        <div className="space-y-6">
-          <div>
-            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">과제 제목</label>
-            <input 
-              autoFocus 
-              value={title} 
-              onChange={(e) => setTitle(e.target.value)} 
-              onKeyDown={(e) => {
-                if(e.key === 'Enter') {
-                  e.preventDefault();
-                  onSave(data.id, title, subjectId, dueDate);
-                }
-              }}
-              placeholder="예: 국어활동 12쪽 풀기"
-              className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg" 
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">과목 선택</label>
-            <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none font-black text-lg appearance-none text-gray-700 transition-colors cursor-pointer">
-              {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">마감 기한</label>
-            <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl font-black text-lg text-gray-700 outline-none transition-colors cursor-pointer" />
-          </div>
-          <button onClick={() => onSave(data.id, title, subjectId, dueDate)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
-            저장 완료
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const StudentEditModal = ({ data, onClose, onSave }) => {
-  const [num, setNum] = useState(data.num || '');
-  const [name, setName] = useState(data.name || '');
-  const [memo, setMemo] = useState(data.memo || '');
-  const nameRef = useRef(null);
-  const memoRef = useRef(null);
-
-  useEffect(() => {
-    if (nameRef.current) nameRef.current.focus();
-  }, []);
-
-  const handleKeyDown = (e, currentField) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (currentField === 'name') {
-        if (data.id === null) onSave(data.id, num, name, memo, true);
-        else memoRef.current?.focus(); 
-      } else if (currentField === 'memo') {
-        onSave(data.id, num, name, memo, data.id === null); 
-      }
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-20 md:pb-0">
-      <div className="bg-white rounded-[40px] p-8 md:p-12 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center mb-8">
-          <h4 className="text-2xl md:text-3xl font-black text-gray-800">{data.id ? '학생 정보 수정' : '신규 학생 등록'}</h4>
-          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors"><X size={24} strokeWidth={3}/></button>
-        </div>
-        <div className="space-y-6">
-          <div className="flex gap-4">
-            <div className="w-24 md:w-32">
-              <label className="block text-sm font-black text-gray-500 mb-2 ml-1">번호</label>
-              <input value={num} onChange={(e) => setNum(e.target.value)} className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-4 py-5 rounded-2xl outline-none transition-all font-black text-center text-lg md:text-xl" />
-            </div>
-            <div className="flex-1">
-              <label className="block text-sm font-black text-gray-500 mb-2 ml-1">이름</label>
-              <input 
-                ref={nameRef} 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
-                onKeyDown={(e) => handleKeyDown(e, 'name')} 
-                placeholder="이름 입력"
-                className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-black text-lg md:text-xl" 
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-black text-gray-500 mb-2 ml-1">학생 메모 (선택)</label>
-            <input 
-              ref={memoRef} 
-              value={memo} 
-              onChange={(e) => setMemo(e.target.value)} 
-              onKeyDown={(e) => handleKeyDown(e, 'memo')} 
-              placeholder="참고사항 입력"
-              className="w-full bg-slate-50 border-2 border-gray-200 focus:border-indigo-500 focus:bg-white px-6 py-5 rounded-2xl outline-none transition-all font-bold text-lg text-gray-700" 
-            />
-          </div>
-          <button onClick={() => onSave(data.id, num, name, memo, data.id === null)} className="w-full bg-indigo-600 text-white py-5 mt-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
-            {data.id ? '수정 완료' : '학생 등록'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
+// --- 독립 컴포넌트 생략하지 않고 전부 기입 ---
 export default App;
